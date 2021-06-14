@@ -1,0 +1,139 @@
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swiperefresh_items"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.watch.aware.app.fragments.GoalProgressFragment">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_margin="15dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Today's Goal Progress"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content">
+
+            </TextView>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/steps"
+                    android:layout_height="40dp"
+                    app:tint="@color/colorPrimaryDark">
+
+                </ImageView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="0"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/steps"
+                    android:textSize="@dimen/text_med"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/white"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </LinearLayout>
+        </RelativeLayout>
+        <com.github.mikephil.charting.charts.BarChart
+            android:layout_width="match_parent"
+            android:id="@+id/idBarChart"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_height="400dp">
+
+        </com.github.mikephil.charting.charts.BarChart>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_margin="15dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Last active hours"
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/red"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="1 am"
+                android:layout_marginLeft="10dp"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content">
+            </TextView>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_margin="15dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Average steps per hour"
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/orange"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="571"
+                android:layout_marginLeft="10dp"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content">
+            </TextView>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_margin="15dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Max step in 1 hour"
+                android:layout_marginLeft="10dp"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/pink"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="3213"
+                android:layout_marginLeft="10dp"
+                android:layout_alignParentRight="true"
+                android:textSize="@dimen/text_med"
+                android:fontFamily="@font/opensansregular"
+                android:textColor="@color/white"
+                android:layout_height="wrap_content">
+            </TextView>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

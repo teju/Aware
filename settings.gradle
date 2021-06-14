@@ -1,0 +1,5 @@
+include ':AndroidBaseBle'
+include ':AndroidDfuLib'
+include ':AndroidSmaBle'
+include ':app'
+rootProject.name = "Aware"

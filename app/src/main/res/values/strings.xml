@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Aware</string>
+    <string name="no_connection">Poor or no internet connection found.\nPlease check your internet connection.</string>
+    <string name="no_internet">No Internet connection</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="enable_bluetooth">Please enable the Bluetooth</string>
+    <string name="scan">Scan</string>
+    <string name="scanning">Scanning…</string>
+    <string name="device_connecting">Device connecting</string>
+    <string name="device_connected">Device connected</string>
+    <string name="device_disconnecting">Device disconnecting</string>
+    <string name="device_disconnected">Device disconnected</string>
+    <string name="dfu_starting">Dfu starting</string>
+    <string name="dfu_started">Dfu started</string>
+    <string name="dfu_progress" formatted="false">Dfu progress:%d%%</string>
+    <string name="dfu_aborted">Dfu aborted</string>
+    <string name="dfu_error">Dfu error:%s</string>
+</resources>

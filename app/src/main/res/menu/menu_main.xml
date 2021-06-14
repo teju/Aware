@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_welness"
+        android:icon="@drawable/healthcare"
+        android:title="Welness" />
+    <item
+        android:id="@+id/navigation_fitness"
+        android:icon="@drawable/heartbeat"
+        android:title="Fitness" />
+
+    <item
+        android:id="@+id/navigation_goal"
+        android:icon="@drawable/goal"
+        android:title="Daily Goal" />
+    <item
+        android:id="@+id/navigation_insight"
+        android:icon="@drawable/barchart"
+        android:title="Insight" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/settings"
+        android:title="Settings" />
+
+</menu>
