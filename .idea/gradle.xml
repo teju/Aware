@@ -15,6 +15,9 @@
             <option value="$PROJECT_DIR$/AndroidDfuLib" />
             <option value="$PROJECT_DIR$/AndroidSmaBle" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/library" />
+            <option value="$PROJECT_DIR$/library/common_lib" />
+            <option value="$PROJECT_DIR$/slide_jsonviewer_lib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -14,7 +14,8 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.watch.aware.app.MainActivity">
+        <activity android:name="com.watch.aware.app.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,6 +32,12 @@
 
         <service android:name="com.szabh.androidblesdk3.firmware.n.DfuService" />
         <service android:name="com.realsil.sdk.dfu.DfuService" />
+        <activity
+            android:name="com.iapps.logs.com.pascalabs.util.log.activity.ActivityPascaLog"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
     </application>
 
 </manifest>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="iapps">
+        <attr name="loadingMessageColor" format="color"/>
+        <attr name="loadingErrorTitleColor" format="color"/>
+        <attr name="loadingErrorMessageColor" format="color"/>
+        <attr name="loadingMessage" format="string"/>
+        <attr name="loadingErrorNetworkTitle" format="string"/>
+        <attr name="loadingErrorNoInternetMessage" format="string"/>
+        <attr name="loadingErrorUnknownResponseMessage" format="string"/>
+        <attr name="loadingRetryButtonText" format="string"/>
+        <attr name="loadingGifNila" format="boolean"/>
+    </declare-styleable>
+    <declare-styleable name="DiagonalLayout">
+        <attr name="diagonal_angle" format="integer" />
+        <attr name="diagonal_handleMargins" format="boolean"/>
+        <attr name="diagonal_position" format="enum">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+            <enum name="bottom" value="4" />
+            <enum name="top" value="8"/>
+        </attr>
+        <attr name="diagonal_direction" format="enum">
+            <enum name="left" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="PinEntryEditText">
+        <attr name="pinAnimationType" format="enum">
+            <enum name="popIn" value="0" />
+            <enum name="fromBottom" value="1" />
+            <enum name="none" value="-1" />
+        </attr>
+        <attr name="pinCharacterMask" format="string" />
+        <attr name="pinRepeatedHint" format="string" />
+        <attr name="pinLineStroke" format="dimension" />
+        <attr name="pinLineStrokeSelected" format="dimension" />
+        <attr name="pinCharacterSpacing" format="dimension" />
+        <attr name="pinTextBottomPadding" format="dimension" />
+        <attr name="pinTextTopPadding" format="dimension" />
+        <attr name="pinLineColors" format="color" />
+        <attr name="pinBackgroundDrawable" format="reference" />
+        <attr name="pinBackgroundIsSquare" format="boolean" />
+        <attr name="pinCharHeight" format="dimension"/>
+        <attr name="pinCharWidth" format="dimension"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="CurrencyEditText">
+        <attr name="android:layout_gravity" />
+    </declare-styleable>
+</resources>

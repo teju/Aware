@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.watch.aware.app.R
+import com.watch.aware.app.fragments.me.SettingsFragment
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.fragments.settings.BaseFragment
 
@@ -82,7 +83,8 @@ class MainTabFragment : BaseFragment() {
 
                 }
                 R.id.navigation_settings ->{
-                    val settings = SettingsFragment()
+                    val settings =
+                        SettingsFragment()
                     settings.setBottomNavigation(bottomNavigation)
                     home().setFragmentInFragment(
                         R.id.mainLayoutFragment, settings,

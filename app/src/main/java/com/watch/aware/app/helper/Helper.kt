@@ -1,6 +1,5 @@
 package com.watch.aware.app.helper
 
-import android.Manifest
 import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
@@ -12,27 +11,28 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.os.Parcelable
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.annotation.Nullable
 import androidx.annotation.RequiresApi
-import com.bestmafen.baseble.data.BleReadable
-import com.bestmafen.baseble.util.BleLog
-import com.blankj.utilcode.constant.PermissionConstants
-import com.blankj.utilcode.util.LogUtils
-import com.blankj.utilcode.util.PermissionUtils
+import com.iapps.libs.helpers.HTTPAsyncTask
+import com.iapps.libs.objects.Response
+import com.iapps.logs.com.pascalabs.util.log.activity.ActivityPascaLog.getStackTrace
 import com.szabh.androidblesdk3.firmware.FirmwareHelper
 import com.szabh.androidblesdk3.tools.doBle
-import com.szabh.androidblesdk3.tools.require
 import com.szabh.androidblesdk3.tools.toast
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
-import com.szabh.smable3.component.*
+import com.szabh.smable3.component.BleCache
+import com.szabh.smable3.component.BleConnector
+import com.szabh.smable3.component.ID_ALL
 import com.szabh.smable3.entity.*
+import com.watch.aware.app.R
 import java.io.File
 import java.text.DateFormat
 import java.text.ParseException
@@ -40,10 +40,54 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
-import kotlin.concurrent.thread
 import kotlin.random.Random
 
 object Helper {
+    open class GenericHttpAsyncTask(internal var taskListener: TaskListener?) : HTTPAsyncTask() {
+
+        lateinit var nonce: String
+
+        interface TaskListener {
+            fun onPreExecute()
+            fun onPostExecute(response: Response?)
+        }
+
+        override fun onPreExecute() {
+            if (taskListener != null) taskListener!!.onPreExecute()
+        }
+
+        override fun onPostExecute(@Nullable response: Response?) {
+
+            if (response == null) {
+
+                var apiDetails = ""
+
+                try {
+                    apiDetails = apiDetails + this.url.path + "\n"
+                } catch (e: Exception) {
+                    logException(null, e)
+                }
+
+                try {
+                    apiDetails = apiDetails + this.params.toString() + "\n"
+                } catch (e: Exception) {
+                    logException(null, e)
+                }
+
+                var rawResponse = ""
+                try {
+                    rawResponse = rawResponse + this.rawResponseString
+                } catch (e: Exception) {
+                    logException(null, e)
+                }
+
+            }
+
+            if (taskListener != null) taskListener!!.onPostExecute(response)
+        }
+
+    }
+
     fun hideKeyboard(activity: Activity) {
         val imm =
             activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -54,6 +98,19 @@ object Helper {
             view = View(activity)
         }
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+    fun logException(ctx: Context?, e: Exception?) {
+        try {
+            if (Constants.IS_DEBUGGING) {
+                if (Constants.IS_DEBUGGING) {
+                    if (ctx != null)
+                        Log.v(ctx.getString(R.string.app_name), getStackTrace(e!!))
+                    else
+                        print(getStackTrace(e!!))
+                }
+            }
+        } catch (e1: Exception) {
+        }
     }
 
     @JvmStatic
@@ -656,8 +713,12 @@ object Helper {
             }
         }
     }
-    fun getActivities() {
-
-
+    fun getCurrentDate(): String? {
+        val date = Calendar.getInstance().time
+        val dateFormat: DateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val strDate = dateFormat.format(date)
+        println("Converted String: $strDate")
+        return strDate
     }
+
 }

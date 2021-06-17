@@ -1,5 +1,8 @@
 package com.watch.aware.app
 
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -7,9 +10,12 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.franmontiel.localechanger.LocaleChanger
+import com.iapps.libs.helpers.BaseHelper
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.MainTabFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
+import com.watch.aware.app.fragments.me.RegisterFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
 import kotlinx.android.synthetic.main.activity_main.*
@@ -27,17 +33,15 @@ class MainActivity : AppCompatActivity() {
             logo_icon.setVisibility(View.GONE)
             triggerMainProcess()
         }, 2 * 2000.toLong())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            BaseHelper.triggerNotifLog(this)
+        };
+
     }
 
     fun triggerMainProcess() {
         setFragment(MainTabFragment())
-        showNotifyDialog("","Please make sure your GPS is turned on",
-            "OK","",object :NotifyListener{
-                override fun onButtonClicked(which: Int) {
 
-                }
-
-            })
     }
 
     fun clearFragment() {
@@ -248,4 +252,20 @@ class MainActivity : AppCompatActivity() {
             f.show(supportFragmentManager, NotifyDialogFragment.TAG)
         }
     }
+
+    override fun attachBaseContext(newBase: Context) {
+        var newBase = newBase
+        newBase = LocaleChanger.configureBaseContext(newBase)
+        super.attachBaseContext(newBase)
+    }
+
+    fun exitApp() {
+        finish()
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        MainTabFragment().onActivityResult(requestCode, resultCode, data);
+
+    }
+
 }

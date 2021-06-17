@@ -16,4 +16,5 @@
     <string name="dfu_progress" formatted="false">Dfu progress:%d%%</string>
     <string name="dfu_aborted">Dfu aborted</string>
     <string name="dfu_error">Dfu error:%s</string>
+    <string name="ok">OK</string>
 </resources>

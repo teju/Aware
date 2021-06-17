@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/loadingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="visible" >
+
+        <ProgressBar
+            android:id="@+id/progressBarLoadingCompound"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/textViewLoadingMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/iapps__loading"
+            android:gravity="center"
+            android:fontFamily="@font/poppins_regular"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/dark_transparent_grey"
+            android:visibility="visible"
+             />
+
+
+        <ImageView
+            android:id="@+id/ivNila"
+            android:layout_width="210dp"
+            android:layout_height="210dp"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/retryContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|center_horizontal|center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/textViewLoadingErrorTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="19sp"
+            android:textColor="@color/dark_transparent_grey"
+            android:textIsSelectable="false"
+            android:fontFamily="@font/poppins_regular"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/textViewLoadingErrorMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="@dimen/iapps__vertical_margin"
+            android:layout_marginLeft="@dimen/iapps__horizontal_margin"
+            android:layout_marginRight="@dimen/iapps__horizontal_margin"
+            android:layout_marginTop="@dimen/iapps__vertical_margin"
+            android:textSize="16sp"
+            android:textColor="@color/DarkGray"
+            android:textIsSelectable="false"
+            android:fontFamily="@font/poppins_regular"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/buttonRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/selector_btn_border__states"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/iapps__retry" />
+
+    </LinearLayout>
+
+</LinearLayout>

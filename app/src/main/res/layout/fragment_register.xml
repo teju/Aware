@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".fragments.me.RegisterFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="a'"
+                android:textColor="@color/colorPrimary"
+                android:textSize="25dp"
+                android:fontFamily="@font/opensansextrabold"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="ware"
+                android:layout_gravity="center"
+                android:textColor="@color/colorAccent"
+                android:textSize="22dp"
+                android:fontFamily="@font/opensansextrabold"
+                android:layout_height="wrap_content">
+
+            </TextView>
+
+        </LinearLayout>
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="80dp"
+            android:layout_margin="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/default_profile"
+            android:id="@+id/user_img"
+            android:layout_height="80dp">
+        </com.makeramen.roundedimageview.RoundedImageView>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:padding="15dp"
+            android:inputType="text"
+            android:hint="Enter user name"
+            android:textSize="@dimen/text_med"
+            android:fontFamily="@font/opensansregular"
+            android:layout_marginTop="25dp"
+            android:imeOptions="actionNext"
+            android:id="@+id/username"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:layout_height="wrap_content">
+
+        </EditText>
+        <EditText
+            android:layout_width="match_parent"
+            android:padding="15dp"
+            android:hint="Enter Age"
+            android:maxLength="2"
+            android:inputType="number"
+            android:textSize="@dimen/text_med"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/opensansregular"
+            android:imeOptions="actionNext"
+            android:id="@+id/age"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:layout_height="wrap_content">
+
+        </EditText>
+        <EditText
+            android:layout_width="match_parent"
+            android:padding="15dp"
+            android:inputType="number"
+            android:hint="Enter Contact Number"
+            android:maxLength="10"
+            android:fontFamily="@font/opensansregular"
+            android:layout_marginTop="15dp"
+            android:textSize="@dimen/text_med"
+            android:imeOptions="actionNext"
+            android:id="@+id/contactNumber"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:layout_height="wrap_content">
+
+        </EditText>
+        <EditText
+            android:layout_width="match_parent"
+            android:padding="15dp"
+            android:inputType="textEmailAddress"
+            android:layout_marginTop="15dp"
+            android:imeOptions="actionDone"
+            android:hint="Enter Email ID"
+            android:textSize="@dimen/text_med"
+            android:fontFamily="@font/opensansregular"
+            android:id="@+id/email"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:layout_height="wrap_content">
+
+        </EditText>
+        <Button
+            android:layout_width="match_parent"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:layout_marginLeft="15dp"
+            android:id="@+id/register"
+            android:text="Register"
+            android:textColor="@color/black"
+            android:textAllCaps="true"
+            android:fontFamily="@font/opensansbold"
+            android:backgroundTint="@color/colorAccent"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_height="50dp">
+
+        </Button>
+    </LinearLayout>
+    <com.iapps.libs.views.LoadingCompound
+        android:id="@+id/ld"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        android:visibility="gone" />
+
+</RelativeLayout>

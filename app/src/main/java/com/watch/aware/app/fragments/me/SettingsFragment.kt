@@ -1,4 +1,4 @@
-package com.watch.aware.app.fragments
+package com.watch.aware.app.fragments.me
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import kotlinx.android.synthetic.main.fragment_settings.*
 
-class SettingsFragment : BaseFragment() {
+class SettingsFragment : BaseFragment() ,View.OnClickListener{
     // TODO: Rename and change types of parameters
     fun setBottomNavigation(bottomNavigation: BottomNavigationView?) {
         this.bottomNavigation = bottomNavigation
@@ -26,6 +27,15 @@ class SettingsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        user_details.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id) {
+            R.id.user_details -> {
+                home().setFragment(RegisterFragment())
+            }
+        }
     }
 
 }

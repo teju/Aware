@@ -12,13 +12,33 @@ android {
         }
     }
     defaultConfig {
-        applicationId "com.watch.aware.in"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
-
+        applicationId project.ext.applicationId
+        minSdkVersion project.ext.myMinSdkVersion
+        targetSdkVersion project.ext.myTargetSdkVersion
+        versionCode project.ext.myVersionCode
+        versionName project.ext.myVersionName
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    compileOptions {
+        sourceCompatibility "8"
+        targetCompatibility "8"
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/INDEX.LIST'
     }
 
     buildTypes {
@@ -44,6 +64,9 @@ dependencies {
     implementation project(path: ':AndroidSmaBle')
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.mike14u:shimmer-recyclerview-x:1.0.1'
+    implementation project(':library:common_lib')
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    compile 'com.makeramen:roundedimageview:2.3.0'
 
 
 }

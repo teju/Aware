@@ -25,6 +25,19 @@ allprojects {
         maven { url "https://jitpack.io" }
 
     }
+    project.ext.applicationId = "com.watch.aware.app"
+
+    project.ext.myCompileSdkVersion = 28
+    project.ext.myBuildToolsVersion = "28.0.3"
+
+    project.ext.myMinSdkVersion = 21
+    project.ext.myTargetSdkVersion = 29
+
+    project.ext.myVersionName = "1.2.0"
+    project.ext.myVersionCode = 4
+
+    project.ext.androidxversion = "1.0.2"
+    project.ext.googleServiceVersion = "17.0.0"
 }
 
 task clean(type: Delete) {
