@@ -67,6 +67,7 @@ dependencies {
     implementation project(':library:common_lib')
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     compile 'com.makeramen:roundedimageview:2.3.0'
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
 
 
 }

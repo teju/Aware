@@ -27,13 +27,13 @@
             <com.makeramen.roundedimageview.RoundedImageView
                 android:layout_width="50dp"
                 android:layout_margin="20dp"
-                android:src="@drawable/default_profile"
+                android:src="@drawable/logo"
                 android:id="@+id/user_img"
                 android:layout_height="50dp">
             </com.makeramen.roundedimageview.RoundedImageView>
             <TextView
                 android:layout_width="match_parent"
-                android:text="User Name"
+                android:text="Aware"
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@+id/user_img"
                 android:fontFamily="@font/opensansregular"

@@ -2,7 +2,7 @@ package com.watch.aware.app.models;
 
 public class Steps {
     String ID;
-    String stepCount;
+    String stepCount = "0";
     String distance;
 
     public String getDistance() {
@@ -39,13 +39,23 @@ public class Steps {
         this.stepCount = stepCount;
     }
 
-    public String getDataTime() {
-        return dataTime;
+    String date;
+
+    public String getDate() {
+        return date;
     }
 
-    public void setDataTime(String dataTime) {
-        this.dataTime = dataTime;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    String dataTime;
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    String time;
 }

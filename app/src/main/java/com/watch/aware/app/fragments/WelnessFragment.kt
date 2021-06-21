@@ -25,11 +25,9 @@ import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.webservices.PostCovidStatusDataViewModel
-import com.watch.aware.app.webservices.PostRegisterViewModel
 import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
 import kotlinx.android.synthetic.main.fragment_welness.*
 import java.lang.Exception
-import java.util.*
 
 
 class WelnessFragment : BaseFragment() {
@@ -141,6 +139,10 @@ class WelnessFragment : BaseFragment() {
                     Helper.getCurrentDate().toString())
             }
 
+            override fun onReadActivity(activities: List<BleActivity>) {
+                super.onReadActivity(activities)
+                insertStepData(activities)
+            }
         }
     }
 
@@ -228,9 +230,9 @@ class WelnessFragment : BaseFragment() {
                                     status.text = "Good"
                                     status.setTextColor(activity?.resources?.getColor(R.color.DarkGreen)!!)
                                 }
-                                "A" -> {
+                                "Y" -> {
                                     status.text = "Average"
-                                    status.setTextColor(Color.BLUE)
+                                    status.setTextColor(Color.YELLOW)
 
                                 }
                                 "B" -> {

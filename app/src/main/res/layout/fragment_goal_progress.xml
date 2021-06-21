@@ -51,14 +51,13 @@
                 </TextView>
             </LinearLayout>
         </RelativeLayout>
-        <com.github.mikephil.charting.charts.BarChart
+        <com.anychart.AnyChartView
             android:layout_width="match_parent"
-            android:id="@+id/idBarChart"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:id="@+id/anyChartView"
+            android:layout_marginTop="10dp"
             android:layout_height="400dp">
 
-        </com.github.mikephil.charting.charts.BarChart>
+        </com.anychart.AnyChartView>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_margin="15dp"
@@ -78,6 +77,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_alignParentRight="true"
                 android:textSize="@dimen/text_med"
+                android:id="@+id/last_active_hr"
                 android:fontFamily="@font/opensansregular"
                 android:textColor="@color/white"
                 android:layout_height="wrap_content">
@@ -99,8 +99,8 @@
             </TextView>
             <TextView
                 android:layout_width="wrap_content"
-                android:text="571"
                 android:layout_marginLeft="10dp"
+                android:id="@+id/average_steps"
                 android:layout_alignParentRight="true"
                 android:textSize="@dimen/text_med"
                 android:fontFamily="@font/opensansregular"
@@ -124,7 +124,6 @@
             </TextView>
             <TextView
                 android:layout_width="wrap_content"
-                android:text="3213"
                 android:layout_marginLeft="10dp"
                 android:layout_alignParentRight="true"
                 android:textSize="@dimen/text_med"

@@ -34,8 +34,9 @@
                 </View>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:text="Week"
+                    android:id="@+id/week"
                     android:padding="15dp"
                     android:gravity="center_horizontal"
                     android:textSize="@dimen/text_med"
@@ -51,8 +52,9 @@
                 </View>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:text="Month"
+                    android:id="@+id/month"
                     android:padding="15dp"
                     android:gravity="center_horizontal"
                     android:textSize="@dimen/text_med"
@@ -68,8 +70,9 @@
                 </View>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:text="Year"
+                    android:id="@+id/year"
                     android:padding="15dp"
                     android:gravity="center_horizontal"
                     android:textSize="@dimen/text_med"
@@ -94,15 +97,13 @@
         </LinearLayout>
 
 
-        <com.github.mikephil.charting.charts.BarChart
+        <com.anychart.AnyChartView
             android:layout_width="match_parent"
-            android:id="@+id/idBarChart"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:id="@+id/insightChart"
+            android:layout_marginTop="10dp"
             android:layout_height="400dp">
 
-        </com.github.mikephil.charting.charts.BarChart>
+        </com.anychart.AnyChartView>
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"

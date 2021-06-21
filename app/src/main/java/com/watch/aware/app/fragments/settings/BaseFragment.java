@@ -12,15 +12,21 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 
 
+import com.iapps.libs.helpers.BaseHelper;
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants;
+import com.szabh.smable3.entity.BleActivity;
 import com.watch.aware.app.MainActivity;
 import com.watch.aware.app.R;
 import com.watch.aware.app.callback.NotifyListener;
 import com.watch.aware.app.callback.PermissionListener;
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment;
+import com.watch.aware.app.helper.DataBaseHelper;
 import com.watch.aware.app.helper.Helper;
 import com.watch.aware.app.models.BaseParams;
+import com.watch.aware.app.models.Steps;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -189,6 +195,24 @@ public class BaseFragment extends GenericFragment {
             f.show(getActivity().getSupportFragmentManager(), NotifyDialogFragment.TAG);
         }
     }
+    public void insertStepData(List<BleActivity> activities) {
 
+        DataBaseHelper dataBaseHelper =new  DataBaseHelper(getActivity());
+        dataBaseHelper.stepsInsert(dataBaseHelper, String.valueOf(activities.get(0).getMStep() - getLastHRSteps()),
+                BaseHelper.parseDate(new Date(), Constants.DATE_JSON),String.valueOf(activities.get(0).getMDistance()/10000),
+                String.valueOf(activities.get(0).getMCalorie()/10000), BaseHelper.parseDate(new Date(),Constants.TIME_JSON_HM));
+    }
+    public int getLastHRSteps() {
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        List<Steps> dteps = dataBaseHelper.getAllSteps(
+                "WHERE time <= " + (Integer.parseInt(BaseHelper.parseDate(new Date(),Constants.TIME_hA)) - 1)
+                        + " AND date is  (" + BaseHelper.parseDate(
+                        new Date(), Constants.DATE_JSON) + ") ORDER BY stepsCount DESC");
+        int stepsCnt = 0;
 
+        if(dteps.size() > 0) {
+            stepsCnt = Integer.parseInt(dteps.get(0).getStepCount());
+        }
+        return  stepsCnt;
+    }
 }
