@@ -144,6 +144,14 @@ class InsightsFragment : BaseFragment() {
             e.printStackTrace()
         }
         Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+        lastActiveDay()
+
+    }
+    fun lastActiveDay() {
+        val dataBaseHelper = DataBaseHelper(activity!!)
+        val dteps = dataBaseHelper.getAllSteps("")
+        val lastActiveDate = BaseHelper.parseDate(dteps.get(0).date,Constants.DATE_JSON)
+        last_active_day.text = BaseHelper.parseDate(lastActiveDate,Constants.DATE_MONTH)
 
     }
     private fun getWeeklyEntries() {
@@ -161,16 +169,7 @@ class InsightsFragment : BaseFragment() {
     }
     private fun getYearlyEntries() {
         data.clear()
-        data.add(ValueDataEntry("12 am",2000))
-        data.add(ValueDataEntry("3 am", 2000 ))
-        data.add(ValueDataEntry("6 am", 2000))
-        data.add(ValueDataEntry("9 am",2000))
-        data.add(ValueDataEntry("12 pm",2000))
-        data.add(ValueDataEntry("3 pm", 2000))
-        data.add(ValueDataEntry("6 pm", 2000))
-        data.add(ValueDataEntry("9 pm", 2000))
-
-
+        data.add(ValueDataEntry("2021", isValideDataYearly(2021) ))
     }
 
     private fun getMonthlyEntries() {
@@ -197,22 +196,45 @@ class InsightsFragment : BaseFragment() {
         var stepsCnt = 0
         val dteps = dataBaseHelper.getAllStepsWeekly(day)
         if(dteps.size > 0) {
-            System.out.println("getAllStepsWeekly "+dteps.get(0).stepCount.toInt())
-        when(type) {
-            "dist" -> {
-                stepsCnt = dteps.get(0).distance.toInt()
-            }
-            "steps" -> {
-                stepsCnt = dteps.get(0).stepCount.toInt()
 
+            when (type) {
+                "dist" -> {
+                    stepsCnt = stepsCnt + dteps.get(0).distance.toInt()
+                }
+                "steps" -> {
+                    stepsCnt = stepsCnt + dteps.get(0).total_count.toInt()
+
+                }
+                "cal" -> {
+                    stepsCnt = stepsCnt + dteps.get(0).cal.toInt()
+                }
             }
-            "cal" -> {
-                stepsCnt =  dteps.get(0).cal.toInt()
-            }
-        }
+
         }
         return  stepsCnt
     }
+    fun isValideDataYearly(day : Int) :Int {
+
+        val dataBaseHelper = DataBaseHelper(activity!!)
+        var stepsCnt = 0
+        val dteps = dataBaseHelper.getAllStepsYearly(day)
+        for (steps in dteps ) {
+            when(type) {
+                "dist" -> {
+                    stepsCnt = stepsCnt + steps.distance.toInt()
+                }
+                "steps" -> {
+                    stepsCnt = stepsCnt + steps.total_count.toInt()
+
+                }
+                "cal" -> {
+                    stepsCnt = stepsCnt + steps.cal.toInt()
+                }
+            }
+        }
+        return  stepsCnt
+    }
+
     fun isValideDataWeekMonthly(day : Int) :Int {
 
         val dataBaseHelper = DataBaseHelper(activity!!)
@@ -224,7 +246,7 @@ class InsightsFragment : BaseFragment() {
                     stepsCnt = stepsCnt + steps.distance.toInt()
                 }
                 "steps" -> {
-                    stepsCnt = stepsCnt + steps.stepCount.toInt()
+                    stepsCnt = stepsCnt + steps.total_count.toInt()
 
                 }
                 "cal" -> {

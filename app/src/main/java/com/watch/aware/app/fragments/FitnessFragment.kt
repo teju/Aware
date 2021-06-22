@@ -1,11 +1,11 @@
 package com.watch.aware.app.fragments
 
 import android.bluetooth.BluetoothDevice
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.bestmafen.baseble.scanner.BleDevice
 import com.bestmafen.baseble.scanner.BleScanCallback
@@ -16,12 +16,13 @@ import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
 import com.szabh.smable3.component.BleConnector
 import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.*
+import com.szabh.smable3.entity.BleActivity
+import com.szabh.smable3.entity.BleDeviceInfo
+import com.szabh.smable3.entity.BleSleep
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
 import kotlinx.android.synthetic.main.fragment_fitness.*
-import java.lang.Exception
 
 
 class FitnessFragment : BaseFragment() {
@@ -92,6 +93,16 @@ class FitnessFragment : BaseFragment() {
                     calories.text = "Burned\n"+(activities.get(0).mCalorie/10000)+" Kacl"
                     distance.text = "Distance Travelled\n"+(activities.get(0).mDistance/10000)+" Km"
                     steps_cnt.text = "Steps\n"+(activities.get(0).mStep)
+                    step_count.text = (activities.get(0).mStep).toString()
+
+                    val amount: Double = (activities.get(0).mStep).toDouble()
+                    val res = amount / 10000 * 100
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        progressBar.setProgress(res.toInt(),true)
+                    }
+                    goalStatus.text = ""+ String.format("%.2f",res) + "% of today's steps taken"
+
+                    System.out.println("res1234 "+res)
                 }catch (e:Exception) {
 
                 }
@@ -118,6 +129,15 @@ class FitnessFragment : BaseFragment() {
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
            connect()
         })
+        rlsteps.setOnClickListener {
+            val goalProgress = GoalProgressFragment()
+            goalProgress.setBottomNavigation(bottomNavigation)
+            home().setFragmentInFragment(
+                R.id.mainLayoutFragment, goalProgress,
+                "MAIN_TAB", "FIRST_TAB"
+            )
+            bottomNavigation!!.menu.findItem(R.id.navigation_goal).isChecked = true
+        }
     }
     fun connect() {
         if(BleCache.mDeviceInfo != null) {

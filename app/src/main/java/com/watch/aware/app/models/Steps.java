@@ -58,4 +58,14 @@ public class Steps {
     }
 
     String time;
+
+    public String getTotal_count() {
+        return total_count;
+    }
+
+    public void setTotal_count(String total_count) {
+        this.total_count = total_count;
+    }
+
+    String total_count;
 }

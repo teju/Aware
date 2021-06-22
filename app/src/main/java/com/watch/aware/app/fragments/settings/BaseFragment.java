@@ -196,22 +196,26 @@ public class BaseFragment extends GenericFragment {
         }
     }
     public void insertStepData(List<BleActivity> activities) {
-
         DataBaseHelper dataBaseHelper =new  DataBaseHelper(getActivity());
+        getLastHRSteps();
+        System.out.println("getLastHRSteps() "+getLastHRSteps());
         dataBaseHelper.stepsInsert(dataBaseHelper, String.valueOf(activities.get(0).getMStep() - getLastHRSteps()),
                 BaseHelper.parseDate(new Date(), Constants.DATE_JSON),String.valueOf(activities.get(0).getMDistance()/10000),
-                String.valueOf(activities.get(0).getMCalorie()/10000), BaseHelper.parseDate(new Date(),Constants.TIME_JSON_HM));
+                String.valueOf(activities.get(0).getMCalorie()/10000), BaseHelper.parseDate(new Date(),Constants.TIME_JSON_HM),activities.get(0).getMStep());
     }
+
     public int getLastHRSteps() {
+        int currentTime = Integer.parseInt(BaseHelper.parseDate(new Date(),Constants.TIME_hA));
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         List<Steps> dteps = dataBaseHelper.getAllSteps(
-                "WHERE time <= " + (Integer.parseInt(BaseHelper.parseDate(new Date(),Constants.TIME_hA)) - 1)
-                        + " AND date is  (" + BaseHelper.parseDate(
-                        new Date(), Constants.DATE_JSON) + ") ORDER BY stepsCount DESC");
+                "WHERE time <  " + currentTime
+                        + " AND date is  ('" + BaseHelper.parseDate(
+                        new Date(), Constants.DATE_JSON) + "') ORDER BY stepsCount DESC");
         int stepsCnt = 0;
 
         if(dteps.size() > 0) {
             stepsCnt = Integer.parseInt(dteps.get(0).getStepCount());
+            return stepsCnt;
         }
         return  stepsCnt;
     }

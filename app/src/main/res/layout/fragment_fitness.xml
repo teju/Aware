@@ -58,6 +58,7 @@
                         android:orientation="vertical"
                         android:elevation="15dp"
                         android:layout_margin="10dp"
+                        android:id="@+id/rlsteps"
                         app:cardCornerRadius="20dp"
                         android:layout_height="wrap_content">
                         <RelativeLayout
@@ -105,6 +106,7 @@
                                                 android:layout_width="wrap_content"
                                                 android:text="\n0"
                                                 android:textSize="@dimen/text_large"
+                                                android:paddingTop="8dp"
                                                 android:id="@+id/step_count"
                                                 android:textColor="@color/white"
                                                 android:textAlignment="center"

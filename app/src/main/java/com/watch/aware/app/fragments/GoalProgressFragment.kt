@@ -10,6 +10,7 @@ import com.anychart.AnyChart
 import com.anychart.chart.common.dataentry.DataEntry
 import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Cartesian
+import com.anychart.core.cartesian.series.Column
 import com.anychart.core.ui.ChartCredits
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iapps.libs.helpers.BaseHelper
@@ -39,7 +40,8 @@ class GoalProgressFragment : BaseFragment() {
     }
     private var bottomNavigation: BottomNavigationView? = null
     val data: MutableList<DataEntry> = ArrayList()
-
+    private var cartesian: Cartesian? = null
+    private var column: Column? = null
     private val mBleHandleCallback by lazy {
         object : BleHandleCallback {
 
@@ -80,7 +82,9 @@ class GoalProgressFragment : BaseFragment() {
         connect()
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
            connect()
-            onConnected()
+            getEntries()
+            cartesian?.removeAllSeries()
+            column = cartesian?.column(data)
         })
     }
     fun connect() {
@@ -96,20 +100,20 @@ class GoalProgressFragment : BaseFragment() {
             }
 
             getEntries()
-            val cartesian: Cartesian = AnyChart.column()
-            val credits: ChartCredits = cartesian.credits()
+            cartesian = AnyChart.column()
+            val credits: ChartCredits = cartesian?.credits()!!
 
-            val column = cartesian.column(data)
-            column.labels(true)
-            column.labels().fontColor("green");
-            column.labels().fontWeight(900);
+            column = cartesian?.column(data)
+            column?.labels(true)
+            column?.labels()?.fontColor("#78B8F1");
+            column?.labels()?.fontWeight(900);
 
-            cartesian.yScale().minimum(0.0)
-            cartesian.yScale().maximum(10000.0)
-            cartesian.yScale().ticks().interval(2000)
-            cartesian.background().fill("trans");
-            cartesian.dataArea().background().enabled(true);
-            cartesian.dataArea().background().fill("#000000");
+            cartesian?.yScale()?.minimum(0.0)
+            cartesian?.yScale()?.maximum(10000.0)
+            cartesian?.yScale()?.ticks()?.interval(2000)
+            cartesian?.background()?.fill("trans");
+            cartesian?.dataArea()?.background()?.enabled(true);
+            cartesian?.dataArea()?.background()?.fill("#000000");
 
             credits.enabled(false)
             credits.text("Custom text");
@@ -144,8 +148,9 @@ class GoalProgressFragment : BaseFragment() {
         var stepsCnt = 0.0
         try {
             for (i in fromnumber.toInt()..toNumber.toInt()) {
-                val dteps = dataBaseHelper.getAllSteps(
-                    "WHERE  time BETWEEN "+i+" AND  "+(i + 1)+" AND  ORDER BY stepsCount DESC" )
+               // val dteps = dataBaseHelper.getAllSteps("WHERE  time >= "+i+" AND  time < "+(i + 1)+" ORDER BY stepsCount DESC" )
+                val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
+                    Date(), Constants.DATE_JSON)+"') AND time BETWEEN "+i+" AND "+(i + 0.9)+" ORDER BY stepsCount DESC" )
                 if (dteps.size > 0) {
                     System.out.println("isValideData "+ dteps[0].stepCount.toInt() +" "+ dteps[0].time.toDouble() +" size "+dteps.size)
                     stepsCnt = stepsCnt + dteps[0].stepCount.toInt()
