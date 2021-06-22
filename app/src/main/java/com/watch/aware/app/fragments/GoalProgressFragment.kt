@@ -150,10 +150,14 @@ class GoalProgressFragment : BaseFragment() {
             for (i in fromnumber.toInt()..toNumber.toInt()) {
                // val dteps = dataBaseHelper.getAllSteps("WHERE  time >= "+i+" AND  time < "+(i + 1)+" ORDER BY stepsCount DESC" )
                 val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
-                    Date(), Constants.DATE_JSON)+"') AND time BETWEEN "+i+" AND "+(i + 0.9)+" ORDER BY stepsCount DESC" )
+                    Date(), Constants.DATE_JSON)+"') AND time BETWEEN "+i+" AND "+(i + 0.9)+" " )
                 if (dteps.size > 0) {
-                    System.out.println("isValideData "+ dteps[0].stepCount.toInt() +" "+ dteps[0].time.toDouble() +" size "+dteps.size)
+                    for (print in dteps){
+                        System.out.println("isValideData "+ print.stepCount.toInt() +" "+ print.time.toDouble())
+                    }
+
                     stepsCnt = stepsCnt + dteps[0].stepCount.toInt()
+
                 }
             }
         } catch (e:java.lang.Exception){
