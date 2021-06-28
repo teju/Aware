@@ -150,7 +150,8 @@ class GoalProgressFragment : BaseFragment() {
             for (i in fromnumber.toInt()..toNumber.toInt()) {
                // val dteps = dataBaseHelper.getAllSteps("WHERE  time >= "+i+" AND  time < "+(i + 1)+" ORDER BY stepsCount DESC" )
                 val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
-                    Date(), Constants.DATE_JSON)+"') AND time BETWEEN "+i+" AND "+(i + 0.9)+" " )
+                    Date(), Constants.DATE_JSON)+"') AND time BETWEEN CAST ('"+i+"' as decimal) AND CAST ('"+(i + 0.9)+"' " +
+                        "as decimal) ORDER BY stepsCount DESC" )
                 if (dteps.size > 0) {
                     for (print in dteps){
                         System.out.println("isValideData "+ print.stepCount.toInt() +" "+ print.time.toDouble())
