@@ -4,280 +4,316 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swiperefresh_items"
     android:layout_height="match_parent"
-    android:background="@color/black"
-
+    android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <ScrollView android:layout_height="match_parent"
+        android:fillViewport="true"
         android:layout_width="match_parent">
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
+            <com.iapps.libs.views.LoadingCompound
+                android:id="@+id/ld"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:visibility="gone" />
+
+
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="a'"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="25dp"
-                    android:fontFamily="@font/opensansextrabold"
-                    android:layout_gravity="center"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Syncing ..."
+                    android:id="@+id/syncing_fitness"
+                    android:textColor="@color/white"
                     android:layout_height="wrap_content">
-
                 </TextView>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="ware"
-                    android:layout_gravity="center"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="22dp"
-                    android:fontFamily="@font/opensansextrabold"
-                    android:layout_height="wrap_content">
-
-                </TextView>
-
-            </LinearLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Syncing ..."
-                android:id="@+id/syncing_fitness"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-
-            </TextView>
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="15dp"
                     android:layout_height="wrap_content">
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:elevation="15dp"
-                        android:layout_margin="10dp"
-                        android:id="@+id/rlsteps"
-                        app:cardCornerRadius="20dp"
-                        android:layout_height="wrap_content">
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:orientation="vertical"
-                            android:padding="15dp"
-                            android:background="@drawable/home_gradient"
-                            android:layout_height="wrap_content">
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:src="@drawable/chevron_right"
-                                android:layout_centerVertical="true"
-                                android:layout_alignParentRight="true"
-                                android:layout_height="wrap_content">
-
-                            </ImageView>
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:orientation="vertical"
-                                android:layout_centerHorizontal="true"
-                                android:layout_height="wrap_content">
-                                <RelativeLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
-                                    <RelativeLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_centerVertical="true"
-                                        android:id="@+id/steps"
-                                        android:layout_centerHorizontal="true"
-                                        android:layout_height="wrap_content">
-                                        <ImageView
-                                            android:layout_width="30dp"
-                                            android:src="@drawable/steps"
-                                            android:layout_centerHorizontal="true"
-                                            android:layout_marginTop="20dp"
-                                            android:layout_height="30dp">
-                                        </ImageView>
-                                        <LinearLayout
-                                            android:layout_width="wrap_content"
-                                            android:orientation="vertical"
-                                            android:layout_centerHorizontal="true"
-                                            android:layout_centerVertical="true"
-                                            android:layout_height="wrap_content">
-                                            <TextView
-                                                android:layout_width="wrap_content"
-                                                android:text="\n0"
-                                                android:textSize="@dimen/text_large"
-                                                android:paddingTop="8dp"
-                                                android:id="@+id/step_count"
-                                                android:textColor="@color/white"
-                                                android:textAlignment="center"
-                                                android:layout_gravity="center_horizontal"
-                                                android:fontFamily="@font/opensansextrabold"
-                                                android:layout_height="wrap_content">
-                                            </TextView>
-                                            <TextView
-                                                android:layout_width="wrap_content"
-                                                android:text="Steps"
-                                                android:textSize="@dimen/text_small"
-                                                android:textColor="@color/white"
-                                                android:fontFamily="@font/opensansregular"
-                                                android:layout_height="wrap_content">
-                                            </TextView>
-
-                                        </LinearLayout>
-                                        <ProgressBar
-                                            android:id="@+id/progressBar"
-                                            android:layout_width="120dp"
-                                            android:layout_height="120dp"
-                                            android:indeterminate="false"
-                                            android:progressDrawable="@drawable/step_progress"
-                                            android:background="@drawable/circle_shape"
-                                            style="?android:attr/progressBarStyleHorizontal"
-                                            android:max="100"
-                                            android:progress="0" >
-                                        </ProgressBar>
-
-                                    </RelativeLayout>
-
-                                </RelativeLayout>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_gravity="center_horizontal"
-                                    android:layout_margin="10dp"
-                                    android:paddingBottom="10dp"
-                                    android:id="@+id/goalStatus"
-                                    android:text="0 % of today's steps taken"
-                                    android:textColor="@color/black"
-                                    android:fontFamily="@font/opensansextrabold"
-                                    android:layout_height="wrap_content">
-
-                                </TextView>
-
-
-                            </LinearLayout>
-
-                        </RelativeLayout>
-                    </androidx.cardview.widget.CardView>
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:orientation="vertical"
-                        android:layout_margin="15dp"
-                        android:paddingTop="25dp"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Connected"
+                            android:drawableRight="@drawable/check_circle"
+                            android:drawablePadding="10dp"
+                            android:textSize="@dimen/text_med"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:id="@+id/connection_status"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Welcome back, Peter"
+                            android:layout_marginTop="5dp"
+                            android:textSize="@dimen/text_small"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:id="@+id/welcome"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginRight="45dp"
+                        android:gravity="center"
+                        android:layout_alignParentRight="true"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Last synced :"
+                            android:textSize="@dimen/text_med"
+                            android:gravity="center"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="24 JUNE 2021"
+                            android:layout_marginTop="5dp"
+                            android:textSize="@dimen/text_small"
+                            android:gravity="center"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:id="@+id/last_synced"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:src="@drawable/refresh"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/refresh"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="30dp">
+                    </ImageView>
+
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Here is your\nfitness data"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="22dp"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/opensansextrabold"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="30dp"
                         android:layout_height="wrap_content">
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:src="@drawable/heart"
+                                android:layout_height="30dp">
+                            </ImageView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:id="@+id/steps"
+                                android:textSize="25dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:layout_marginTop="15dp"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Step"
+                                android:textSize="18dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+                            </TextView>
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginRight="20dp"
                             android:layout_height="wrap_content">
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-
+                                android:layout_width="150dp"
                                 android:orientation="vertical"
                                 android:layout_height="wrap_content">
                                 <ImageView
                                     android:layout_width="50dp"
-                                    android:src="@drawable/sleep"
-                                    android:layout_gravity="center_horizontal"
+                                    android:src="@drawable/hot"
+                                    android:layout_gravity="end"
                                     android:layout_height="50dp">
                                 </ImageView>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:id="@+id/sleep"
-                                    android:layout_gravity="center_horizontal"
+                                    android:textSize="25dp"
+                                    android:fontFamily="@font/opensansbold"
                                     android:layout_marginTop="15dp"
-                                    android:textColor="@color/white"
+                                    android:layout_gravity="end"
+                                    android:textColor="@color/black"
                                     android:layout_height="wrap_content">
 
                                 </TextView>
-                            </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginTop="20dp"
-                                android:layout_height="wrap_content">
-                                <LinearLayout
-                                    android:layout_width="150dp"
-                                    android:orientation="vertical"
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="hours"
+                                    android:textSize="18dp"
+                                    android:layout_gravity="end"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/DarkGray"
                                     android:layout_height="wrap_content">
-                                    <ImageView
-                                        android:layout_width="50dp"
-                                        android:src="@drawable/calories"
-                                        android:layout_gravity="center_horizontal"
-                                        android:layout_height="50dp">
-                                    </ImageView>
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:id="@+id/calories"
-                                        android:layout_marginTop="15dp"
-                                        android:textAlignment="center"
-                                        android:layout_gravity="center_horizontal"
-                                        android:textColor="@color/white"
-                                        android:layout_height="wrap_content">
-
-                                    </TextView>
-                                </LinearLayout>
+                                </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="Sleep"
+                                    android:layout_gravity="end"
+                                    android:textSize="18dp"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/black"
+                                    android:layout_height="wrap_content">
+                                </TextView>
 
                             </LinearLayout>
 
                         </LinearLayout>
+
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="30dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="30dp"
+                        android:layout_height="wrap_content">
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:src="@drawable/heart"
+                                android:layout_height="30dp">
+                            </ImageView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:id="@+id/dist"
+                                android:textSize="25dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:layout_marginTop="15dp"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:textSize="18dp"
+                                android:text="km"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/DarkGray"
+                                android:layout_height="wrap_content">
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Distance Travelled"
+                                android:textSize="18dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+                            </TextView>
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentRight="true"
                             android:layout_gravity="center_horizontal"
-                            android:layout_marginTop="20dp"
+                            android:layout_marginRight="20dp"
                             android:layout_height="wrap_content">
                             <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
+                                android:layout_width="150dp"
                                 android:orientation="vertical"
                                 android:layout_height="wrap_content">
                                 <ImageView
                                     android:layout_width="50dp"
-                                    android:src="@drawable/steps"
-                                    android:textAlignment="center"
-                                    android:layout_gravity="center_horizontal"
-                                    android:layout_height="50dp"
-                                    app:tint="@color/colorAccent">
-                                </ImageView>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_gravity="center_horizontal"
-                                    android:layout_marginTop="15dp"
-                                    android:id="@+id/steps_cnt"
-                                    android:textColor="@color/white"
-                                    android:layout_height="wrap_content">
-
-                                </TextView>
-                            </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_height="wrap_content">
-                                <ImageView
-                                    android:layout_width="50dp"
-                                    android:src="@drawable/distance"
-                                    android:layout_gravity="center_horizontal"
-
+                                    android:src="@drawable/hot"
+                                    android:layout_gravity="end"
                                     android:layout_height="50dp">
                                 </ImageView>
                                 <TextView
                                     android:layout_width="wrap_content"
-                                    android:id="@+id/distance"
+                                    android:text="95"
+                                    android:textSize="25dp"
+                                    android:id="@+id/temp"
+                                    android:fontFamily="@font/opensansbold"
                                     android:layout_marginTop="15dp"
-                                    android:textAlignment="center"
-                                    android:layout_gravity="center_horizontal"
-                                    android:textColor="@color/white"
+                                    android:layout_gravity="end"
+                                    android:textColor="@color/black"
                                     android:layout_height="wrap_content">
 
                                 </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="Calories"
+                                    android:textSize="18dp"
+                                    android:layout_gravity="end"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/DarkGray"
+                                    android:layout_height="wrap_content">
+                                </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="burned"
+                                    android:layout_gravity="end"
+                                    android:textSize="18dp"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/black"
+                                    android:layout_height="wrap_content">
+                                </TextView>
+
                             </LinearLayout>
 
                         </LinearLayout>
 
-                    </LinearLayout>
-                </LinearLayout>
+                    </RelativeLayout>
+
+                </RelativeLayout>
 
 
-        </LinearLayout>
+
+
+            </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swiperefresh_items"
     android:layout_height="match_parent"
-    android:background="@color/black"
-
+    android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android">
         <ScrollView android:layout_height="match_parent"
+            android:fillViewport="true"
             android:layout_width="match_parent">
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -24,33 +24,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:text="a'"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="25dp"
-                        android:fontFamily="@font/opensansextrabold"
-                        android:layout_gravity="center"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:text="ware"
-                        android:layout_gravity="center"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="22dp"
-                        android:fontFamily="@font/opensansextrabold"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
-
-                </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -58,238 +31,294 @@
                     android:id="@+id/syncing"
                     android:textColor="@color/white"
                     android:layout_height="wrap_content">
-
                 </TextView>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="15dp"
+                    android:layout_height="wrap_content">
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:orientation="vertical"
                         android:layout_height="wrap_content">
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="match_parent"
-                            android:orientation="vertical"
-                            android:elevation="15dp"
-                            android:layout_margin="10dp"
-                            app:cardCornerRadius="20dp"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Connected"
+                            android:drawableRight="@drawable/check_circle"
+                            android:drawablePadding="10dp"
+                            android:textSize="@dimen/text_med"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:id="@+id/connection_status"
                             android:layout_height="wrap_content">
-                            <RelativeLayout
-                                android:layout_width="match_parent"
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Welcome back, Peter"
+                            android:layout_marginTop="5dp"
+                            android:textSize="@dimen/text_small"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:id="@+id/welcome"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginRight="45dp"
+                        android:gravity="center"
+                        android:layout_alignParentRight="true"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Last synced :"
+                            android:textSize="@dimen/text_med"
+                            android:gravity="center"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="24 JUNE 2021"
+                            android:layout_marginTop="5dp"
+                            android:textSize="@dimen/text_small"
+                            android:gravity="center"
+                            android:layout_marginLeft="15dp"
+                            android:fontFamily="@font/opensansregular"
+                            android:textColor="@color/black"
+                            android:id="@+id/last_synced"
+                            android:layout_height="wrap_content">
+                        </TextView>
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:src="@drawable/refresh"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/refresh"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="30dp">
+                    </ImageView>
+
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="There is some issue\nwith your wellness data"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="22dp"
+                    android:layout_marginTop="20dp"
+                    android:textColor="@color/colorAccent"
+                    android:fontFamily="@font/opensansextrabold"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:src="@drawable/heart"
+                                android:layout_height="30dp">
+                            </ImageView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:id="@+id/heart_rate"
+                                android:textSize="25dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:layout_marginTop="15dp"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="bpm"
+                                android:textSize="18dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/DarkGray"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Heart Rate"
+                                android:textSize="18dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+                            </TextView>
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginRight="20dp"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="150dp"
                                 android:orientation="vertical"
-                                android:padding="15dp"
-                                android:background="@drawable/home_gradient"
                                 android:layout_height="wrap_content">
                                 <ImageView
-                                    android:layout_width="40dp"
-                                    android:src="@drawable/refresh"
-                                    android:id="@+id/refresh"
-                                    android:layout_alignParentRight="true"
-                                    android:layout_gravity="center_vertical"
-                                    android:layout_height="40dp">
+                                    android:layout_width="50dp"
+                                    android:src="@drawable/hot"
+                                    android:layout_gravity="end"
+                                    android:layout_height="50dp">
                                 </ImageView>
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:orientation="vertical"
-                                    android:layout_centerHorizontal="true"
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:textSize="25dp"
+                                    android:id="@+id/oxygen_level"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:layout_marginTop="15dp"
+                                    android:layout_gravity="end"
+                                    android:textColor="@color/black"
                                     android:layout_height="wrap_content">
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_gravity="center_horizontal"
-                                        android:layout_margin="10dp"
-                                        android:paddingBottom="10dp"
-                                        android:text="OverAll Health Status"
-                                        android:textColor="@color/black"
-                                        android:fontFamily="@font/opensansextrabold"
-                                        android:layout_height="wrap_content">
-                                    </TextView>
 
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:orientation="horizontal"
-                                        android:layout_gravity="center_horizontal"
-                                        android:gravity="center_horizontal"
-                                        android:layout_height="wrap_content">
-                                        <ImageView
-                                            android:layout_width="100dp"
-                                            android:src="@drawable/mansilhouette"
-                                            android:layout_height="100dp">
-                                        </ImageView>
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:id="@+id/status"
-                                            android:layout_gravity="center_vertical"
-                                            android:layout_marginTop="15dp"
-                                            android:textSize="18dp"
-                                            android:fontFamily="@font/opensansextrabold"
-                                            android:textColor="@color/black"
-                                            android:layout_height="wrap_content">
-
-                                        </TextView>
-
-                                    </LinearLayout>
-                                    <LinearLayout
-                                        android:layout_width="match_parent"
-                                        android:gravity="center"
-                                        android:layout_marginTop="15dp"
-                                        android:layout_height="wrap_content">
-                                        <ImageView
-                                            android:layout_width="40dp"
-                                            android:src="@drawable/bluetooth"
-                                            android:layout_gravity="center_vertical"
-                                            android:layout_height="40dp"
-                                            android:id="@+id/bluetooth"
-                                            app:tint="@color/Gray">
-                                        </ImageView>
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:text="Connection Status:"
-                                            android:layout_marginLeft="5dp"
-                                            android:fontFamily="@font/opensansregular"
-                                            android:textColor="@color/black"
-                                            android:id="@+id/connection_status"
-                                            android:layout_height="wrap_content">
-
-                                        </TextView>
-
-                                    </LinearLayout>
-                                    <TextView
-                                        android:layout_width="match_parent"
-                                        android:text="Manufaturer:"
-                                        android:id="@+id/device"
-                                        android:gravity="center_horizontal"
-                                        android:layout_marginTop="15dp"
-                                        android:fontFamily="@font/opensansregular"
-                                        android:textColor="@color/black"
-                                        android:layout_height="wrap_content">
-
-                                    </TextView>
-
-                                </LinearLayout>
-
-                            </RelativeLayout>
-                        </androidx.cardview.widget.CardView>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:orientation="vertical"
-                            android:layout_margin="15dp"
-                            android:paddingTop="25dp"
-                            android:layout_height="wrap_content">
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:orientation="horizontal"
-                                android:layout_height="wrap_content">
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-
-                                    android:orientation="vertical"
+                                </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="%"
+                                    android:textSize="18dp"
+                                    android:layout_gravity="end"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/DarkGray"
                                     android:layout_height="wrap_content">
-                                    <ImageView
-                                        android:layout_width="50dp"
-                                        android:src="@drawable/heart"
-                                        android:layout_gravity="center_horizontal"
-                                        android:layout_height="50dp">
-                                    </ImageView>
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:id="@+id/heart_rate"
-                                        android:text="- - BPM"
-                                        android:fontFamily="@font/opensansregular"
-                                        android:layout_gravity="center_horizontal"
-                                        android:layout_marginTop="15dp"
-                                        android:textColor="@color/white"
-                                        android:layout_height="wrap_content">
-
-                                    </TextView>
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:layout_gravity="center_horizontal"
-                                    android:layout_marginTop="20dp"
+                                </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="Spo2"
+                                    android:layout_gravity="end"
+                                    android:textSize="18dp"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/black"
                                     android:layout_height="wrap_content">
-                                    <LinearLayout
-                                        android:layout_width="150dp"
-                                        android:orientation="vertical"
-                                        android:layout_height="wrap_content">
-                                        <ImageView
-                                            android:layout_width="50dp"
-                                            android:src="@drawable/hot"
-                                            android:layout_gravity="center_horizontal"
-                                            android:layout_height="50dp">
-                                        </ImageView>
-                                        <TextView
-                                            android:layout_width="wrap_content"
-                                            android:text="- - C"
-                                            android:id="@+id/temp"
-                                            android:fontFamily="@font/opensansregular"
-                                            android:layout_marginTop="15dp"
-                                            android:layout_gravity="center_horizontal"
-                                            android:textColor="@color/white"
-                                            android:layout_height="wrap_content">
-
-                                        </TextView>
-                                    </LinearLayout>
-
-                                </LinearLayout>
-
-                            </LinearLayout>
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginTop="20dp"
-                                android:layout_height="wrap_content">
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical"
-                                    android:layout_height="wrap_content">
-                                    <ImageView
-                                        android:layout_width="50dp"
-                                        android:src="@drawable/illness"
-                                        android:layout_gravity="center_horizontal"
-                                        android:layout_height="50dp">
-                                    </ImageView>
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:text="- - %"
-                                        android:layout_gravity="center_horizontal"
-                                        android:layout_marginTop="15dp"
-                                        android:id="@+id/oxygen"
-                                        android:fontFamily="@font/opensansregular"
-                                        android:textColor="@color/white"
-                                        android:layout_height="wrap_content">
-
-                                    </TextView>
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical"
-                                    android:layout_height="wrap_content">
-                                    <ImageView
-                                        android:layout_width="50dp"
-                                        android:src="@drawable/cough"
-                                        android:layout_gravity="center_horizontal"
-
-                                        android:layout_height="50dp">
-                                    </ImageView>
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:text="Cough 18"
-                                        android:id="@+id/cough"
-                                        android:fontFamily="@font/opensansregular"
-                                        android:layout_marginTop="15dp"
-                                        android:layout_gravity="center_horizontal"
-                                        android:textColor="@color/white"
-                                        android:layout_height="wrap_content">
-
-                                    </TextView>
-                                </LinearLayout>
+                                </TextView>
 
                             </LinearLayout>
 
                         </LinearLayout>
-                    </LinearLayout>
+
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginBottom="30dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="30dp"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:src="@drawable/heart"
+                                android:layout_height="30dp">
+                            </ImageView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:id="@+id/cough"
+                                android:text="No"
+                                android:textSize="25dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:layout_marginTop="15dp"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:textSize="18dp"
+                                android:layout_gravity="end"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/DarkGray"
+                                android:layout_height="wrap_content">
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Cough"
+                                android:textSize="18dp"
+                                android:fontFamily="@font/opensansbold"
+                                android:textColor="@color/black"
+                                android:layout_height="wrap_content">
+                            </TextView>
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginRight="20dp"
+                            android:layout_height="wrap_content">
+                            <LinearLayout
+                                android:layout_width="150dp"
+                                android:orientation="vertical"
+                                android:layout_height="wrap_content">
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:src="@drawable/hot"
+                                    android:layout_gravity="end"
+                                    android:layout_height="50dp">
+                                </ImageView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:textSize="25dp"
+                                    android:id="@+id/temp"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:layout_marginTop="15dp"
+                                    android:layout_gravity="end"
+                                    android:textColor="@color/black"
+                                    android:layout_height="wrap_content">
+
+                                </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="oC"
+                                    android:textSize="18dp"
+                                    android:layout_gravity="end"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/DarkGray"
+                                    android:layout_height="wrap_content">
+                                </TextView>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:text="Body Temp"
+                                    android:layout_gravity="end"
+                                    android:textSize="18dp"
+                                    android:fontFamily="@font/opensansbold"
+                                    android:textColor="@color/black"
+                                    android:layout_height="wrap_content">
+                                </TextView>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+
 
 
             </LinearLayout>

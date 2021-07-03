@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black"
+    tools:context=".fragments.LandingFragment">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Start Now !"
+            android:layout_marginLeft="15dp"
+            android:textSize="25dp"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/opensansextrabold"
+            android:layout_height="wrap_content">
+
+        </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Use email, or social media\naccount to continue"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:textSize="20dp"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="@font/opensansregular"
+            android:layout_height="wrap_content">
+        </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="80dp"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="match_parent"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:backgroundTint="@color/colorAccent"
+            android:text="Use Email"
+            android:id="@+id/signup"
+            android:fontFamily="@font/opensansbold"
+            android:textColor="@color/black"
+            android:textAllCaps="false"
+            android:layout_height="40dp">
+        </Button>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="or"
+            android:textSize="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:fontFamily="@font/opensansextrabold"
+            android:layout_height="wrap_content">
+        </TextView>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:backgroundTint="@color/white"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content">
+            </ImageView>
+            <Button
+                android:layout_width="match_parent"
+                android:background="@color/transparent"
+                android:text="Sign in with Apple"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:layout_height="40dp">
+            </Button>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:backgroundTint="@color/white"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content">
+            </ImageView>
+            <Button
+                android:layout_width="match_parent"
+                android:background="@color/transparent"
+                android:text="Sign in with Facebook"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:layout_height="40dp">
+            </Button>
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:backgroundTint="@color/white"
+            android:layout_marginTop="15dp"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content">
+            </ImageView>
+            <Button
+                android:layout_width="match_parent"
+                android:background="@color/transparent"
+                android:text="Sign in with Google"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:layout_height="40dp">
+            </Button>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

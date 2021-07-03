@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.bestmafen.baseble.scanner.BleDevice
 import com.bestmafen.baseble.scanner.BleScanCallback
 import com.bestmafen.baseble.scanner.ScannerFactory
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
@@ -34,117 +35,12 @@ class WelnessFragment : BaseFragment() {
     lateinit var postSaveDeviceDataViewModel: PostSaveDeviceDataViewModel
     lateinit var postGetCovidStatusDataViewModel: PostCovidStatusDataViewModel
 
-    fun setBottomNavigation(bottomNavigation: BottomNavigationView?) {
-        this.bottomNavigation = bottomNavigation
-    }
-    private var bottomNavigation: BottomNavigationView? = null
+
     var SPO2 = "0"
     var HR = "0"
     var Temp = "0"
     var cough = "1"
     var _activity = "68"
-    private val mBleScanner by lazy {
-        // ScannerFactory.newInstance(arrayOf(UUID.fromString(BleConnector.BLE_SERVICE)))
-        ScannerFactory.newInstance()
-            .setScanDuration(10)
-            .setBleScanCallback(object : BleScanCallback {
-
-                override fun onBluetoothDisabled() {
-                    device.setText(R.string.enable_bluetooth)
-                }
-
-                override fun onScan(scan: Boolean) {
-                    try {
-                        if (swiperefresh_items.isRefreshing) {
-                            swiperefresh_items.setRefreshing(false);
-                        }
-                    }catch (e:Exception){
-
-                    }
-                }
-
-                override fun onDeviceFound(device: BleDevice) {
-                    try {
-                        if (swiperefresh_items.isRefreshing) {
-                            swiperefresh_items.setRefreshing(false);
-
-                        }
-                    }catch (e:Exception){
-
-                    }
-                    if(device.mBluetoothDevice.address.equals("FA:B4:2E:A8:5E:03")) {
-                        BleConnector.setBleDevice(device).connect(true)
-                    }
-                }
-            })
-    }
-    private val mBleHandleCallback by lazy {
-        object : BleHandleCallback {
-
-            override fun onDeviceConnected(_device: BluetoothDevice) {
-                try {
-                    device.text = "Manufaturer : "+_device.name
-                } catch (e:Exception){
-
-                }
-                postGetCovidStatusDataViewModel.loadData(_device.address)
-
-                onConnected()
-            }
-
-            override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-               onConnected()
-            }
-
-
-            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
-                try {
-                    heart_rate.text = heartRates.get(0).mBpm.toString()+" BPM"
-
-                }catch (e:Exception) {
-
-                }
-                if(heartRates.get(0).mBpm != 0) {
-                    HR = heartRates.get(0).mBpm.toString()
-                }
-                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough,BleCache.mDeviceInfo?.mBleAddress!!,_activity,
-                    Helper.getCurrentDate().toString())
-            }
-
-            override fun onReadTemperature(temperatures: List<BleTemperature>) {
-                try {
-                    temp.text = temperatures.get(0).mTemperature.toString()+" C"
-
-                }catch (e:Exception) {
-
-                }
-                if(temperatures.get(0).mTemperature != 0) {
-                    Temp = temperatures.get(0).mTemperature.toString()
-                }
-                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough,BleCache.mDeviceInfo?.mBleAddress!!,_activity,
-                    Helper.getCurrentDate().toString())
-            }
-
-            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
-                try {
-                    oxygen.text = bloodOxygen.get(0).mValue.toString()+" %"
-
-                }catch (e:Exception) {
-
-                }
-                if(bloodOxygen.get(0).mValue != 0) {
-                    SPO2 = bloodOxygen.get(0).mValue.toString()
-                }
-                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough,BleCache.mDeviceInfo?.mBleAddress!!,_activity,
-                    Helper.getCurrentDate().toString())
-            }
-
-            override fun onReadActivity(activities: List<BleActivity>) {
-                super.onReadActivity(activities)
-                insertStepData(activities)
-            }
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -155,54 +51,84 @@ class WelnessFragment : BaseFragment() {
         return v;
     }
 
+    val mBleHandleCallback by lazy {
+        object : BleHandleCallback {
+
+            override fun onDeviceConnected(_device: BluetoothDevice) {
+
+                onConnected()
+            }
+
+            override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
+                onConnected()
+            }
+
+            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
+                try {
+                    heart_rate.text = heartRates.get(0).mBpm.toString()
+                } catch (e:Exception){
+                    e.printStackTrace()
+                }
+            }
+
+            override fun onReadTemperature(temperatures: List<BleTemperature>) {
+                try {
+                    temp.text = temperatures.get(0).mTemperature.toString()
+                } catch (e:Exception){
+                    e.printStackTrace()
+                }
+            }
+
+            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
+                try {
+                    oxygen_level.text = bloodOxygen.get(0).mValue.toString()
+                } catch (e:Exception){
+                    e.printStackTrace()
+                }
+            }
+
+            override fun onReadActivity(activities: List<BleActivity>) {
+                super.onReadActivity(activities)
+                insertStepData(activities)
+            }
+        }
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setSaveDeviceDataAPIObserver()
         setGetCovidStatusDataAPIObserver()
         syncing.visibility = View.VISIBLE
         BleConnector.addHandleCallback(mBleHandleCallback)
-        mBleScanner.scan(!mBleScanner.isScanning)
-        connect()
-        swiperefresh_items.setOnRefreshListener(OnRefreshListener {
-           connect()
-        })
-        refresh.setOnClickListener {
-            if (BleCache.mDeviceInfo?.mBleName != null) {
-                postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
-            }
-        }
-    }
-    fun connect() {
         if(BleCache.mDeviceInfo != null) {
-           onConnected()
-        } else {
-            mBleScanner.scan(!mBleScanner.isScanning)
-
+            onConnected()
         }
+        swiperefresh_items.setOnRefreshListener(OnRefreshListener {
+            if(BleCache.mDeviceInfo != null) {
+                onConnected()
+            }
+        })
+
     }
+
 
     fun onConnected() {
         try {
             if(swiperefresh_items.isRefreshing) {
                 swiperefresh_items.setRefreshing(false);
             }
-
         if(BleCache.mDeviceInfo?.mBleName != null){
-            device.text = "Manufaturer : "+BleCache.mDeviceInfo?.mBleName
-            postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough,BleCache.mDeviceInfo?.mBleAddress!!,_activity,
-                Helper.getCurrentDate().toString())
+            postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough,BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
             postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
         }
-        connection_status.text = "Connection Status: : Connected"
-        Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-        bluetooth.setColorFilter(ContextCompat.getColor(activity!!, R.color.Blue), android.graphics.PorterDuff.Mode.SRC_IN);
         syncing.visibility = View.GONE
         } catch (e:Exception){
 
         }
-
-
     }
+
+
     fun setGetCovidStatusDataAPIObserver() {
         postGetCovidStatusDataViewModel = ViewModelProviders.of(this).get(PostCovidStatusDataViewModel::class.java).apply {
             this@WelnessFragment.let { thisFragReference ->
@@ -221,24 +147,17 @@ class WelnessFragment : BaseFragment() {
                         }
                     )
                 })
-                isNetworkAvailable.observe(thisFragReference, obsNoInternet)
+                isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
                 getTrigger().observe(thisFragReference, Observer { state ->
                     when (state) {
                         PostCovidStatusDataViewModel.NEXT_STEP -> {
                             when(postGetCovidStatusDataViewModel.obj?.CovidPrediction) {
                                 "G" ->{
-                                    status.text = "Good"
-                                    status.setTextColor(activity?.resources?.getColor(R.color.DarkGreen)!!)
+
                                 }
                                 "Y" -> {
-                                    status.text = "Average"
-                                    status.setTextColor(Color.YELLOW)
-
                                 }
                                 "B" -> {
-                                    status.text = "Bad"
-                                    status.setTextColor(Color.RED)
-
                                 }
                             }
                         }
@@ -267,7 +186,7 @@ class WelnessFragment : BaseFragment() {
                         }
                     )
                 })
-                isNetworkAvailable.observe(thisFragReference, obsNoInternet)
+                isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
                 getTrigger().observe(thisFragReference, Observer { state ->
                     when (state) {
                         PostSaveDeviceDataViewModel.NEXT_STEP -> {

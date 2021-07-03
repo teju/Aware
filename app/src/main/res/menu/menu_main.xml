@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_welness"
-        android:icon="@drawable/healthcare"
+        android:icon="@drawable/welness"
         android:title="Welness" />
     <item
         android:id="@+id/navigation_fitness"
-        android:icon="@drawable/heartbeat"
+        android:icon="@drawable/fitness"
         android:title="Fitness" />
 
     <item
@@ -15,7 +15,7 @@
         android:title="Daily Goal" />
     <item
         android:id="@+id/navigation_insight"
-        android:icon="@drawable/barchart"
+        android:icon="@drawable/insights"
         android:title="Insight" />
     <item
         android:id="@+id/navigation_settings"

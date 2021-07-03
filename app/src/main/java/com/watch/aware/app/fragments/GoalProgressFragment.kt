@@ -12,6 +12,7 @@ import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Cartesian
 import com.anychart.core.cartesian.series.Column
 import com.anychart.core.ui.ChartCredits
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
@@ -35,10 +36,7 @@ import kotlin.collections.ArrayList
 
 class GoalProgressFragment : BaseFragment() {
 
-    fun setBottomNavigation(bottomNavigation: BottomNavigationView?) {
-        this.bottomNavigation = bottomNavigation
-    }
-    private var bottomNavigation: BottomNavigationView? = null
+
     val data: MutableList<DataEntry> = ArrayList()
     private var cartesian: Cartesian? = null
     private var column: Column? = null
@@ -64,6 +62,8 @@ class GoalProgressFragment : BaseFragment() {
 
 
             }
+
+
         }
     }
 

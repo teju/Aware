@@ -3,329 +3,315 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context="com.watch.aware.app.fragments.me.SettingsFragment">
+    android:background="@color/white"
+    tools:context="com.watch.aware.app.fragments.SettingsFragment">
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Settings"
-            android:layout_margin="15dp"
-            android:fontFamily="@font/opensansbold"
-            android:textSize="22dp"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content">
-        </TextView>
         <RelativeLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:id="@+id/user_details"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:backgroundTint="@color/soft_transparent_grey"
             android:layout_height="wrap_content">
-            <com.makeramen.roundedimageview.RoundedImageView
-                android:layout_width="50dp"
-                android:layout_margin="20dp"
-                android:src="@drawable/logo"
-                android:id="@+id/user_img"
-                android:layout_height="50dp">
-            </com.makeramen.roundedimageview.RoundedImageView>
-            <TextView
+            <EditText
                 android:layout_width="match_parent"
-                android:text="Aware"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/user_img"
-                android:fontFamily="@font/opensansregular"
-                android:textSize="18dp"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:tint="@color/white"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/chevron_right"
-                android:layout_height="wrap_content">
-
-            </ImageView>
-
-        </RelativeLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:text="Settings"
-            android:fontFamily="@font/opensansregular"
-            android:background="@color/light_black"
-            android:padding="15dp"
-            android:textSize="18dp"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content">
-        </TextView>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="In App Paring"
-                android:fontFamily="@font/opensansregular"
-                android:layout_centerVertical="true"
+                android:background="@color/transparent"
+                android:hint="Search here"
                 android:padding="15dp"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-            </TextView>
+                android:layout_height="match_parent">
+            </EditText>
             <ImageView
                 android:layout_width="wrap_content"
+                android:src="@drawable/magnify"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
                 android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                android:layout_marginRight="15dp"
+                android:tint="@color/DarkGray"
+                android:layout_height="wrap_content">
 
             </ImageView>
         </RelativeLayout>
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginRight="15dp"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="LED Intensity"
-                android:fontFamily="@font/opensansregular"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:textColor="@color/white"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:id="@+id/user_details"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_margin="20dp"
+                    android:src="@drawable/logo"
+                    android:id="@+id/user_img"
+                    android:layout_height="60dp">
+                </ImageView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/chevron_right"
+                    android:layout_height="wrap_content">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Wrist"
-                android:fontFamily="@font/opensansregular"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:textColor="@color/white"
+                </ImageView>
+
+            </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:background="@color/black"
+                android:layout_height="0.5dp"></View>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Settings"
+                    android:fontFamily="@font/opensansregular"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Time Format"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="In App Paring"
+                    android:fontFamily="@font/opensansregular"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Sleep Schedule"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Time Format"
+                    android:fontFamily="@font/opensansregular"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:text="Step Goal"
-            android:fontFamily="@font/opensansregular"
-            android:background="@color/light_black"
-            android:padding="15dp"
-            android:textSize="18dp"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content">
-        </TextView>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Goal Steps"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Sleep Schedule"
+                    android:fontFamily="@font/opensansregular"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:text="Step Goal"
-            android:fontFamily="@font/opensansregular"
-            android:background="@color/light_black"
-            android:padding="15dp"
-            android:textSize="18dp"
-            android:textColor="@color/white"
-            android:layout_height="wrap_content">
-        </TextView>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="User Name"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Step Goal"
+                    android:fontFamily="@font/opensansregular"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Gender"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Goal Step"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Height"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="User Name"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Weight"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Gender"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Existing Medical Condition"
-                android:layout_centerVertical="true"
-                android:padding="15dp"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            </TextView>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/chevron_right"
-                android:layout_centerVertical="true"
-                android:layout_height="wrap_content"
-                app:tint="@color/white">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Height"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
 
-            </ImageView>
-        </RelativeLayout>
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Weight"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
+
+                </ImageView>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Existing Medical Condition"
+                    android:layout_centerVertical="true"
+                    android:padding="15dp"
+                    android:fontFamily="@font/opensansregular"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/chevron_right"
+                    android:layout_centerVertical="true"
+                    android:layout_height="wrap_content"
+                    app:tint="@color/black">
+
+                </ImageView>
+            </RelativeLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

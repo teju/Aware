@@ -10,6 +10,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.bestmafen.baseble.scanner.BleDevice
 import com.bestmafen.baseble.scanner.BleScanCallback
 import com.bestmafen.baseble.scanner.ScannerFactory
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
@@ -27,45 +28,7 @@ import kotlinx.android.synthetic.main.fragment_fitness.*
 
 class FitnessFragment : BaseFragment() {
 
-    fun setBottomNavigation(bottomNavigation: BottomNavigationView?) {
-        this.bottomNavigation = bottomNavigation
-    }
-    private var bottomNavigation: BottomNavigationView? = null
-    private val mBleScanner by lazy {
-        // ScannerFactory.newInstance(arrayOf(UUID.fromString(BleConnector.BLE_SERVICE)))
-        ScannerFactory.newInstance()
-            .setScanDuration(10)
-            .setBleScanCallback(object : BleScanCallback {
 
-                override fun onBluetoothDisabled() {
-
-                }
-
-                override fun onScan(scan: Boolean) {
-                    try {
-                        if (swiperefresh_items.isRefreshing) {
-                            swiperefresh_items.setRefreshing(false);
-                        }
-                    }catch (e:Exception){
-
-                    }
-                }
-
-                override fun onDeviceFound(device: BleDevice) {
-                    try {
-                        if (swiperefresh_items.isRefreshing) {
-                            swiperefresh_items.setRefreshing(false);
-
-                        }
-                    }catch (e:Exception){
-
-                    }
-                    if(device.mBluetoothDevice.address.equals("FA:B4:2E:A8:5E:03")) {
-                        BleConnector.setBleDevice(device).connect(true)
-                    }
-                }
-            })
-    }
     private val mBleHandleCallback by lazy {
         object : BleHandleCallback {
 
@@ -79,30 +42,26 @@ class FitnessFragment : BaseFragment() {
 
             override fun onReadSleep(sleeps: List<BleSleep>) {
                 super.onReadSleep(sleeps)
-                try {
-                    sleep.text = "Slept Last Night\n Light Sleep :"+sleeps.get(0).mSoft+" hrs\nDeep Sleep :"+sleeps.get(0).mStrong+" hrs"
-                }catch (e:Exception) {
 
-                }
             }
 
             override fun onReadActivity(activities: List<BleActivity>) {
                 super.onReadActivity(activities)
                 try {
                     syncing_fitness.visibility = View.GONE
-                    calories.text = "Burned\n"+(activities.get(0).mCalorie/10000)+" Kacl"
-                    distance.text = "Distance Travelled\n"+(activities.get(0).mDistance/10000)+" Km"
-                    steps_cnt.text = "Steps\n"+(activities.get(0).mStep)
-                    step_count.text = (activities.get(0).mStep).toString()
-
-                    val amount: Double = (activities.get(0).mStep).toDouble()
-                    val res = amount / 10000 * 100
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        progressBar.setProgress(res.toInt(),true)
-                    }
-                    goalStatus.text = ""+ String.format("%.2f",res) + "% of today's steps taken"
-
-                    System.out.println("res1234 "+res)
+//                    calories.text = "Burned\n"+(activities.get(0).mCalorie/10000)+" Kacl"
+//                    distance.text = "Distance Travelled\n"+(activities.get(0).mDistance/10000)+" Km"
+//                    steps_cnt.text = "Steps\n"+(activities.get(0).mStep)
+//                    step_count.text = (activities.get(0).mStep).toString()
+////
+//                    val amount: Double = (activities.get(0).mStep).toDouble()
+//                    val res = amount / 10000 * 100
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        progressBar.setProgress(res.toInt(),true)
+//                    }
+//                    goalStatus.text = ""+ String.format("%.2f",res) + "% of today's steps taken"
+//
+//                    System.out.println("res1234 "+res)
                 }catch (e:Exception) {
 
                 }
@@ -123,30 +82,13 @@ class FitnessFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         BleConnector.addHandleCallback(mBleHandleCallback)
-        connect()
         syncing_fitness.visibility = View.VISIBLE
-
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
-           connect()
-        })
-        rlsteps.setOnClickListener {
-            val goalProgress = GoalProgressFragment()
-            goalProgress.setBottomNavigation(bottomNavigation)
-            home().setFragmentInFragment(
-                R.id.mainLayoutFragment, goalProgress,
-                "MAIN_TAB", "FIRST_TAB"
-            )
-            bottomNavigation!!.menu.findItem(R.id.navigation_goal).isChecked = true
-        }
-    }
-    fun connect() {
-        if(BleCache.mDeviceInfo != null) {
-           onConnected()
-        } else {
-            mBleScanner.scan(!mBleScanner.isScanning)
 
-        }
+        })
+
     }
+
 
     fun onConnected() {
         try {
@@ -156,9 +98,6 @@ class FitnessFragment : BaseFragment() {
         } catch (e:Exception){
 
         }
-
-        Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-
     }
 
 }

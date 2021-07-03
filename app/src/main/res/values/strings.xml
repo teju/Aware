@@ -17,4 +17,9 @@
     <string name="dfu_aborted">Dfu aborted</string>
     <string name="dfu_error">Dfu error:%s</string>
     <string name="ok">OK</string>
+    <string name="welness">Welness</string>
+    <string name="fitness">Fitness</string>
+    <string name="goal">Goal</string>
+    <string name="insights">Insights</string>
+    <string name="settings">Settings</string>
 </resources>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".fragments.EmailInstructionsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Check your mail"
+            android:layout_marginLeft="15dp"
+            android:textSize="25dp"
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/opensansextrabold"
+            android:layout_height="wrap_content">
+
+        </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="We have sent a password recover instructions to your email."
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="15dp"
+            android:textSize="@dimen/text_med"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:textColor="@color/DarkGray"
+            android:fontFamily="@font/opensansregular"
+            android:layout_height="wrap_content">
+        </TextView>
+        <Button
+            android:layout_width="match_parent"
+            android:background="@drawable/theme_rounded_rectangle"
+            android:backgroundTint="@color/colorAccent"
+            android:text="Open email app"
+            android:id="@+id/open_mail"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="35dp"
+            android:fontFamily="@font/opensansbold"
+            android:textColor="@color/black"
+            android:textAllCaps="false"
+            android:layout_height="50dp">
+        </Button>
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Skip, I’ll confirm later"
+            android:layout_marginTop="10dp"
+            android:id="@+id/skip"
+            android:layout_marginLeft="15dp"
+            android:textSize="@dimen/text_med"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center"
+            android:textColor="@color/DarkGray"
+            android:fontFamily="@font/opensansregular"
+            android:layout_height="wrap_content">
+        </TextView>
+
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Did not receive the email? Check your spem filter, or try another email address"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="@dimen/text_med"
+        android:layout_gravity="bottom"
+        android:textAlignment="center"
+        android:textColor="@color/DarkGray"
+        android:fontFamily="@font/opensansregular"
+        android:layout_height="wrap_content">
+    </TextView>
+
+
+</FrameLayout>

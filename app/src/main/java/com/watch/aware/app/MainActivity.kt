@@ -13,9 +13,9 @@ import androidx.fragment.app.FragmentManager
 import com.franmontiel.localechanger.LocaleChanger
 import com.iapps.libs.helpers.BaseHelper
 import com.watch.aware.app.callback.NotifyListener
+import com.watch.aware.app.fragments.LandingFragment
 import com.watch.aware.app.fragments.MainTabFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
-import com.watch.aware.app.fragments.me.RegisterFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
 import kotlinx.android.synthetic.main.activity_main.*
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun triggerMainProcess() {
-        setFragment(MainTabFragment())
+        setFragment(LandingFragment())
 
     }
 

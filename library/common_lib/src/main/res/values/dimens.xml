@@ -13,5 +13,9 @@
     <dimen name="iapps__horizontal_margin_small">10dp</dimen>
     <dimen name="iapps__button_padding">20dp</dimen>
     <dimen name="iapps__small_margin">5dp</dimen>
-
+    <dimen name="cbn_fab_size">56dp</dimen>
+    <dimen name="cbn_height">60dp</dimen>
+    <dimen name="cbn_layout_height">84dp</dimen>
+    <dimen name="cbn_bottom_curve_offset">12dp</dimen>
+    <dimen name="cbn_fab_top_offset">8dp</dimen>
 </resources>

@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.watch.aware.app.R
-import com.watch.aware.app.fragments.me.SettingsFragment
-import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.models.CbnMenuItem
+import kotlinx.android.synthetic.main.main_tab_fragment.*
 
 class MainTabFragment : BaseFragment() {
-    var bottomNavigation: BottomNavigationView? = null
+    var instance : Int = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,78 +26,117 @@ class MainTabFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        initUI()
-    }
+        try {
+            initNavigationView()
+        } catch (e : Exception){
 
-    fun initUI() {
-        bottomNavigation =
-            v.findViewById(R.id.bottom_navigation)
-        bottomNavigation!!.setOnNavigationItemSelectedListener(navigationItemSelectedListener)
-        val homeFragment = WelnessFragment()
-        homeFragment.setBottomNavigation(bottomNavigation)
-        home().setOrShowExistingFragmentByTag(
-            R.id.mainLayoutFragment, "FIRST_TAB",
-            "MAIN_TAB", homeFragment, Helper.listFragmentsMainTab()
+        }
+    }
+    fun  initNavigationView() {
+
+        val menuItems = arrayOf(
+            CbnMenuItem(
+                R.string.welness,
+                R.drawable.bluetooth, // the icon
+                R.drawable.avd_bluetooth,// the AVD that will be shown in FAB
+                R.id.navigation_welness // optional if you use Jetpack Navigation
+            ),
+            CbnMenuItem(
+                R.string.fitness,
+                R.drawable.bluetooth,
+                R.drawable.avd_bluetooth,
+                R.id.navigation_fitness
+            ),
+            CbnMenuItem(
+                R.string.goal,
+                R.drawable.bluetooth,
+                R.drawable.avd_bluetooth,
+                R.id.navigation_goal
+            ),
+            CbnMenuItem(
+                R.string.insights,
+                R.drawable.bluetooth,
+                R.drawable.avd_bluetooth,
+                R.id.navigation_insight
+            ),
+            CbnMenuItem(
+                R.string.settings,
+                R.drawable.bluetooth,
+                R.drawable.avd_bluetooth,
+                R.id.navigation_settings
+            )
         )
+
+        nav_view.setMenuItems(menuItems, instance)
+        nav_view.onMenuItemClick(instance)
+        setCurrentItem(R.id.navigation_welness)
+        nav_view.setOnMenuItemClickListener { item, _ ->
+            setCurrentItem(item.destinationId)
+        }
+        showTab()
+
+    }
+    open fun showTab() {
+        activity?.runOnUiThread(object:Runnable {
+            override fun run() {
+                nav_view.onMenuItemClick(instance)
+                setCurrentItem(instance)
+
+            }
+        })
     }
 
-    var navigationItemSelectedListener =
-        BottomNavigationView.OnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.navigation_welness -> {
-                    val welness = WelnessFragment()
-                    welness.setBottomNavigation(bottomNavigation)
-                    home().setFragmentInFragment(
-                        R.id.mainLayoutFragment, welness,
-                        "MAIN_TAB", "FIRST_TAB"
-                    )
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.navigation_fitness -> {
-                    val fitness = FitnessFragment()
-                    fitness.setBottomNavigation(bottomNavigation)
-                    home().setFragmentInFragment(
-                        R.id.mainLayoutFragment, fitness,
-                        "MAIN_TAB", "FIRST_TAB"
-                    )
-                    return@OnNavigationItemSelectedListener true
-                }
-                R.id.navigation_goal ->{
-                    val goalProgress = GoalProgressFragment()
-                    goalProgress.setBottomNavigation(bottomNavigation)
-                    home().setFragmentInFragment(
-                        R.id.mainLayoutFragment, goalProgress,
-                        "MAIN_TAB", "FIRST_TAB"
-                    )
-                    return@OnNavigationItemSelectedListener true
 
-                }
-                R.id.navigation_insight ->{
-                    val insights = InsightsFragment()
-                    insights.setBottomNavigation(bottomNavigation)
-                    home().setFragmentInFragment(
-                        R.id.mainLayoutFragment, insights,
-                        "MAIN_TAB", "FIRST_TAB"
-                    )
-                    return@OnNavigationItemSelectedListener true
+    fun setCurrentItem(which: Int) {
+        when (which) {
+            R.id.navigation_welness -> {
+                val welness = WelnessFragment()
+                home()?.setFragmentInFragment(
+                    R.id.mainLayoutFragment, welness,
+                    "MAIN_TAB", "FIRST_TAB"
+                )
 
-                }
-                R.id.navigation_settings ->{
-                    val settings =
-                        SettingsFragment()
-                    settings.setBottomNavigation(bottomNavigation)
-                    home().setFragmentInFragment(
-                        R.id.mainLayoutFragment, settings,
-                        "MAIN_TAB", "FIRST_TAB"
-                    )
-                    return@OnNavigationItemSelectedListener true
-
-                }
             }
-            false
+            R.id.navigation_fitness -> {
+                val fitness = FitnessFragment()
+                home()?.setFragmentInFragment(
+                    R.id.mainLayoutFragment, fitness,
+                    "MAIN_TAB", "FIRST_TAB"
+                )
+
+            }
+            R.id.navigation_goal ->{
+                val goalProgress = GoalProgressFragment()
+                home()?.setFragmentInFragment(
+                    R.id.mainLayoutFragment, goalProgress,
+                    "MAIN_TAB", "FIRST_TAB"
+                )
+
+
+            }
+            R.id.navigation_insight ->{
+                val insights = InsightsFragment()
+                home()?.setFragmentInFragment(
+                    R.id.mainLayoutFragment, insights,
+                    "MAIN_TAB", "FIRST_TAB"
+                )
+
+
+            }
+            R.id.navigation_settings ->{
+                val settings =
+                    SettingsFragment()
+                home()?.setFragmentInFragment(
+                    R.id.mainLayoutFragment, settings,
+                    "MAIN_TAB", "FIRST_TAB"
+                )
+
+
+            }
         }
 
+    }
     override fun onBackTriggered() {
-        home().resetAndExit();
+        home()?.resetAndExit();
     }
 }

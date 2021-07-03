@@ -20,7 +20,7 @@
 	<color name="transparent">#00000000</color>
     <color name="android_green">#FFA4C639</color>
     <color name="honeycombish_blue">#FF58BAED</color>
-    <color name="soft_transparent_grey">#77DDDDDD</color>
+    <color name="soft_transparent_grey">#66DDDDDD</color>
     <color name="soft_grey">#FFDDDDDD</color>
     <color name="transparent_grey">#77333333</color>
     <color name="dark_transparent_grey">#99333333</color>

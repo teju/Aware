@@ -18,6 +18,7 @@ import com.anychart.core.ui.ChartCredits
 import com.bestmafen.baseble.scanner.BleDevice
 import com.bestmafen.baseble.scanner.BleScanCallback
 import com.bestmafen.baseble.scanner.ScannerFactory
+import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
@@ -43,15 +44,11 @@ import kotlin.collections.ArrayList
 
 class InsightsFragment : BaseFragment() {
 
-    fun setBottomNavigation(bottomNavigation: BottomNavigationView?) {
-        this.bottomNavigation = bottomNavigation
-    }
 
     private var cartesian: Cartesian? = null
     private var column: Column? = null
     val data: MutableList<DataEntry> = ArrayList()
 
-    private var bottomNavigation: BottomNavigationView? = null
     val barEntries = ArrayList<BarEntry>()
     var type = "steps"
     var datatype = "week"

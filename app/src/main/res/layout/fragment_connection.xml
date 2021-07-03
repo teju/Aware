@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.ConnectionFragment">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="30dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Connect to your\na’ware band"
+                android:layout_marginLeft="25dp"
+                android:textSize="25dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/opensansextrabold"
+                android:layout_height="wrap_content">
+
+            </TextView>
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_height="100dp">
+            </ImageView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Keep your a’ware and paired mobile\ndevice close together to make sure that\nthey're in range."
+                android:layout_marginTop="20dp"
+                android:id="@+id/forget_password"
+                android:textSize="@dimen/text_med"
+                android:drawableLeft="@drawable/exclamation"
+                android:drawablePadding="10dp"
+                android:layout_marginLeft="25dp"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Make sure that Airplane Mode is off and\nthat Wi-Fi and Bluetooth are on....."
+                android:layout_marginTop="20dp"
+                android:id="@+id/forget_password"
+                android:textSize="@dimen/text_med"
+                android:drawableLeft="@drawable/exclamation"
+                android:drawablePadding="10dp"
+                android:layout_marginLeft="25dp"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Restart your a’ware and phone."
+                android:layout_marginTop="20dp"
+                android:id="@+id/forget_password"
+                android:textSize="@dimen/text_med"
+                android:drawableLeft="@drawable/exclamation"
+                android:drawablePadding="10dp"
+                android:layout_marginLeft="25dp"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Can not find your device ?"
+                android:layout_marginTop="30dp"
+                android:textSize="@dimen/text_med"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="contact a’ware Support."
+                android:textSize="@dimen/text_small"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="or try again"
+                android:layout_marginTop="20dp"
+                android:textSize="@dimen/text_med"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <Button
+                android:layout_width="match_parent"
+                android:background="@drawable/theme_rounded_rectangle"
+                android:backgroundTint="@color/colorAccent"
+                android:text="Searching ..."
+                android:layout_marginBottom="50dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:id="@+id/search"
+                android:layout_marginTop="25dp"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/black"
+                android:textAllCaps="false"
+                android:layout_height="50dp">
+            </Button>
+
+        </LinearLayout>
+
+    </FrameLayout>
+</ScrollView>

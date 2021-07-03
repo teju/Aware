@@ -1,8 +1,6 @@
-package com.watch.aware.app.fragments.me
+package com.watch.aware.app.fragments
 
-import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,23 +33,37 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         setRegisterAPIObserver()
         register.setOnClickListener(this)
+        signin.setOnClickListener(this)
+        back.setOnClickListener(this)
     }
 
     fun validate() :Boolean{
         if(BaseHelper.isEmpty(username.text.toString())) {
-            username.setError("Enter user name")
+            error_name.visibility = View.VISIBLE
+            error_passowrd.visibility = View.GONE
+            error_confirm_passowrd.visibility = View.GONE
+            error_email.visibility = View.GONE
             username.requestFocus()
             return false
-        } else if(BaseHelper.isEmpty(age.text.toString())) {
-            age.setError("Enter age")
-            age.requestFocus()
+        } else if(BaseHelper.isEmpty(password.text.toString()) || password.text.toString().length < 8) {
+            error_name.visibility = View.GONE
+            error_passowrd.visibility = View.VISIBLE
+            error_confirm_passowrd.visibility = View.GONE
+            error_email.visibility = View.GONE
+            password.requestFocus()
             return false
-        }  else if(BaseHelper.isEmpty(contactNumber.text.toString())) {
-            contactNumber.setError("Enter Contact Number")
-            contactNumber.requestFocus()
+        }  else if(!password.text.toString().equals(confirm_password.text.toString())) {
+            error_name.visibility = View.GONE
+            error_passowrd.visibility = View.GONE
+            error_confirm_passowrd.visibility = View.VISIBLE
+            error_email.visibility = View.GONE
+            confirm_password.requestFocus()
             return false
         } else if(!Helper.isValidEmail(email.text.toString())) {
-            email.setError("Enter valid Email ID")
+            error_name.visibility = View.GONE
+            error_passowrd.visibility = View.GONE
+            error_confirm_passowrd.visibility = View.GONE
+            error_email.visibility = View.VISIBLE
             email.requestFocus()
             return false
         }
@@ -75,12 +87,11 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
                         }
                     )
                 })
-                isNetworkAvailable.observe(thisFragReference, obsNoInternet)
+                isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
                 getTrigger().observe(thisFragReference, Observer { state ->
                     when (state) {
                         PostRegisterViewModel.NEXT_STEP -> {
-
-                            home().proceedDoOnBackPressed()
+                            home()?.setFragment(RegistrationSuccessFragment())
                         }
                     }
                 })
@@ -97,10 +108,16 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
                     if(BleCache.mDeviceInfo != null ) {
                         deviceID = BleCache.mDeviceInfo?.mBleAddress!!
                     }
-                    postRegisterViewModel.loadData(username.text.toString(),age.text.toString(),contactNumber.text.toString(),email.text.toString(),
+                    postRegisterViewModel.loadData(username.text.toString(),password.text.toString(),"",email.text.toString(),
                         deviceID)
                 }
 
+            }
+            R.id.back -> {
+                home()?.proceedDoOnBackPressed()
+            }
+            R.id.signin -> {
+                home()?.setFragment(LoginFragment())
             }
         }
     }
