@@ -50,7 +50,7 @@ class FitnessFragment : BaseFragment() {
                 try {
                     syncing_fitness.visibility = View.GONE
 //                    calories.text = "Burned\n"+(activities.get(0).mCalorie/10000)+" Kacl"
-//                    distance.text = "Distance Travelled\n"+(activities.get(0).mDistance/10000)+" Km"
+//                    sleep.text = "Distance Travelled\n"+(activities.get(0).mDistance/10000)+" Km"
 //                    steps_cnt.text = "Steps\n"+(activities.get(0).mStep)
 //                    step_count.text = (activities.get(0).mStep).toString()
 ////

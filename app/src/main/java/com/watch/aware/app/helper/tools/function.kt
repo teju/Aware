@@ -8,8 +8,6 @@ import com.szabh.smable3.component.BleConnector
 fun doBle(context: Context, action: () -> Unit) {
     if (BleConnector.isAvailable()) {
         action()
-    } else {
-        toast(context, "BleConnector is not available!")
     }
 }
 

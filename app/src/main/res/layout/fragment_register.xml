@@ -15,14 +15,32 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="30dp"
             android:layout_height="wrap_content">
-            <ImageView
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:src="@drawable/arrow_left"
-                android:id="@+id/back"
-                android:layout_marginLeft="25dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
                 android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/arrow_left"
+                    android:id="@+id/back"
+                    android:layout_marginLeft="25dp"
+                    android:layout_height="wrap_content">
 
-            </ImageView>
+                </ImageView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Back"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="@dimen/text_small"
+                    android:layout_gravity="center_vertical"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/opensanssemibold"
+                    android:layout_height="wrap_content">
+                </TextView>
+
+            </LinearLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:text="Create account"
@@ -37,23 +55,23 @@
                 android:layout_width="match_parent"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="50dp"
                 android:orientation="vertical"
                 android:layout_height="wrap_content">
 
                 <EditText
                     android:layout_width="match_parent"
-                    android:padding="15dp"
                     android:inputType="text"
+                    android:paddingLeft="15dp"
                     android:hint="Name"
-                    android:textSize="@dimen/text_med"
+                    android:textSize="@dimen/text_small"
                     android:fontFamily="@font/opensansregular"
                     android:layout_marginTop="25dp"
                     android:imeOptions="actionNext"
                     android:backgroundTint="@color/soft_transparent_grey"
                     android:id="@+id/username"
                     android:background="@drawable/theme_rounded_rectangle"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp">
 
                 </EditText>
                 <TextView
@@ -72,17 +90,17 @@
 
                 <EditText
                     android:layout_width="match_parent"
-                    android:padding="15dp"
+                    android:paddingLeft="15dp"
                     android:hint="Password"
                     android:backgroundTint="@color/soft_transparent_grey"
                     android:inputType="textPassword"
-                    android:textSize="@dimen/text_med"
+                    android:textSize="@dimen/text_small"
                     android:layout_marginTop="15dp"
                     android:fontFamily="@font/opensansregular"
                     android:imeOptions="actionNext"
                     android:id="@+id/password"
                     android:background="@drawable/theme_rounded_rectangle"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp">
 
                 </EditText>
                 <TextView
@@ -101,17 +119,17 @@
 
                 <EditText
                     android:layout_width="match_parent"
-                    android:padding="15dp"
+                    android:paddingLeft="15dp"
                     android:backgroundTint="@color/soft_transparent_grey"
                     android:inputType="textPassword"
                     android:hint="Confirm Password"
                     android:fontFamily="@font/opensansregular"
                     android:layout_marginTop="15dp"
-                    android:textSize="@dimen/text_med"
+                    android:textSize="@dimen/text_small"
                     android:imeOptions="actionNext"
                     android:id="@+id/confirm_password"
                     android:background="@drawable/theme_rounded_rectangle"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp">
 
                 </EditText>
                 <TextView
@@ -130,17 +148,17 @@
 
                 <EditText
                     android:layout_width="match_parent"
-                    android:padding="15dp"
+                    android:paddingLeft="15dp"
                     android:inputType="textEmailAddress"
                     android:layout_marginTop="15dp"
                     android:imeOptions="actionDone"
                     android:hint="Email"
                     android:backgroundTint="@color/soft_transparent_grey"
-                    android:textSize="@dimen/text_med"
+                    android:textSize="@dimen/text_small"
                     android:fontFamily="@font/opensansregular"
                     android:id="@+id/email"
                     android:background="@drawable/theme_rounded_rectangle"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp">
 
                 </EditText>
                 <TextView
@@ -167,14 +185,13 @@
                     android:fontFamily="@font/opensansbold"
                     android:backgroundTint="@color/colorAccent"
                     android:layout_marginTop="20dp"
-                    android:layout_height="50dp">
+                    android:layout_height="40dp">
 
                 </Button>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="By signing up you accept our\nTerms of Services and Privacy Policy"
+                    android:id="@+id/tvsignup"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="15dp"
                     android:textSize="@dimen/text_small"
                     android:layout_gravity="center_horizontal"
                     android:textAlignment="center"
@@ -185,8 +202,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:text="Or create account using social media"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="40dp"
                     android:textSize="@dimen/text_small"
                     android:layout_gravity="center_horizontal"
                     android:textAlignment="center"
@@ -205,6 +221,35 @@
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="30dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/apple"
+                    android:layout_height="wrap_content">
+                </ImageView>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/fb"
+                    android:layout_marginLeft="25dp"
+                    android:layout_height="wrap_content">
+                </ImageView>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/gmail"
+                    android:layout_marginLeft="25dp"
+                    android:layout_height="wrap_content">
+                </ImageView>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:orientation="vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="30dp"
@@ -213,7 +258,6 @@
                     android:layout_width="wrap_content"
                     android:text="Already have an account?"
                     android:layout_marginTop="30dp"
-                    android:layout_marginLeft="15dp"
                     android:textSize="@dimen/text_small"
                     android:layout_gravity="center_horizontal"
                     android:textAlignment="center"
@@ -225,7 +269,6 @@
                     android:layout_width="wrap_content"
                     android:text="Sign in"
                     android:id="@+id/signin"
-                    android:layout_marginLeft="15dp"
                     android:textSize="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center_horizontal"

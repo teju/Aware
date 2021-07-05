@@ -46,7 +46,8 @@
                             android:text="Connected"
                             android:drawableRight="@drawable/check_circle"
                             android:drawablePadding="10dp"
-                            android:textSize="@dimen/text_med"
+                            android:drawableTint="@color/colorAccent"
+                            android:textSize="@dimen/text_small"
                             android:gravity="center_vertical"
                             android:layout_marginLeft="15dp"
                             android:fontFamily="@font/opensansregular"
@@ -58,7 +59,7 @@
                             android:layout_width="wrap_content"
                             android:text="Welcome back, Peter"
                             android:layout_marginTop="5dp"
-                            android:textSize="@dimen/text_small"
+                            android:textSize="@dimen/text_med"
                             android:gravity="center_vertical"
                             android:layout_marginLeft="15dp"
                             android:fontFamily="@font/opensansregular"
@@ -77,9 +78,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:text="Last synced :"
-                            android:textSize="@dimen/text_med"
+                            android:textSize="@dimen/text_small"
                             android:gravity="center"
-                            android:layout_marginLeft="15dp"
+                            android:layout_marginLeft="10dp"
                             android:fontFamily="@font/opensansregular"
                             android:textColor="@color/black"
                             android:layout_height="wrap_content">
@@ -88,7 +89,7 @@
                             android:layout_width="wrap_content"
                             android:text="24 JUNE 2021"
                             android:layout_marginTop="5dp"
-                            android:textSize="@dimen/text_small"
+                            android:textSize="@dimen/text_med"
                             android:gravity="center"
                             android:layout_marginLeft="15dp"
                             android:fontFamily="@font/opensansregular"
@@ -111,7 +112,7 @@
                 </RelativeLayout>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="There is some issue\nwith your wellness data"
+                    android:text="Your wellness data\nseems ok !"
                     android:layout_marginLeft="15dp"
                     android:textSize="22dp"
                     android:layout_marginTop="20dp"
@@ -123,11 +124,19 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+                    <ImageView
+                        android:layout_width="500dp"
+                        android:layout_centerInParent="true"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/green_human_male"
+                        android:layout_height="500dp">
+
+                    </ImageView>
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="20dp"
                         android:layout_height="wrap_content">
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -136,14 +145,15 @@
                             <ImageView
                                 android:layout_width="30dp"
                                 android:src="@drawable/heart"
+                                android:adjustViewBounds="true"
                                 android:layout_height="30dp">
                             </ImageView>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:id="@+id/heart_rate"
-                                android:textSize="25dp"
+                                android:textSize="30dp"
+                                android:text="88"
                                 android:fontFamily="@font/opensansbold"
-                                android:layout_marginTop="15dp"
                                 android:textColor="@color/black"
                                 android:layout_height="wrap_content">
 
@@ -151,7 +161,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:text="bpm"
-                                android:textSize="18dp"
+                                android:textSize="@dimen/text_small"
                                 android:fontFamily="@font/opensansbold"
                                 android:textColor="@color/DarkGray"
                                 android:layout_height="wrap_content">
@@ -159,7 +169,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:text="Heart Rate"
-                                android:textSize="18dp"
+                                android:textSize="@dimen/text_small"
                                 android:fontFamily="@font/opensansbold"
                                 android:textColor="@color/black"
                                 android:layout_height="wrap_content">
@@ -177,17 +187,18 @@
                                 android:orientation="vertical"
                                 android:layout_height="wrap_content">
                                 <ImageView
-                                    android:layout_width="50dp"
-                                    android:src="@drawable/hot"
+                                    android:layout_width="30dp"
+                                    android:adjustViewBounds="true"
+                                    android:src="@drawable/spo"
                                     android:layout_gravity="end"
-                                    android:layout_height="50dp">
+                                    android:layout_height="30dp">
                                 </ImageView>
                                 <TextView
                                     android:layout_width="wrap_content"
-                                    android:textSize="25dp"
+                                    android:textSize="30dp"
+                                    android:text="90"
                                     android:id="@+id/oxygen_level"
                                     android:fontFamily="@font/opensansbold"
-                                    android:layout_marginTop="15dp"
                                     android:layout_gravity="end"
                                     android:textColor="@color/black"
                                     android:layout_height="wrap_content">
@@ -196,7 +207,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="%"
-                                    android:textSize="18dp"
+                                    android:textSize="@dimen/text_small"
                                     android:layout_gravity="end"
                                     android:fontFamily="@font/opensansbold"
                                     android:textColor="@color/DarkGray"
@@ -206,7 +217,7 @@
                                     android:layout_width="wrap_content"
                                     android:text="Spo2"
                                     android:layout_gravity="end"
-                                    android:textSize="18dp"
+                                    android:textSize="@dimen/text_small"
                                     android:fontFamily="@font/opensansbold"
                                     android:textColor="@color/black"
                                     android:layout_height="wrap_content">
@@ -231,33 +242,25 @@
                             android:layout_height="wrap_content">
                             <ImageView
                                 android:layout_width="30dp"
-                                android:src="@drawable/heart"
+                                android:src="@drawable/cough"
                                 android:layout_height="30dp">
                             </ImageView>
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:id="@+id/cough"
                                 android:text="No"
-                                android:textSize="25dp"
+                                android:textSize="30dp"
                                 android:fontFamily="@font/opensansbold"
                                 android:layout_marginTop="15dp"
                                 android:textColor="@color/black"
                                 android:layout_height="wrap_content">
 
                             </TextView>
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:textSize="18dp"
-                                android:layout_gravity="end"
-                                android:fontFamily="@font/opensansbold"
-                                android:textColor="@color/DarkGray"
-                                android:layout_height="wrap_content">
-                            </TextView>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:text="Cough"
-                                android:textSize="18dp"
+                                android:textSize="@dimen/text_small"
                                 android:fontFamily="@font/opensansbold"
                                 android:textColor="@color/black"
                                 android:layout_height="wrap_content">
@@ -275,17 +278,17 @@
                                 android:orientation="vertical"
                                 android:layout_height="wrap_content">
                                 <ImageView
-                                    android:layout_width="50dp"
-                                    android:src="@drawable/hot"
+                                    android:layout_width="30dp"
+                                    android:src="@drawable/temp"
                                     android:layout_gravity="end"
-                                    android:layout_height="50dp">
+                                    android:layout_height="30dp">
                                 </ImageView>
                                 <TextView
                                     android:layout_width="wrap_content"
-                                    android:textSize="25dp"
+                                    android:textSize="30dp"
+                                    android:text="40.7"
                                     android:id="@+id/temp"
                                     android:fontFamily="@font/opensansbold"
-                                    android:layout_marginTop="15dp"
                                     android:layout_gravity="end"
                                     android:textColor="@color/black"
                                     android:layout_height="wrap_content">
@@ -294,7 +297,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="oC"
-                                    android:textSize="18dp"
+                                    android:textSize="@dimen/text_small"
                                     android:layout_gravity="end"
                                     android:fontFamily="@font/opensansbold"
                                     android:textColor="@color/DarkGray"
@@ -304,7 +307,7 @@
                                     android:layout_width="wrap_content"
                                     android:text="Body Temp"
                                     android:layout_gravity="end"
-                                    android:textSize="18dp"
+                                    android:textSize="@dimen/text_small"
                                     android:fontFamily="@font/opensansbold"
                                     android:textColor="@color/black"
                                     android:layout_height="wrap_content">

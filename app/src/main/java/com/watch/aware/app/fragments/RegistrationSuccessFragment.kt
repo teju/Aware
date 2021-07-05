@@ -29,7 +29,7 @@ class RegistrationSuccessFragment : BaseFragment() ,View.OnClickListener{
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.next -> {
-
+                home()?.setFragment(ConnectionFragment())
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.watch.aware.app.fragments
 
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ class EmailInstructionsFragment : BaseFragment(),View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         open_mail.setOnClickListener(this)
         skip.setOnClickListener(this)
+        tvretry.setText(Html.fromHtml("Did not receive the email? Check your spem filter, or <b><font color='#02FE97'>try another email address</font></b>"))
     }
 
     override fun onClick(v: View?) {

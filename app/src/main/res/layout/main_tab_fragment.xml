@@ -7,7 +7,7 @@
     <FrameLayout
         android:id="@+id/mainLayoutFragment"
         android:layout_width="match_parent"
-        android:layout_marginBottom="75dp"
+        android:layout_marginBottom="70dp"
         android:layout_height="match_parent"
          />
     <np.com.susanthapa.curved_bottom_navigation.CurvedBottomNavigationView

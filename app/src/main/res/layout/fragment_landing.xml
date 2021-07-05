@@ -4,12 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/black"
     tools:context=".fragments.LandingFragment">
+    <ImageView
+        android:layout_width="match_parent"
+        android:src="@drawable/landing_bg_img"
+        android:scaleType="fitXY"
+        android:layout_height="match_parent">
+    </ImageView>
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="120dp"
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
@@ -54,11 +60,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:text="or"
-            android:textSize="25dp"
+            android:textSize="18dp"
             android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/white"
-            android:fontFamily="@font/opensansextrabold"
+            android:fontFamily="@font/opensansregular"
             android:layout_height="wrap_content">
         </TextView>
         <RelativeLayout
@@ -68,8 +74,10 @@
             android:layout_marginTop="10dp"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="20dp"
+                android:adjustViewBounds="true"
                 android:layout_marginLeft="15dp"
+                android:src="@drawable/apple"
                 android:layout_centerVertical="true"
                 android:layout_height="wrap_content">
             </ImageView>
@@ -91,8 +99,10 @@
             android:layout_marginTop="15dp"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="20dp"
                 android:layout_marginLeft="15dp"
+                android:src="@drawable/fb"
+                android:adjustViewBounds="true"
                 android:layout_centerVertical="true"
                 android:layout_height="wrap_content">
             </ImageView>
@@ -114,8 +124,10 @@
             android:layout_marginTop="15dp"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="wrap_content"
+                android:layout_width="20dp"
                 android:layout_marginLeft="15dp"
+                android:src="@drawable/gmail"
+                android:adjustViewBounds="true"
                 android:layout_centerVertical="true"
                 android:layout_height="wrap_content">
             </ImageView>

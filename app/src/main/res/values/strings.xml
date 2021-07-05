@@ -22,4 +22,5 @@
     <string name="goal">Goal</string>
     <string name="insights">Insights</string>
     <string name="settings">Settings</string>
+    <string name="signup">By signing up you accept our\n<b><font color='#FF0060'>Terms of Services</font></b> and <b><font color='#FF0060'>Privacy Policy</font></b></string>
 </resources>

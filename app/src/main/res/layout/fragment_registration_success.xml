@@ -9,18 +9,25 @@
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="60dp"
         android:text="Thank You\nYour account has\nbeen created"
-        android:layout_marginLeft="15dp"
+        android:layout_marginLeft="25dp"
         android:textSize="25dp"
         android:textColor="@color/black"
         android:fontFamily="@font/opensansextrabold"
         android:layout_height="wrap_content">
     </TextView>
+    <ImageView
+        android:layout_width="150dp"
+        android:src="@drawable/tick"
+        android:layout_gravity="center"
+        android:layout_height="150dp">
+
+    </ImageView>
     <Button
         android:layout_width="match_parent"
         android:layout_gravity="bottom"
-        android:layout_margin="25dp"
+        android:layout_margin="45dp"
         android:background="@drawable/theme_rounded_rectangle"
         android:backgroundTint="@color/colorAccent"
         android:text="Next"
@@ -29,7 +36,7 @@
         android:fontFamily="@font/opensansbold"
         android:textColor="@color/black"
         android:textAllCaps="false"
-        android:layout_height="50dp">
+        android:layout_height="40dp">
     </Button>
 
 </FrameLayout>

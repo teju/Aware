@@ -12,9 +12,18 @@
         android:layout_gravity="center"
         android:layout_marginTop="30dp"
         android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:src="@drawable/email_instructions"
+            android:layout_height="wrap_content">
+
+        </ImageView>
         <TextView
             android:layout_width="wrap_content"
             android:text="Check your mail"
+            android:layout_marginTop="15dp"
             android:layout_marginLeft="15dp"
             android:textSize="25dp"
             android:textColor="@color/black"
@@ -25,10 +34,11 @@
         </TextView>
         <TextView
             android:layout_width="wrap_content"
-            android:text="We have sent a password recover instructions to your email."
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="15dp"
+            android:text="We have sent a password recover instructions\nto your email."
+            android:layout_marginTop="20dp"
             android:textSize="@dimen/text_med"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:layout_gravity="center_horizontal"
             android:textAlignment="center"
             android:textColor="@color/DarkGray"
@@ -47,12 +57,12 @@
             android:fontFamily="@font/opensansbold"
             android:textColor="@color/black"
             android:textAllCaps="false"
-            android:layout_height="50dp">
+            android:layout_height="40dp">
         </Button>
         <TextView
             android:layout_width="wrap_content"
             android:text="Skip, I’ll confirm later"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:id="@+id/skip"
             android:layout_marginLeft="15dp"
             android:textSize="@dimen/text_med"
@@ -66,12 +76,12 @@
     </LinearLayout>
     <TextView
         android:layout_width="match_parent"
-        android:text="Did not receive the email? Check your spem filter, or try another email address"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="40dp"
+        android:id="@+id/tvretry"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:textSize="@dimen/text_med"
+        android:textSize="@dimen/text_small"
         android:layout_gravity="bottom"
         android:textAlignment="center"
         android:textColor="@color/DarkGray"

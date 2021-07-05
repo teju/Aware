@@ -12,7 +12,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="50dp"
             android:layout_height="wrap_content">
             <TextView
                 android:layout_width="wrap_content"
@@ -25,19 +25,19 @@
 
             </TextView>
             <ImageView
-                android:layout_width="100dp"
+                android:layout_width="180dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_height="100dp">
+                android:layout_marginTop="50dp"
+                android:src="@drawable/img_connecting"
+                android:layout_height="180dp">
             </ImageView>
             <TextView
                 android:layout_width="wrap_content"
                 android:text="Keep your a’ware and paired mobile\ndevice close together to make sure that\nthey're in range."
-                android:layout_marginTop="20dp"
-                android:id="@+id/forget_password"
-                android:textSize="@dimen/text_med"
+                android:layout_marginTop="50dp"
+                android:textSize="@dimen/text_small"
                 android:drawableLeft="@drawable/exclamation"
-                android:drawablePadding="10dp"
+                android:drawablePadding="15dp"
                 android:layout_marginLeft="25dp"
                 android:textColor="@color/DarkGray"
                 android:fontFamily="@font/opensanssemibold"
@@ -47,10 +47,9 @@
                 android:layout_width="wrap_content"
                 android:text="Make sure that Airplane Mode is off and\nthat Wi-Fi and Bluetooth are on....."
                 android:layout_marginTop="20dp"
-                android:id="@+id/forget_password"
-                android:textSize="@dimen/text_med"
+                android:textSize="@dimen/text_small"
                 android:drawableLeft="@drawable/exclamation"
-                android:drawablePadding="10dp"
+                android:drawablePadding="15dp"
                 android:layout_marginLeft="25dp"
                 android:textColor="@color/DarkGray"
                 android:fontFamily="@font/opensanssemibold"
@@ -60,10 +59,9 @@
                 android:layout_width="wrap_content"
                 android:text="Restart your a’ware and phone."
                 android:layout_marginTop="20dp"
-                android:id="@+id/forget_password"
-                android:textSize="@dimen/text_med"
+                android:textSize="@dimen/text_small"
                 android:drawableLeft="@drawable/exclamation"
-                android:drawablePadding="10dp"
+                android:drawablePadding="15dp"
                 android:layout_marginLeft="25dp"
                 android:textColor="@color/DarkGray"
                 android:fontFamily="@font/opensanssemibold"
@@ -73,15 +71,6 @@
                 android:layout_width="wrap_content"
                 android:text="Can not find your device ?"
                 android:layout_marginTop="30dp"
-                android:textSize="@dimen/text_med"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/DarkGray"
-                android:fontFamily="@font/opensanssemibold"
-                android:layout_height="wrap_content">
-            </TextView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="contact a’ware Support."
                 android:textSize="@dimen/text_small"
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/DarkGray"
@@ -90,7 +79,16 @@
             </TextView>
             <TextView
                 android:layout_width="wrap_content"
-                android:text="or try again"
+                android:textSize="@dimen/text_small"
+                android:id="@+id/tv_contact_support"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/DarkGray"
+                android:fontFamily="@font/opensanssemibold"
+                android:layout_height="wrap_content">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/tvtry_again"
                 android:layout_marginTop="20dp"
                 android:textSize="@dimen/text_med"
                 android:layout_gravity="center_horizontal"
@@ -111,7 +109,7 @@
                 android:fontFamily="@font/opensansbold"
                 android:textColor="@color/black"
                 android:textAllCaps="false"
-                android:layout_height="50dp">
+                android:layout_height="40dp">
             </Button>
 
         </LinearLayout>

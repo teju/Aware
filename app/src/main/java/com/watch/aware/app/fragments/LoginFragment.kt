@@ -35,7 +35,7 @@ class LoginFragment : BaseFragment(),View.OnClickListener {
                 home()?.setFragment(RegisterFragment())
             }
             R.id.login -> {
-                if(BleCache.mBleName == null) {
+                if(BleCache.mDeviceInfo == null) {
                     home()?.setFragment(ConnectionFragment())
                 } else{
                     home()?.setFragment(CoughSettingsFragment())

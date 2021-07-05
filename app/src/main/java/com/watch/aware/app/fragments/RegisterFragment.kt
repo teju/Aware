@@ -1,6 +1,7 @@
 package com.watch.aware.app.fragments
 
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
         register.setOnClickListener(this)
         signin.setOnClickListener(this)
         back.setOnClickListener(this)
+        tvsignup.setText(Html.fromHtml("By signing up you accept our<br /><b><font color='#02FE97'>Terms of Services</font></b> and <b><font color='#02FE97'>Privacy Policy</font></b>"))
     }
 
     fun validate() :Boolean{

@@ -5,13 +5,22 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     tools:context=".fragments.RecordCoughFragment">
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="50dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/microphone"
+        android:layout_height="wrap_content">
+
+    </ImageView>
 
     <TextView
         android:layout_width="wrap_content"
         android:text="Please record cough\nto microphone, thx"
-        android:textSize="25dp"
+        android:textSize="30dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="60dp"
         android:textColor="@color/white"
         android:fontFamily="@font/opensansextrabold"
         android:layout_height="wrap_content">

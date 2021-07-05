@@ -2,6 +2,7 @@ package com.watch.aware.app.fragments
 
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +35,8 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
         search.setOnClickListener(this)
         mBleScanner.scan(!mBleScanner.isScanning)
         BleConnector.addHandleCallback(mBleHandleCallback)
+        tvtry_again.setText(Html.fromHtml("or <font color='#02FE97'>try again</font>"))
+        tv_contact_support.setText(Html.fromHtml("<u>contact a’ware Support.</u>"))
 
 
     }

@@ -1,0 +1,25 @@
+<!-- drawable/bluetooth.xml -->
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="66.55"
+            android:viewportHeight="66.28">
+            <path
+                android:pathData="M57.74,24.19l-2.41,0a24.57,24.57 0,1 1,-13 -13.15V8.63l4.39,-4.42A32.63,32.63 0,1 0,62.17 19.78Z"
+                android:fillColor="#9fa0a0"
+                android:fillType="evenOdd"/>
+            <path
+                android:pathData="M32.63,24a9.44,9.44 0,0 1,1.85 0.18L40.58,18a17.51,17.51 0,1 0,7.85 8L42.2,32.28a10.15,10.15 0,0 1,0.1 1.37A9.67,9.67 0,1 1,32.63 24Z"
+                android:fillColor="#9fa0a0"
+                android:fillType="evenOdd"/>
+            <path
+                android:pathData="M44.66,17.26l-15,15.1c-1.45,4.24 3,6.15 5.37,4L49.43,22l7.46,0 9.66,-9.62L54.47,12 54.21,0 44.66,9.62Z"
+                android:fillColor="#9fa0a0"
+                android:fillType="evenOdd"/>
+        </vector>
+    </aapt:attr>
+</animated-vector>

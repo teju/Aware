@@ -21,8 +21,8 @@
                 android:layout_width="match_parent"
                 android:background="@color/transparent"
                 android:hint="Search here"
-                android:padding="15dp"
-                android:layout_height="match_parent">
+                android:paddingLeft="15dp"
+                android:layout_height="40dp">
             </EditText>
             <ImageView
                 android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
                 android:id="@+id/user_details"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:layout_width="100dp"
+                    android:layout_width="150dp"
                     android:layout_margin="20dp"
                     android:src="@drawable/logo"
                     android:id="@+id/user_img"

@@ -47,7 +47,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         cv.put("stepsCount", stepsCount);
         cv.put("date", date);
-        cv.put("distance", distance);
+        cv.put("sleep", distance);
         cv.put("cal", cal);
         cv.put("time", time);
         cv.put("total_count", total_count);

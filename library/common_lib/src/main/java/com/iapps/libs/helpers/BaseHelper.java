@@ -1257,9 +1257,9 @@ public class BaseHelper {
 	}
 
 	/**
-	 * Format distance to be displayed to the user
+	 * Format sleep to be displayed to the user
 	 *
-	 * @param d , distance in metres
+	 * @param d , sleep in metres
 	 * @return formatted {@link String}
 	 */
 	public static String formatDistance(double d) {

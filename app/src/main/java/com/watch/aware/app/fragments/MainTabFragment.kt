@@ -37,32 +37,32 @@ class MainTabFragment : BaseFragment() {
         val menuItems = arrayOf(
             CbnMenuItem(
                 R.string.welness,
-                R.drawable.bluetooth, // the icon
-                R.drawable.avd_bluetooth,// the AVD that will be shown in FAB
+                R.drawable.welness, // the icon
+                R.drawable.avd_welness,// the AVD that will be shown in FAB
                 R.id.navigation_welness // optional if you use Jetpack Navigation
             ),
             CbnMenuItem(
                 R.string.fitness,
-                R.drawable.bluetooth,
-                R.drawable.avd_bluetooth,
+                R.drawable.fitness,
+                R.drawable.avd_fitness,
                 R.id.navigation_fitness
             ),
             CbnMenuItem(
                 R.string.goal,
-                R.drawable.bluetooth,
-                R.drawable.avd_bluetooth,
+                R.drawable.goal,
+                R.drawable.avd_goal,
                 R.id.navigation_goal
             ),
             CbnMenuItem(
                 R.string.insights,
-                R.drawable.bluetooth,
-                R.drawable.avd_bluetooth,
+                R.drawable.insights,
+                R.drawable.avd_insights,
                 R.id.navigation_insight
             ),
             CbnMenuItem(
                 R.string.settings,
-                R.drawable.bluetooth,
-                R.drawable.avd_bluetooth,
+                R.drawable.settings,
+                R.drawable.avd_settings,
                 R.id.navigation_settings
             )
         )

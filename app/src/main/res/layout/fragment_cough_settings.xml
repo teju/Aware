@@ -5,12 +5,19 @@
     android:layout_height="match_parent"
     android:background="@color/black"
     tools:context=".fragments.CoughSettingsFragment">
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:src="@drawable/cough_settings"
+        android:layout_height="wrap_content">
+    </ImageView>
     <TextView
         android:layout_width="wrap_content"
         android:text="Welcome back,\nDo you have cough\nin the last 24 hours ?"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="60dp"
         android:layout_marginLeft="25dp"
-        android:textSize="20dp"
+        android:textSize="30dp"
         android:textColor="@color/white"
         android:fontFamily="@font/opensansbold"
         android:layout_height="wrap_content">
