@@ -5,16 +5,13 @@ import com.google.gson.GsonBuilder
 
 import com.iapps.libs.helpers.BaseConstants
 import com.iapps.libs.objects.Response
-import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.helper.APIs
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.Keys
 import com.watch.aware.app.helper.SingleLiveEvent
 import com.watch.aware.app.models.GenericResponse
-import com.watch.aware.app.models.covid_status.CovidStatus
-import java.lang.Exception
 
-class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(application) {
+class PostUpdateProfileModel(application: Application) : BaseViewModel(application) {
 
     private val trigger = SingleLiveEvent<Integer>()
 
@@ -22,7 +19,7 @@ class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(app
 
     var apl: Application
 
-    var obj: CovidStatus? = null
+    var obj: GenericResponse? = null
 
 
     fun getTrigger(): SingleLiveEvent<Integer> {
@@ -33,7 +30,14 @@ class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(app
         this.apl = application
     }
 
-    fun loadData(deviceId:String) {
+    fun loadData(
+        username: String,
+        age: String,
+        email: String,
+        contactNumber: String,
+        gender: String,
+        mBleAddress: String
+    ) {
         genericHttpAsyncTask = Helper.GenericHttpAsyncTask(object : Helper.GenericHttpAsyncTask.TaskListener {
 
             override fun onPreExecute() {
@@ -51,18 +55,20 @@ class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(app
                 val json = checkResponse(response, apl)
 
                 if (response != null) {
-                    trigger.postValue(PostRegisterViewModel.NEXT_STEP)
+                    trigger.postValue(NEXT_STEP)
 
                     try {
                         val gson = GsonBuilder().create()
-                        obj = gson.fromJson(response!!.content.toString(), CovidStatus::class.java)
-                        if (!Helper.isEmpty(obj!!.CovidPrediction)) {
+                        obj = gson.fromJson(response!!.content.toString(), GenericResponse::class.java)
+                        if (!Helper.isEmpty(obj!!.result)) {
                             trigger.postValue(NEXT_STEP)
+                        }else{
+                            trigger.postValue(ERROR)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        trigger.postValue(PostRegisterViewModel.UnknownError)
-                        //showUnknowResponseErrorMessage()
+                        trigger.postValue(UnknownError)
+                        showUnknowResponseErrorMessage()
                     }
                 }
 
@@ -70,12 +76,24 @@ class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(app
         })
 
         genericHttpAsyncTask.method = BaseConstants.POST
-        genericHttpAsyncTask.setUrl(APIs.postGetCovidStatus)
-        try {
-            genericHttpAsyncTask.setPostParams(Keys.deviceId, deviceId)
-        }catch (e:Exception){
-
+        genericHttpAsyncTask.setUrl(APIs.postProfileUpdate)
+        if(!Helper.isEmpty(username)) {
+            genericHttpAsyncTask.setPostParams(Keys.username,username)
         }
+        if(!Helper.isEmpty(age)) {
+            genericHttpAsyncTask.setPostParams(Keys.age,age)
+        }
+        if(!Helper.isEmpty(email)) {
+            genericHttpAsyncTask.setPostParams(Keys.email,email)
+        }
+        if(!Helper.isEmpty(contactNumber)) {
+            genericHttpAsyncTask.setPostParams(Keys.contactNumber,contactNumber)
+        }
+        if(!Helper.isEmpty(gender)) {
+            genericHttpAsyncTask.setPostParams(Keys.gender,gender)
+        }
+        genericHttpAsyncTask.setPostParams(Keys.deviceId,mBleAddress)
+
         genericHttpAsyncTask.context = apl.applicationContext
         genericHttpAsyncTask.setCache(false)
         genericHttpAsyncTask.execute()
@@ -85,6 +103,8 @@ class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(app
     companion object {
         @JvmField
         var NEXT_STEP: Integer? = Integer(1)
+        var ERROR: Integer? = Integer(2)
+        var UnknownError: Integer? = Integer(3)
     }
 
 }

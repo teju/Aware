@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".fragments.ProfileUpdateFragment">
+
+        <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+            <com.iapps.libs.views.LoadingCompound
+                android:id="@+id/ld"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/transparent"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:src="@drawable/arrow_left"
+                        android:id="@+id/back"
+                        android:layout_marginLeft="25dp"
+                        android:layout_height="wrap_content">
+
+                    </ImageView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Back"
+                        android:layout_marginLeft="5dp"
+                        android:textSize="@dimen/text_small"
+                        android:layout_gravity="center_vertical"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/opensanssemibold"
+                        android:layout_height="wrap_content">
+                    </TextView>
+
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Update Profile"
+                    android:layout_marginLeft="25dp"
+                    android:textSize="25dp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/opensansextrabold"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="50dp"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:inputType="text"
+                        android:paddingLeft="15dp"
+                        android:hint="Name"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:layout_marginTop="25dp"
+                        android:imeOptions="actionNext"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:id="@+id/username"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="40dp">
+
+                    </EditText>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/red"
+                        android:id="@+id/error_name"
+                        android:text="Enter name"
+                        android:layout_marginLeft="10dp"
+                        android:visibility="gone"
+                        android:textSize="@dimen/text_small"
+                        android:layout_marginTop="5dp"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:paddingLeft="15dp"
+                        android:inputType="textEmailAddress"
+                        android:layout_marginTop="15dp"
+                        android:imeOptions="actionDone"
+                        android:hint="Email"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:id="@+id/email"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="40dp">
+
+                    </EditText>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/red"
+                        android:text="Enter valid email id"
+                        android:layout_marginLeft="10dp"
+                        android:id="@+id/error_email"
+                        android:visibility="gone"
+                        android:textSize="@dimen/text_small"
+                        android:layout_marginTop="5dp"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:paddingLeft="15dp"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:layout_marginTop="15dp"
+                        android:imeOptions="actionNext"
+                        android:hint="Contact Number"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:id="@+id/contact_number"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="40dp">
+
+                    </EditText>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="15dp"
+                        android:layout_height="wrap_content">
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:text="Male"
+                            android:id="@+id/male"
+                            android:checked="true"
+                            android:padding="5dp"
+                            android:layout_height="wrap_content">
+
+                        </RadioButton>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:text="Female"
+                            android:id="@+id/female"
+                            android:layout_marginLeft="10dp"
+                            android:padding="5dp"
+                            android:layout_height="wrap_content">
+
+                        </RadioButton>
+
+                    </LinearLayout>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:paddingLeft="15dp"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:layout_marginTop="15dp"
+                        android:imeOptions="actionNext"
+                        android:hint="Age"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:id="@+id/age"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="40dp">
+
+                    </EditText>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:paddingLeft="15dp"
+                        android:inputType="number"
+                        android:layout_marginTop="15dp"
+                        android:imeOptions="actionNext"
+                        android:hint="Height (in cms)"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:id="@+id/height"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="40dp">
+
+                    </EditText>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:paddingLeft="15dp"
+                        android:inputType="number"
+                        android:layout_marginTop="15dp"
+                        android:imeOptions="actionNext"
+                        android:hint="Weight (in Kgs)"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:id="@+id/weight"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="40dp">
+
+                    </EditText>
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:paddingLeft="15dp"
+                        android:layout_marginTop="15dp"
+                        android:minLines="5"
+                        android:gravity="start"
+                        android:paddingTop="15dp"
+                        android:imeOptions="actionDone"
+                        android:hint="Existing Medical Condition"
+                        android:backgroundTint="@color/soft_transparent_grey"
+                        android:textSize="@dimen/text_small"
+                        android:fontFamily="@font/opensansregular"
+                        android:id="@+id/medical_condition"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:layout_height="wrap_content">
+
+                    </EditText>
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:background="@drawable/theme_rounded_rectangle"
+                        android:id="@+id/save"
+                        android:layout_marginBottom="50dp"
+                        android:text="Save"
+                        android:textColor="@color/black"
+                        android:textAllCaps="true"
+                        android:fontFamily="@font/opensansbold"
+                        android:backgroundTint="@color/colorAccent"
+                        android:layout_marginTop="20dp"
+                        android:layout_height="40dp">
+
+                    </Button>
+                </LinearLayout>
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </FrameLayout>
+</ScrollView>

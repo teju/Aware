@@ -48,20 +48,19 @@ class PostSaveDeviceDataViewModel(application: Application) : BaseViewModel(appl
                 val json = checkResponse(response, apl)
 
                 if (response != null) {
-                    trigger.postValue(NEXT_STEP)
+                    trigger.postValue(PostRegisterViewModel.NEXT_STEP)
 
-                    /*try {
+                    try {
                         val gson = GsonBuilder().create()
                         obj = gson.fromJson(response!!.content.toString(), GenericResponse::class.java)
-                        if (obj!!.status.equals(Keys.STATUS_CODE)) {
+                        if (!Helper.isEmpty(obj!!.result)) {
                             trigger.postValue(NEXT_STEP)
-                        }else{
-                            errorMessage.value = createErrorMessageObject(response)
-
                         }
                     } catch (e: Exception) {
+                        e.printStackTrace()
+                        trigger.postValue(PostRegisterViewModel.UnknownError)
                         showUnknowResponseErrorMessage()
-                    }*/
+                    }
                 }
 
             }

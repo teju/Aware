@@ -30,9 +30,11 @@ class CoughSettingsFragment : BaseFragment() ,View.OnClickListener{
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.btnno -> {
+                cough = 0
                 home()?.setFragment(MainTabFragment())
             }
             R.id.btnyes -> {
+                cough = 1
                 home()?.setFragment(RecordCoughFragment())
             }
         }

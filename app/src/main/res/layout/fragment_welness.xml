@@ -9,15 +9,9 @@
         <ScrollView android:layout_height="match_parent"
             android:fillViewport="true"
             android:layout_width="match_parent">
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <com.iapps.libs.views.LoadingCompound
-                    android:id="@+id/ld"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/transparent"
-                    android:visibility="gone" />
 
 
             <LinearLayout
@@ -29,7 +23,7 @@
                     android:layout_gravity="center_horizontal"
                     android:text="Syncing ..."
                     android:id="@+id/syncing"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:layout_height="wrap_content">
                 </TextView>
                 <RelativeLayout
@@ -87,9 +81,9 @@
                         </TextView>
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="24 JUNE 2021"
                             android:layout_marginTop="5dp"
                             android:textSize="@dimen/text_med"
+                            android:layout_marginRight="5dp"
                             android:gravity="center"
                             android:layout_marginLeft="15dp"
                             android:fontFamily="@font/opensansregular"
@@ -112,9 +106,9 @@
                 </RelativeLayout>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Your wellness data\nseems ok !"
                     android:layout_marginLeft="15dp"
                     android:textSize="22dp"
+                    android:id="@+id/info_txt"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/colorAccent"
                     android:fontFamily="@font/opensansextrabold"
@@ -128,8 +122,19 @@
                         android:layout_width="500dp"
                         android:layout_centerInParent="true"
                         android:adjustViewBounds="true"
-                        android:src="@drawable/green_human_male"
-                        android:layout_height="500dp">
+                        android:src="@drawable/circle"
+                        android:layout_height="500dp"
+                        android:id="@+id/circle"
+                        app:tint="@color/white">
+                    </ImageView>
+                    <ImageView
+                        android:layout_width="500dp"
+                        android:layout_centerInParent="true"
+                        android:adjustViewBounds="true"
+                        android:id="@+id/human"
+                        android:src="@drawable/human_male"
+                        android:layout_height="500dp"
+                        app:tint="@color/black">
 
                     </ImageView>
                     <RelativeLayout
@@ -152,7 +157,6 @@
                                 android:layout_width="wrap_content"
                                 android:id="@+id/heart_rate"
                                 android:textSize="30dp"
-                                android:text="88"
                                 android:fontFamily="@font/opensansbold"
                                 android:textColor="@color/black"
                                 android:layout_height="wrap_content">
@@ -196,7 +200,6 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:textSize="30dp"
-                                    android:text="90"
                                     android:id="@+id/oxygen_level"
                                     android:fontFamily="@font/opensansbold"
                                     android:layout_gravity="end"
@@ -247,8 +250,8 @@
                             </ImageView>
                             <TextView
                                 android:layout_width="wrap_content"
-                                android:id="@+id/cough"
-                                android:text="No"
+                                android:id="@+id/tvcough"
+                                android:text="NO"
                                 android:textSize="30dp"
                                 android:fontFamily="@font/opensansbold"
                                 android:layout_marginTop="15dp"
@@ -286,7 +289,6 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:textSize="30dp"
-                                    android:text="40.7"
                                     android:id="@+id/temp"
                                     android:fontFamily="@font/opensansbold"
                                     android:layout_gravity="end"
@@ -312,19 +314,17 @@
                                     android:textColor="@color/black"
                                     android:layout_height="wrap_content">
                                 </TextView>
-
                             </LinearLayout>
-
                         </LinearLayout>
-
                     </RelativeLayout>
-
                 </RelativeLayout>
-
-
-
-
             </LinearLayout>
-        </RelativeLayout>
+                <com.iapps.libs.views.LoadingCompound
+                    android:id="@+id/ld"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/transparent"
+                    android:visibility="gone" />
+            </FrameLayout>
     </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

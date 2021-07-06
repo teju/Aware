@@ -1,138 +1,254 @@
+
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swiperefresh_items"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context="com.watch.aware.app.fragments.GoalProgressFragment">
-        <RelativeLayout
+        android:fillViewport="true"
+        xmlns:android="http://schemas.android.com/apk/res/android" >
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_margin="15dp"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context="com.watch.aware.app.fragments.GoalProgressFragment">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Connected"
+                        android:drawableRight="@drawable/check_circle"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/colorAccent"
+                        android:textSize="@dimen/text_small"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="15dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:id="@+id/connection_status"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Welcome back, Peter"
+                        android:layout_marginTop="5dp"
+                        android:textSize="@dimen/text_med"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="15dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:id="@+id/welcome"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginRight="45dp"
+                    android:gravity="center"
+                    android:layout_alignParentRight="true"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Last synced :"
+                        android:textSize="@dimen/text_small"
+                        android:gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="@dimen/text_med"
+                        android:gravity="center"
+                        android:layout_marginLeft="15dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:layout_marginRight="5dp"
+                        android:id="@+id/last_synced"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                </LinearLayout>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:src="@drawable/refresh"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/refresh"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="30dp">
+                </ImageView>
+
+            </RelativeLayout>
+
             <TextView
                 android:layout_width="wrap_content"
-                android:text="Today's Goal Progress"
+                android:text="Today's Goal Progress :"
                 android:gravity="center_horizontal"
                 android:layout_marginTop="15dp"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
+                android:layout_marginLeft="20dp"
+                android:textSize="25dp"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/black"
                 android:layout_height="wrap_content">
-
             </TextView>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_alignParentRight="true"
-                android:orientation="horizontal"
-                android:gravity="center"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ProgressBar
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_centerInParent="true"
+                    android:progress="10"
+                    android:indeterminate="true"
+                    android:indeterminateDrawable="@drawable/step_progress" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textAlignment="center"
+                    android:id="@+id/step_count"
+                    android:textSize="@dimen/text_small"
+                    android:fontFamily="@font/opensansbold"
+                    android:text="0%\nof steps taken"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+
+            </RelativeLayout>
+            <com.github.mikephil.charting.charts.LineChart
+                android:layout_width="match_parent"
+                android:id="@+id/mChart"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_height="200dp">
+
+            </com.github.mikephil.charting.charts.LineChart>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_margin="15dp"
+                android:background="@drawable/theme_rounded_rectangle_black"
+                android:padding="10dp"
                 android:layout_height="wrap_content">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/steps"
-                    android:layout_height="40dp"
-                    app:tint="@color/colorPrimaryDark">
+                    android:layout_width="30dp"
+                    android:src="@drawable/least_active"
+                    android:layout_centerVertical="true"
+                    android:layout_height="30dp">
 
                 </ImageView>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="0"
-                    android:layout_marginLeft="10dp"
-                    android:id="@+id/steps"
-                    android:textSize="@dimen/text_med"
-                    android:fontFamily="@font/opensansregular"
+                    android:text="Last active hours : "
+                    android:layout_marginLeft="50dp"
+                    android:layout_centerVertical="true"
+                    android:textSize="@dimen/text_small"
+                    android:fontFamily="@font/opensanssemibold"
                     android:textColor="@color/white"
                     android:layout_height="wrap_content">
                 </TextView>
-            </LinearLayout>
-        </RelativeLayout>
-        <com.anychart.AnyChartView
-            android:layout_width="match_parent"
-            android:id="@+id/anyChartView"
-            android:layout_marginTop="10dp"
-            android:layout_height="400dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="1 am"
+                    android:layout_marginLeft="10dp"
+                    android:layout_alignParentRight="true"
+                    android:textSize="@dimen/text_med"
+                    android:id="@+id/last_active_hr"
+                    android:fontFamily="@font/opensansbold"
+                    android:textColor="@color/colorAccent"
+                    android:layout_height="wrap_content">
+                </TextView>
 
-        </com.anychart.AnyChartView>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_margin="15dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Last active hours"
-                android:layout_marginLeft="10dp"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/red"
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/theme_rounded_rectangle_black"
+                android:padding="15dp"
                 android:layout_height="wrap_content">
-            </TextView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="1 am"
-                android:layout_marginLeft="10dp"
-                android:layout_alignParentRight="true"
-                android:textSize="@dimen/text_med"
-                android:id="@+id/last_active_hr"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-            </TextView>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:src="@drawable/avg_steps"
+                    android:layout_centerVertical="true"
+                    android:layout_height="30dp">
 
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_margin="15dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Average steps per hour"
-                android:layout_marginLeft="10dp"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/orange"
-                android:layout_height="wrap_content">
-            </TextView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:id="@+id/average_steps"
-                android:layout_alignParentRight="true"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-            </TextView>
+                </ImageView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Average steps per hour : "
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="50dp"
+                    android:textSize="@dimen/text_small"
+                    android:fontFamily="@font/opensanssemibold"
+                    android:textColor="@color/white"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/average_steps"
+                    android:layout_alignParentRight="true"
+                    android:textSize="@dimen/text_med"
+                    android:fontFamily="@font/opensansbold"
+                    android:textColor="@color/colorAccent"
+                    android:layout_height="wrap_content">
+                </TextView>
 
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_margin="15dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Max step in 1 hour"
-                android:layout_marginLeft="10dp"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/pink"
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/theme_rounded_rectangle_black"
+                android:padding="15dp"
                 android:layout_height="wrap_content">
-            </TextView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_alignParentRight="true"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-            </TextView>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/max_step"
+                    android:layout_height="30dp">
+                </ImageView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Max step in 1 hour :"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="50dp"
+                    android:textSize="@dimen/text_small"
+                    android:fontFamily="@font/opensanssemibold"
+                    android:textColor="@color/white"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_alignParentRight="true"
+                    android:textSize="@dimen/text_med"
+                    android:fontFamily="@font/opensansbold"
+                    android:textColor="@color/colorAccent"
+                    android:layout_height="wrap_content">
+                </TextView>
 
-        </RelativeLayout>
+            </RelativeLayout>
 
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -58,35 +58,38 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public List<Steps> getAllSteps(String where) {
         List<Steps> dataListList = new ArrayList<Steps>();
+        try {
 
-        String selectQuery = "SELECT * FROM StepsCount "+where ;
+            String selectQuery = "SELECT * FROM StepsCount " + where;
 
-        SQLiteDatabase db = this.getWritableDatabase();
+            SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                Steps steps = new Steps();
-                steps.setID(cursor.getString(0));
-                steps.setStepCount(cursor.getString(1));
-                steps.setDistance(cursor.getString(2));
-                steps.setCal(cursor.getString(3));
-                steps.setDate(cursor.getString(4));
-                steps.setTime(cursor.getString(5));
-                steps.setTotal_count(cursor.getString(6));
-                dataListList.add(steps);
-            } while (cursor.moveToNext());
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+                do {
+                    Steps steps = new Steps();
+                    steps.setID(cursor.getString(0));
+                    steps.setStepCount(cursor.getString(1));
+                    steps.setDistance(cursor.getString(2));
+                    steps.setCal(cursor.getString(3));
+                    steps.setDate(cursor.getString(4));
+                    steps.setTime(cursor.getString(5));
+                    steps.setTotal_count(cursor.getString(6));
+                    dataListList.add(steps);
+                } while (cursor.moveToNext());
+            }
+            for (Steps data : dataListList) {
+                System.out.println(" DataBaseHelper123 getAllSteps :"
+                        + data.getStepCount() +
+                        " time " + data.getTime() +
+                        " date " + data.getDate() + " total " + data.getTotal_count());
+
+            }
+            System.out.println("DataBaseHelper123 getAllSteps " + selectQuery + " dataListList " + dataListList.size());
+        } catch (Exception e){
+
         }
-        for (Steps data: dataListList){
-            System.out.println(" DataBaseHelper123 getAllSteps :"
-                    + data.getStepCount()+
-                    " time "+data.getTime() +
-                    " date "+data.getDate() +" total "+data.getTotal_count());
-
-        }
-        System.out.println("DataBaseHelper123 getAllSteps " + selectQuery +" dataListList "+dataListList.size());
-
         return dataListList;
     }
 

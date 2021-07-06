@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
 import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.UserInfoManager
 
 
 class RegisterFragment : BaseFragment(),View.OnClickListener {
@@ -94,10 +95,20 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
                     when (state) {
                         PostRegisterViewModel.NEXT_STEP -> {
                             home()?.setFragment(RegistrationSuccessFragment())
+                            UserInfoManager.getInstance(activity!!).saveAccountName(username.text.toString())
+                            UserInfoManager.getInstance(activity!!).saveEmail(email.text.toString())
+                            UserInfoManager.getInstance(activity!!).saveIsLoggedIn(true)
+                        }
+                        PostRegisterViewModel.ERROR -> {
+                            showNotifyDialog(
+                                "", obj?.errorDesc,
+                                getString(R.string.ok),"",object : NotifyListener {
+                                    override fun onButtonClicked(which: Int) { }
+                                }
+                            )
                         }
                     }
                 })
-
             }
         }
     }
@@ -106,14 +117,9 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
         when(v?.id) {
             R.id.register ->{
                 if(validate()) {
-                    var deviceID = ""
-                    if(BleCache.mDeviceInfo != null ) {
-                        deviceID = BleCache.mDeviceInfo?.mBleAddress!!
-                    }
-                    postRegisterViewModel.loadData(username.text.toString(),password.text.toString(),"",email.text.toString(),
-                        deviceID)
+                    Helper.hideKeyboard(activity!!)
+                    postRegisterViewModel.loadData(username.text.toString(),password.text.toString(),email.text.toString(),)
                 }
-
             }
             R.id.back -> {
                 home()?.proceedDoOnBackPressed()

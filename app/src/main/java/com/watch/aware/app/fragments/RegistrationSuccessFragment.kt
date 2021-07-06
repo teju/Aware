@@ -26,6 +26,10 @@ class RegistrationSuccessFragment : BaseFragment() ,View.OnClickListener{
         next.setOnClickListener(this)
     }
 
+    override fun onBackTriggered() {
+        home()?.exitApp()
+    }
+
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.next -> {

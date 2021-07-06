@@ -43,7 +43,6 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
-                android:id="@+id/user_details"
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_width="150dp"
@@ -52,16 +51,6 @@
                     android:id="@+id/user_img"
                     android:layout_height="60dp">
                 </ImageView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/chevron_right"
-                    android:layout_height="wrap_content">
-
-                </ImageView>
-
             </RelativeLayout>
             <View
                 android:layout_width="match_parent"
@@ -69,6 +58,7 @@
                 android:layout_height="0.5dp"></View>
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/settings"
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
@@ -82,6 +72,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:id="@+id/chevron"
                     android:src="@drawable/chevron_right"
                     android:layout_centerVertical="true"
                     android:layout_height="wrap_content"
@@ -89,123 +80,109 @@
 
                 </ImageView>
             </RelativeLayout>
-
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:id="@+id/llsettings"
+                android:layout_marginLeft="20dp"
                 android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="In App Paring"
-                    android:fontFamily="@font/opensansregular"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:textColor="@color/black"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="In App Paring"
+                        android:fontFamily="@font/opensansregular"
+                        android:layout_centerVertical="true"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/chevron_right"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/black">
 
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Time Format"
-                    android:fontFamily="@font/opensansregular"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:textColor="@color/black"
+                    </ImageView>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Time Format"
+                        android:fontFamily="@font/opensansregular"
+                        android:layout_centerVertical="true"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/chevron_right"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/black">
 
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Sleep Schedule"
-                    android:fontFamily="@font/opensansregular"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:textColor="@color/black"
+                    </ImageView>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Sleep Schedule"
+                        android:fontFamily="@font/opensansregular"
+                        android:layout_centerVertical="true"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/chevron_right"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/black">
 
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Step Goal"
-                    android:fontFamily="@font/opensansregular"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:textColor="@color/black"
+                    </ImageView>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Step Goal"
+                        android:fontFamily="@font/opensansregular"
+                        android:layout_centerVertical="true"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/chevron_right"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content"
+                        app:tint="@color/black">
 
-                </ImageView>
-            </RelativeLayout>
+                    </ImageView>
+                </RelativeLayout>
+            </LinearLayout>
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:id="@+id/profile"
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Goal Step"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
-
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="User Name"
+                    android:text="Profile"
                     android:layout_centerVertical="true"
                     android:padding="15dp"
                     android:fontFamily="@font/opensansregular"
@@ -222,95 +199,6 @@
 
                 </ImageView>
             </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Gender"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
-
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Height"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
-
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Weight"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
-
-                </ImageView>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Existing Medical Condition"
-                    android:layout_centerVertical="true"
-                    android:padding="15dp"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content">
-                </TextView>
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:src="@drawable/chevron_right"
-                    android:layout_centerVertical="true"
-                    android:layout_height="wrap_content"
-                    app:tint="@color/black">
-
-                </ImageView>
-            </RelativeLayout>
-
         </LinearLayout>
 
     </LinearLayout>

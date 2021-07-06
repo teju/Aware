@@ -12,12 +12,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.franmontiel.localechanger.LocaleChanger
 import com.iapps.libs.helpers.BaseHelper
+import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.callback.NotifyListener
+import com.watch.aware.app.fragments.ConnectionFragment
+import com.watch.aware.app.fragments.CoughSettingsFragment
 import com.watch.aware.app.fragments.LandingFragment
 import com.watch.aware.app.fragments.MainTabFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -40,8 +44,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun triggerMainProcess() {
-        setFragment(LandingFragment())
-
+        if(UserInfoManager.getInstance(this).getISLoggedIn()) {
+            if(BleCache.mDeviceInfo == null) {
+                setFragment(ConnectionFragment())
+            } else{
+                setFragment(CoughSettingsFragment())
+            }
+        } else {
+            setFragment(LandingFragment())
+        }
     }
 
     fun clearFragment() {

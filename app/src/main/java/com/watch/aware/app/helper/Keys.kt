@@ -6,7 +6,7 @@ class Keys : BaseKeys() {
     companion object {
         @kotlin.jvm.JvmField
         var GCM_MESSAGE: String = "message"
-        val MESSAGE = "message"
+        val MESSAGE = "errorDesc"
         val STATUS_CODE = "success"
         val FAILED = "failed"
         @kotlin.jvm.JvmField
@@ -29,12 +29,14 @@ class Keys : BaseKeys() {
         val contactNumber = "contactNumber"
         val email = "email"
         val deviceId = "deviceId"
-        val SPO2 = "SPO2"
-        val HR = "HR"
-        val Temp = "Temp"
+        val SPO2 = "spo2"
+        val HR = "heartrate"
+        val Temp = "temperature"
         val cough = "cough"
         val activity = "activity"
-        val timestamp = "timestamp"
+        val timestamp = "captureTs"
+        val password = "password"
+        val gender = "gender"
 
         @kotlin.jvm.JvmField
         var GCM_DT : String = "dt"

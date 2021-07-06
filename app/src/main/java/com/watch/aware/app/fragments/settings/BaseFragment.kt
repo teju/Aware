@@ -33,6 +33,7 @@ import com.watch.aware.app.models.BaseParams
 import java.util.*
 
 open class BaseFragment : GenericFragment() {
+
     var permissionsThatNeedTobeCheck: List<String> =
         ArrayList()
     var permissionListener: PermissionListener? = null
@@ -42,29 +43,9 @@ open class BaseFragment : GenericFragment() {
         home()!!.proceedDoOnBackPressed()
     }
 
+    public var cough = 0
     fun home(): MainActivity? {
         return activity as MainActivity?
-    }
-    val mBleScanner by lazy {
-        // ScannerFactory.newInstance(arrayOf(UUID.fromString(BleConnector.BLE_SERVICE)))
-        ScannerFactory.newInstance()
-            .setScanDuration(10)
-            .setBleScanCallback(object : BleScanCallback {
-
-                override fun onBluetoothDisabled() {
-
-                }
-
-                override fun onScan(scan: Boolean) {
-
-                }
-
-                override fun onDeviceFound(device: BleDevice) {
-                    if(device.mBluetoothDevice.name.contains("optima",true)) {
-                        BleConnector.setBleDevice(device).connect(true)
-                    }
-                }
-            })
     }
 
 
@@ -244,6 +225,7 @@ open class BaseFragment : GenericFragment() {
         } catch (Exception e) {
         }
     }*/
+
     fun showNotifyDialog(
         tittle: String?,
         messsage: String?,

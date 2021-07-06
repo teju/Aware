@@ -22,15 +22,24 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        user_details.setOnClickListener(this)
+        profile.setOnClickListener(this)
+        settings.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v?.id) {
-            R.id.user_details -> {
-                home()?.setFragment(RegisterFragment())
+            R.id.profile -> {
+                home()?.setFragment(ProfileUpdateFragment())
+            }
+            R.id.settings -> {
+                if(llsettings.visibility == View.VISIBLE) {
+                    llsettings.visibility = View.GONE
+                    chevron.setImageDrawable(activity?.resources?.getDrawable(R.drawable.chevron_right))
+                } else {
+                    llsettings.visibility = View.VISIBLE
+                    chevron.setImageDrawable(activity?.resources?.getDrawable(R.drawable.chevron_down))
+                }
             }
         }
     }
-
 }

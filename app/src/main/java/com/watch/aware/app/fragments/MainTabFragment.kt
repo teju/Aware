@@ -10,7 +10,7 @@ import com.watch.aware.app.models.CbnMenuItem
 import kotlinx.android.synthetic.main.main_tab_fragment.*
 
 class MainTabFragment : BaseFragment() {
-    var instance : Int = 0
+    var instance : Int = 4
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +69,7 @@ class MainTabFragment : BaseFragment() {
 
         nav_view.setMenuItems(menuItems, instance)
         nav_view.onMenuItemClick(instance)
-        setCurrentItem(R.id.navigation_welness)
+        setCurrentItem(R.id.navigation_settings)
         nav_view.setOnMenuItemClickListener { item, _ ->
             setCurrentItem(item.destinationId)
         }
@@ -128,13 +128,9 @@ class MainTabFragment : BaseFragment() {
                     SettingsFragment()
                 home()?.setFragmentInFragment(
                     R.id.mainLayoutFragment, settings,
-                    "MAIN_TAB", "FIRST_TAB"
-                )
-
-
+                    "MAIN_TAB", "FIRST_TAB")
             }
         }
-
     }
     override fun onBackTriggered() {
         home()?.resetAndExit();

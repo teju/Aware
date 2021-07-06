@@ -37,6 +37,7 @@ import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_insight.*
 
 import java.util.*
@@ -84,7 +85,6 @@ class InsightsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         BleConnector.addHandleCallback(mBleHandleCallback)
-        checkBoxFun()
         getWeeklyEntries()
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
             connect()
@@ -92,7 +92,8 @@ class InsightsFragment : BaseFragment() {
         })
 
         connect()
-        selectDataType()
+        welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
+        last_synced.text =  BaseHelper.parseDate(Date(), Constants.TIME_hMA)
     }
     fun connect() {
         if(BleCache.mDeviceInfo != null) {
@@ -103,52 +104,7 @@ class InsightsFragment : BaseFragment() {
     }
 
     fun onConnected() {
-        year.setBackgroundColor(resources.getColor(R.color.black))
-        month.setBackgroundColor(resources.getColor(R.color.black))
-        week.setBackgroundColor(resources.getColor(R.color.colorPrimary))
-        try {
-            val insightChartView : AnyChartView? =v?.findViewById(R.id.insightChart);
 
-            if(swiperefresh_items.isRefreshing) {
-                swiperefresh_items.setRefreshing(false);
-            }
-
-
-            cartesian = AnyChart.column()
-            val credits: ChartCredits = cartesian?.credits()!!
-
-            column = cartesian?.column(data)
-            insightChartView?.invalidate()
-
-            column?.labels(true)
-            column?.labels()?.fontColor(colour);
-            column?.labels()?.fontWeight(900);
-            column?.normal()?.fill(colour)
-            column?.normal()?.stroke(colour)
-
-            cartesian?.yScale()?.minimum(0.0)
-            cartesian?.yScale()?.maximum(10000.0)
-            cartesian?.yScale()?.ticks()?.interval(2000)
-            cartesian?.background()?.fill("trans");
-            cartesian?.dataArea()?.background()?.enabled(true);
-            cartesian?.dataArea()?.background()?.fill("#000000");
-
-            credits.enabled(false)
-            credits.text("Custom text");
-            insightChartView?.setChart(cartesian)
-
-        }catch (e:Exception){
-            e.printStackTrace()
-        }
-        Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-        lastActiveDay()
-
-    }
-    fun lastActiveDay() {
-        val dataBaseHelper = DataBaseHelper(activity!!)
-        val dteps = dataBaseHelper.getAllSteps("")
-        val lastActiveDate = BaseHelper.parseDate(dteps.get(0).date,Constants.DATE_JSON)
-        last_active_day.text = BaseHelper.parseDate(lastActiveDate,Constants.DATE_MONTH)
 
     }
     private fun getWeeklyEntries() {
@@ -254,6 +210,7 @@ class InsightsFragment : BaseFragment() {
         return  stepsCnt
     }
 
+/*
     fun selectDataType() {
         year.setOnClickListener {
             year.setBackgroundColor(resources.getColor(R.color.colorPrimary))
@@ -283,7 +240,9 @@ class InsightsFragment : BaseFragment() {
 
         }
     }
+*/
 
+/*
     fun checkBoxFun() {
 
         distnce.setOnClickListener {
@@ -345,13 +304,5 @@ class InsightsFragment : BaseFragment() {
 
         }
     }
-    fun resetData() {
-        cartesian?.removeAllSeries()
-        column = cartesian?.column(data)
-        column?.labels(true)
-        column?.labels()?.fontColor(colour);
-        column?.normal()?.fill(colour)
-        column?.normal()?.stroke(colour)
-        column?.labels()?.fontColor(colour);
-    }
+*/
 }

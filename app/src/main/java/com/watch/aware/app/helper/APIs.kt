@@ -7,7 +7,10 @@ class APIs : BaseKeys() {
         val BASE_URL = "https://asia-east2-cband2.cloudfunctions.net/"
 
         val postRegister : String
-            get() = BASE_URL!!  + "Insert_User"
+            get() = BASE_URL!!  + "Register_Profile"
+
+        val postProfileUpdate : String
+            get() = BASE_URL!!  + "Update_Profile"
 
         val postSaveDeviceData : String
             get() = BASE_URL!!  + "Save_DeviceData"

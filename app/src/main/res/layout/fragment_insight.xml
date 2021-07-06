@@ -3,172 +3,526 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swiperefresh_items"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context="com.watch.aware.app.fragments.GoalProgressFragment">
-        <LinearLayout
-            android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="wrap_content">
-            <View
+            tools:context="com.watch.aware.app.fragments.GoalProgressFragment">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:background="@color/colorPrimaryDark"
-                android:layout_marginTop="15dp"
-                android:layout_height="1dp">
-
-            </View>
-            <LinearLayout
-                android:layout_width="wrap_content"
                 android:orientation="horizontal"
+                android:layout_marginTop="15dp"
                 android:layout_height="wrap_content">
-                <View
-                    android:layout_width="1dp"
-                    android:background="@color/colorPrimaryDark"
-                    android:layout_height="match_parent">
-                </View>
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:text="Week"
-                    android:id="@+id/week"
-                    android:padding="15dp"
-                    android:gravity="center_horizontal"
-                    android:textSize="@dimen/text_med"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/white"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
                     android:layout_height="wrap_content">
-
-                </TextView>
-                <View
-                    android:layout_width="1dp"
-                    android:background="@color/colorPrimaryDark"
-                    android:layout_height="match_parent">
-                </View>
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:text="Month"
-                    android:id="@+id/month"
-                    android:padding="15dp"
-                    android:gravity="center_horizontal"
-                    android:textSize="@dimen/text_med"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/white"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Connected"
+                        android:drawableRight="@drawable/check_circle"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/colorAccent"
+                        android:textSize="@dimen/text_small"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="15dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:id="@+id/connection_status"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Welcome back, Peter"
+                        android:layout_marginTop="5dp"
+                        android:textSize="@dimen/text_med"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="15dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:id="@+id/welcome"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginRight="45dp"
+                    android:gravity="center"
+                    android:layout_alignParentRight="true"
                     android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Last synced :"
+                        android:textSize="@dimen/text_small"
+                        android:gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:textSize="@dimen/text_med"
+                        android:gravity="center"
+                        android:layout_marginLeft="15dp"
+                        android:fontFamily="@font/opensansregular"
+                        android:textColor="@color/black"
+                        android:id="@+id/last_synced"
+                        android:layout_marginRight="5dp"
+                        android:layout_height="wrap_content">
+                    </TextView>
+                </LinearLayout>
+                <ImageView
+                    android:layout_width="30dp"
+                    android:src="@drawable/refresh"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/refresh"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="30dp">
+                </ImageView>
 
-                </TextView>
-                <View
-                    android:layout_width="1dp"
-                    android:background="@color/colorPrimaryDark"
-                    android:layout_height="match_parent">
-                </View>
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:text="Year"
-                    android:id="@+id/year"
-                    android:padding="15dp"
+            </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Wellness Data"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="20dp"
+                android:textSize="25dp"
+                android:fontFamily="@font/opensansbold"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content">
+            </TextView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_marginTop="25dp"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:gravity="center_horizontal"
-                    android:textSize="@dimen/text_med"
-                    android:fontFamily="@font/opensansregular"
-                    android:textColor="@color/white"
                     android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/distance"
+                                android:layout_height="30dp">
 
-                </TextView>
-                <View
-                    android:layout_width="1dp"
-                    android:background="@color/colorPrimaryDark"
-                    android:layout_height="match_parent">
-                </View>
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="25 km"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Distance Travelled"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/cough"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="No"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Cough"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/sleep"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="5 hours"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Sleep"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/heart"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="131bpm"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Heart Rate"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/steps"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="5128"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Steps"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/spo"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="90%"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Blood oxygen"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/temp"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="32.6 oc"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Temperature"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:backgroundTint="@color/DodgerBlue"
+                        android:background="@drawable/theme_rounded_rectangle_black"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Yesterday"
+                                android:fontFamily="@font/opensansregular"
+                                android:textColor="@color/White"
+                                android:layout_height="wrap_content">
+                            </TextView>
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_alignParentRight="true"
+                                android:src="@drawable/cal"
+                                android:layout_height="30dp">
+
+                            </ImageView>
+                        </RelativeLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="1435"
+                            android:fontFamily="@font/opensansbold"
+                            android:layout_marginTop="15dp"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="25dp"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Calories burned"
+                            android:textSize="15dp"
+                            android:fontFamily="@font/opensansbold"
+                            android:textColor="@color/White"
+                            android:layout_height="wrap_content">
+                        </TextView>
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:background="@color/colorPrimaryDark"
-                android:layout_height="1dp">
-
-            </View>
         </LinearLayout>
 
-
-        <com.anychart.AnyChartView
-            android:layout_width="match_parent"
-            android:id="@+id/insightChart"
-            android:layout_marginTop="10dp"
-            android:layout_height="400dp">
-
-        </com.anychart.AnyChartView>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_margin="15dp"
-            android:paddingTop="20dp"
-            android:layout_height="wrap_content">
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Calories"
-                android:id="@+id/calories"
-                android:buttonTint="@color/orange"
-                android:textColor="@color/orange"
-                android:layout_height="wrap_content">
-
-            </CheckBox>
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Steps"
-                android:id="@+id/steps"
-                android:buttonTint="@color/Blue"
-
-                android:textColor="@color/Blue"
-                android:layout_height="wrap_content">
-
-            </CheckBox>
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Distance"
-                android:id="@+id/distnce"
-                android:buttonTint="@color/green"
-
-                android:textColor="@color/green"
-                android:layout_height="wrap_content">
-
-            </CheckBox>
-
-        </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_margin="15dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="Least active Day"
-                android:layout_marginLeft="10dp"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/red"
-                android:layout_height="wrap_content">
-            </TextView>
-            <TextView
-                android:layout_width="wrap_content"
-                android:id="@+id/last_active_day"
-                android:layout_marginLeft="10dp"
-                android:layout_alignParentRight="true"
-                android:textSize="@dimen/text_med"
-                android:fontFamily="@font/opensansregular"
-                android:textColor="@color/white"
-                android:layout_height="wrap_content">
-            </TextView>
-
-        </RelativeLayout>
-    </LinearLayout>
+    </ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

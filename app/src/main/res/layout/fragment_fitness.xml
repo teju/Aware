@@ -86,7 +86,6 @@
                         </TextView>
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="24 JUNE 2021"
                             android:layout_marginTop="5dp"
                             android:textSize="@dimen/text_med"
                             android:gravity="center"
@@ -94,6 +93,7 @@
                             android:fontFamily="@font/opensansregular"
                             android:textColor="@color/black"
                             android:id="@+id/last_synced"
+                            android:layout_marginRight="5dp"
                             android:layout_height="wrap_content">
                         </TextView>
                     </LinearLayout>
@@ -127,7 +127,8 @@
                         android:layout_width="500dp"
                         android:layout_centerInParent="true"
                         android:adjustViewBounds="true"
-                        android:src="@drawable/gray_human"
+                        android:id="@+id/fitness_human"
+                        android:src="@drawable/human_male"
                         android:layout_height="500dp">
 
                     </ImageView>
@@ -151,7 +152,6 @@
                                 android:layout_width="wrap_content"
                                 android:id="@+id/steps"
                                 android:textSize="30dp"
-                                android:text="1200"
                                 android:fontFamily="@font/opensansbold"
                                 android:layout_marginTop="15dp"
                                 android:textColor="@color/black"
@@ -188,7 +188,7 @@
                                     android:layout_width="wrap_content"
                                     android:id="@+id/sleep"
                                     android:textSize="30dp"
-                                    android:text="10.32"
+                                    android:text="0"
                                     android:fontFamily="@font/opensansbold"
                                     android:layout_gravity="end"
                                     android:textColor="@color/black"
@@ -240,7 +240,6 @@
                                 android:layout_width="wrap_content"
                                 android:id="@+id/dist"
                                 android:textSize="30dp"
-                                android:text="2"
                                 android:fontFamily="@font/opensansbold"
                                 android:layout_marginTop="15dp"
                                 android:textColor="@color/black"
@@ -284,9 +283,8 @@
                                 </ImageView>
                                 <TextView
                                     android:layout_width="wrap_content"
-                                    android:text="9"
                                     android:textSize="30dp"
-                                    android:id="@+id/temp"
+                                    android:id="@+id/calories"
                                     android:fontFamily="@font/opensansbold"
                                     android:layout_marginTop="15dp"
                                     android:layout_gravity="end"

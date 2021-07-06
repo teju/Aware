@@ -12,6 +12,8 @@ import com.bestmafen.baseble.scanner.BleScanCallback
 import com.bestmafen.baseble.scanner.ScannerFactory
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.iapps.libs.helpers.BaseHelper
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
@@ -23,7 +25,9 @@ import com.szabh.smable3.entity.BleSleep
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_fitness.*
+import java.util.*
 
 
 class FitnessFragment : BaseFragment() {
@@ -48,20 +52,11 @@ class FitnessFragment : BaseFragment() {
             override fun onReadActivity(activities: List<BleActivity>) {
                 super.onReadActivity(activities)
                 try {
+                    last_synced.text =  BaseHelper.parseDate(Date(), Constants.TIME_hMA)
                     syncing_fitness.visibility = View.GONE
-//                    calories.text = "Burned\n"+(activities.get(0).mCalorie/10000)+" Kacl"
-//                    sleep.text = "Distance Travelled\n"+(activities.get(0).mDistance/10000)+" Km"
-//                    steps_cnt.text = "Steps\n"+(activities.get(0).mStep)
-//                    step_count.text = (activities.get(0).mStep).toString()
-////
-//                    val amount: Double = (activities.get(0).mStep).toDouble()
-//                    val res = amount / 10000 * 100
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        progressBar.setProgress(res.toInt(),true)
-//                    }
-//                    goalStatus.text = ""+ String.format("%.2f",res) + "% of today's steps taken"
-//
-//                    System.out.println("res1234 "+res)
+                    calories.text = (activities.get(0).mCalorie/10000).toString()
+                    dist.text = (activities.get(0).mDistance/1000000).toString()
+                    steps.text = (activities.get(0).mStep).toString()
                 }catch (e:Exception) {
 
                 }
@@ -86,6 +81,13 @@ class FitnessFragment : BaseFragment() {
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
 
         })
+        welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
+        if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
+            //fitness_human.setImageDrawable(activity?.resources.getDrawable(R.drawable.human_male))
+        } else {
+            fitness_human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
+
+        }
 
     }
 

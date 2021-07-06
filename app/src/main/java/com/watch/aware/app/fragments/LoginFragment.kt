@@ -40,6 +40,7 @@ class LoginFragment : BaseFragment(),View.OnClickListener {
                 } else{
                     home()?.setFragment(CoughSettingsFragment())
                 }
+
             }
             R.id.forget_password -> {
                 home()?.setFragment(ResetPasswordFragment())

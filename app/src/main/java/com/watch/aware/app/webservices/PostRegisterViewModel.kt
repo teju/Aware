@@ -30,7 +30,7 @@ class PostRegisterViewModel(application: Application) : BaseViewModel(applicatio
         this.apl = application
     }
 
-    fun loadData(username: String,age:String,contactNumber:String,email:String,deviceId:String) {
+    fun loadData(username: String,password:String,email:String) {
         genericHttpAsyncTask = Helper.GenericHttpAsyncTask(object : Helper.GenericHttpAsyncTask.TaskListener {
 
             override fun onPreExecute() {
@@ -50,18 +50,19 @@ class PostRegisterViewModel(application: Application) : BaseViewModel(applicatio
                 if (response != null) {
                     trigger.postValue(NEXT_STEP)
 
-                    /*try {
+                    try {
                         val gson = GsonBuilder().create()
                         obj = gson.fromJson(response!!.content.toString(), GenericResponse::class.java)
-                        if (obj!!.status.equals(Keys.STATUS_CODE)) {
+                        if (!Helper.isEmpty(obj!!.result)) {
                             trigger.postValue(NEXT_STEP)
                         }else{
-                            errorMessage.value = createErrorMessageObject(response)
-
+                            trigger.postValue(ERROR)
                         }
                     } catch (e: Exception) {
+                        e.printStackTrace()
+                        trigger.postValue(UnknownError)
                         showUnknowResponseErrorMessage()
-                    }*/
+                    }
                 }
 
             }
@@ -70,10 +71,8 @@ class PostRegisterViewModel(application: Application) : BaseViewModel(applicatio
         genericHttpAsyncTask.method = BaseConstants.POST
         genericHttpAsyncTask.setUrl(APIs.postRegister)
         genericHttpAsyncTask.setPostParams(Keys.username,username)
-        genericHttpAsyncTask.setPostParams(Keys.age,age)
-        genericHttpAsyncTask.setPostParams(Keys.contactNumber,contactNumber)
+        genericHttpAsyncTask.setPostParams(Keys.password,password)
         genericHttpAsyncTask.setPostParams(Keys.email,email)
-        genericHttpAsyncTask.setPostParams(Keys.deviceId,deviceId)
         genericHttpAsyncTask.context = apl.applicationContext
         genericHttpAsyncTask.setCache(false)
         genericHttpAsyncTask.execute()
@@ -83,6 +82,8 @@ class PostRegisterViewModel(application: Application) : BaseViewModel(applicatio
     companion object {
         @JvmField
         var NEXT_STEP: Integer? = Integer(1)
+        var ERROR: Integer? = Integer(2)
+        var UnknownError: Integer? = Integer(3)
     }
 
 }
