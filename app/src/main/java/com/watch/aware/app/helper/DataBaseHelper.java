@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
-    private static  int database_version  = 9;
+    private static  int database_version  = 10;
     private final Context context;
-    public String Steps = "CREATE TABLE StepsCount (Id INTEGER PRIMARY KEY AUTOINCREMENT, stepsCount TEXT UNIQUE," +
-            "distance TEXT, cal TEXT,date DATE,time TEXT UNIQUE,total_count TEXT)";
+    public String Steps = "CREATE TABLE StepsCount (Id INTEGER PRIMARY KEY AUTOINCREMENT, stepsCount TEXT," +
+            "distance TEXT, cal TEXT,date DATE,time TEXT UNIQUE,total_count TEXT,total_dist TEXT, total_cal Text)";
 
     private static final String DELETE_STEPS = "DROP TABLE IF EXISTS StepsCount" ;
 
@@ -40,17 +40,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     public boolean stepsInsert(DataBaseHelper dbh, String stepsCount, String date,String distance,
-                               String cal,String time,int total_count){
+                               String cal,String time,int total_count,int total_dist,int total_cal){
         SQLiteDatabase sq=dbh.getWritableDatabase();
         ContentValues cv = new ContentValues();
         System.out.println("DataBaseHelper123 stepsInsert " + stepsCount+" time "+time);
 
         cv.put("stepsCount", stepsCount);
         cv.put("date", date);
-        cv.put("sleep", distance);
+        cv.put("distance", distance);
         cv.put("cal", cal);
         cv.put("time", time);
         cv.put("total_count", total_count);
+        cv.put("total_dist", total_dist);
+        cv.put("total_cal", total_cal);
         sq.insert("StepsCount", null, cv);
         return true;
 
@@ -76,11 +78,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     steps.setDate(cursor.getString(4));
                     steps.setTime(cursor.getString(5));
                     steps.setTotal_count(cursor.getString(6));
+                    steps.setTotal_dist(cursor.getString(7));
+                    steps.setTotal_cal(cursor.getString(8));
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
             for (Steps data : dataListList) {
-                System.out.println(" DataBaseHelper123 getAllSteps :"
+                System.out.println(" DataBaseHelper123 getAllSteps Data :"
                         + data.getStepCount() +
                         " time " + data.getTime() +
                         " date " + data.getDate() + " total " + data.getTotal_count());

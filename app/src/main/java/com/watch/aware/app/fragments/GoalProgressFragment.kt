@@ -31,9 +31,15 @@ import com.szabh.smable3.entity.BleDeviceInfo
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.DataBaseHelper
+import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.MyMarkerView
 import com.watch.aware.app.helper.UserInfoManager
+import kotlinx.android.synthetic.main.fragment_fitness.*
 import kotlinx.android.synthetic.main.fragment_goal_progress.*
+import kotlinx.android.synthetic.main.fragment_goal_progress.last_synced
+import kotlinx.android.synthetic.main.fragment_goal_progress.swiperefresh_items
+import kotlinx.android.synthetic.main.fragment_goal_progress.welcome
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -56,11 +62,18 @@ class GoalProgressFragment : BaseFragment() {
         object : BleHandleCallback {
 
             override fun onDeviceConnected(_device: BluetoothDevice) {
-                renderData()
+                try {
+                    renderData()
+                } catch (e : Exception) {
+
+                }
             }
 
             override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-               renderData()
+                try {
+                    renderData()
+                } catch (e : Exception) {
+                }
             }
 
 
@@ -71,12 +84,13 @@ class GoalProgressFragment : BaseFragment() {
                     val amount: Double = (activities.get(0).mStep).toDouble()
                     val res = amount / 10000 * 100
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                       // progressBar.setProgress(20,true)
+                        progressBar.progress = res.toFloat()
                     }
                     step_count.text = ""+ String.format("%.2f",res) + "%\nof steps taken"
-
+                    average_steps.text = (activities.get(0).mStep/(BaseHelper.parseDate(Date(),Constants.TIME_hA).toInt())).toString()
                 } catch (e:java.lang.Exception){
                 }
+                insertStepData(activities)
             }
         }
     }
@@ -106,14 +120,32 @@ class GoalProgressFragment : BaseFragment() {
            renderData()
         }
     }
+    fun setAnylasisData() {
+        val dataBaseHelper = DataBaseHelper(activity)
+        val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
+                "AND stepsCount != 0  LIMIT 1")
+        if(dteps!= null && dteps.size > 0) {
+            val lasthr = Helper.convertStringToDate(TIME_JSON_HM,dteps.get(0).time)
+            last_active_hr.text = BaseHelper.parseDate(lasthr,TIME_hM)
+        }
+
+
+    }
+
     fun renderData() {
+        try {
+            if(swiperefresh_items.isRefreshing) {
+                swiperefresh_items.setRefreshing(false);
+            }
+        } catch (e:Exception){
+
+        }
+        setAnylasisData()
         mChart.setTouchEnabled(true)
         mChart.setPinchZoom(true)
         val mv = MyMarkerView(activity, R.layout.custom_marker_view)
         mv.setChartView(mChart)
         mChart.marker = mv
-
-
 
         val xAxis: XAxis = mChart.getXAxis()
         xAxis.textColor = Color.BLACK
@@ -135,22 +167,20 @@ class GoalProgressFragment : BaseFragment() {
         mChart.getXAxis().setValueFormatter(IndexAxisValueFormatter(xAxisValues))
 
 
-        setData()
+        setGraphData()
 
     }
 
-    private fun setData() {
+    private fun setGraphData() {
         values.clear()
-        values.add(Entry(1f, isValideData(0.0,2.9)))
-        values.add(Entry(2f, isValideData(3.0,5.9) ))
-        values.add(Entry(3f, isValideData(6.0,8.9)))
-        values.add(Entry(4f, isValideData(9.0,11.9)))
-        values.add(Entry(5f, isValideData(12.0,14.9)))
-        values.add(Entry(6f, isValideData(15.0,17.9)))
-        values.add(Entry(7f, isValideData(18.0,20.9)))
-        values.add(Entry(8f, isValideData(21.0,23.9)))
-
-
+        values.add(Entry(1f, getStepCount(0.0,3.0)))
+        values.add(Entry(2f, getStepCount(3.0,6.0) ))
+        values.add(Entry(3f, getStepCount(6.0,9.0)))
+        values.add(Entry(4f, getStepCount(9.0,12.0)))
+        values.add(Entry(5f, getStepCount(12.0,15.0)))
+        values.add(Entry(6f, getStepCount(15.0,18.0)))
+        values.add(Entry(7f, getStepCount(18.0,21.0)))
+        values.add(Entry(8f, getStepCount(21.0,23.9)))
 
         val set1: LineDataSet
         if (mChart.getData() != null && mChart.getData().getDataSetCount() > 0) {
@@ -181,34 +211,24 @@ class GoalProgressFragment : BaseFragment() {
         }
     }
 
-    fun isValideData(fromnumber : Double,toNumber : Double) :Float {
+    fun getStepCount(fromnumber : Double,toNumber : Double) :Float {
 
         val dataBaseHelper = DataBaseHelper(activity!!)
-        val query = dataBaseHelper.getAllSteps("ORDER BY stepsCount DESC")
-
         var stepsCnt = 0.0
         try {
-            val lastHour =  BaseHelper.parseDate(query.get(0).time,TIME_JSON_HM)
-            last_active_hr.text = BaseHelper.parseDate(lastHour,TIME_hM)
-            average_steps.text = (query.get(0).stepCount.toInt()/query.get(0).time.toDouble()).toInt().toString() + " Steps/hr"
+            val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
+                Date(), Constants.DATE_JSON)+"') AND time >= CAST ('"+fromnumber+"' as decimal) AND  time < CAST ('"+toNumber+"' " +
+                    "as decimal) ORDER BY stepsCount DESC" )
+            if (dteps.size > 0) {
+                for (step in dteps){
 
-            for (i in fromnumber.toInt()..toNumber.toInt()) {
-                val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
-                    Date(), Constants.DATE_JSON)+"') AND time BETWEEN CAST ('"+i+"' as decimal) AND CAST ('"+(i + 0.9)+"' " +
-                        "as decimal) ORDER BY stepsCount DESC" )
-                if (dteps.size > 0) {
-                    for (print in dteps){
-                        System.out.println("isValideData "+ print.stepCount.toInt() +" "+ print.time.toDouble())
-                    }
-
-                    stepsCnt = stepsCnt + dteps[0].stepCount.toInt()
-
+                    stepsCnt = stepsCnt + step.stepCount.toInt()
+                    System.out.println(" getStepCount "+stepsCnt)
                 }
             }
         } catch (e:java.lang.Exception){
             e.printStackTrace()
         }
-
         return  stepsCnt.toFloat()
     }
 }

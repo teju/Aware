@@ -98,6 +98,7 @@ class RegisterFragment : BaseFragment(),View.OnClickListener {
                             UserInfoManager.getInstance(activity!!).saveAccountName(username.text.toString())
                             UserInfoManager.getInstance(activity!!).saveEmail(email.text.toString())
                             UserInfoManager.getInstance(activity!!).saveIsLoggedIn(true)
+                            UserInfoManager.getInstance(activity!!).saveIsFirstTime(true)
                         }
                         PostRegisterViewModel.ERROR -> {
                             showNotifyDialog(

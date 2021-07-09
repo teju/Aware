@@ -1,36 +1,33 @@
 package com.watch.aware.app.fragments.settings
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import com.bestmafen.baseble.scanner.BleDevice
-import com.bestmafen.baseble.scanner.BleScanCallback
-import com.bestmafen.baseble.scanner.ScannerFactory
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
-import com.szabh.smable3.component.BleConnector
-import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.*
+import com.szabh.smable3.entity.BleActivity
 import com.watch.aware.app.MainActivity
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.callback.PermissionListener
-import com.watch.aware.app.fragments.MainTabFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
-import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.Constants.Companion.TIME_JSON_HM
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.Helper.isEmpty
 import com.watch.aware.app.models.BaseParams
+import com.watch.aware.app.models.Steps
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 open class BaseFragment : GenericFragment() {
 
@@ -250,45 +247,50 @@ open class BaseFragment : GenericFragment() {
 
     fun insertStepData(activities: List<BleActivity>) {
         val dataBaseHelper = DataBaseHelper(activity)
-        lastHRSteps
-        println("getLastHRSteps() $lastHRSteps")
-        dataBaseHelper.stepsInsert(
-            dataBaseHelper,
-            (activities[0].mStep - lastHRSteps).toString(),
-            BaseHelper.parseDate(
-                Date(),
-                Constants.DATE_JSON
-            ),
-            (activities[0].mDistance / 10000).toString(),
-            (activities[0].mCalorie / 10000).toString(),
-            BaseHelper.parseDate(
-                Date(),
-                Constants.TIME_JSON_HM
-            ),
-            activities[0].mStep
-        )
+        for(a in activities) {
+            val lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
+            if(lastHRSteps != null && lastHRSteps.size != 0) {
+                val dist : Int = (a.mDistance / 10000).toInt()  - lastHRSteps.get(0).total_dist.trim().toInt()
+                val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
+                dataBaseHelper.stepsInsert(
+                    dataBaseHelper,
+                    (a.mStep - lastHRSteps.get(0).total_count.toInt()).toString(),
+                    BaseHelper.parseDate(Date(), Constants.DATE_JSON),
+                    (dist.toInt()).toString(),
+                    (cal.toInt()).toString(),
+                    epcoToDate(a.mTime), activities[0].mStep,activities[0].mDistance/10000,activities[0].mCalorie/10000)
+            } else {
+                dataBaseHelper.stepsInsert(
+                    dataBaseHelper,
+                    a.mStep.toString(),
+                    BaseHelper.parseDate(Date(), Constants.DATE_JSON),
+                    ((a.mDistance / 10000)).toString(),
+                    ((a.mCalorie / 10000)).toString(),
+                    epcoToDate(a.mTime), activities[0].mStep,activities[0].mDistance/10000,activities[0].mCalorie/10000)
+            }
+        }
     }
 
-    val lastHRSteps: Int
-        get() {
-            val currentTime = BaseHelper.parseDate(
-                Date(),
-                Constants.TIME_hA
-            ).toInt()
-            val dataBaseHelper = DataBaseHelper(activity)
-            val dteps = dataBaseHelper.getAllSteps(
-                "WHERE time <  " + currentTime
-                        + " AND date is  ('" + BaseHelper.parseDate(
-                    Date(), Constants.DATE_JSON
-                ) + "') ORDER BY stepsCount DESC"
-            )
-            var stepsCnt = 0
-            if (dteps.size > 0) {
-                stepsCnt = dteps[0].stepCount.toInt()
-                return stepsCnt
-            }
-            return stepsCnt
+    fun lastHRSteps(mTime: String): List<Steps>? {
+        val dataBaseHelper = DataBaseHelper(activity)
+        val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
+                "AND total_count != 0  AND time != '"+mTime+"' ORDER BY total_count DESC LIMIT 1")
+        return dteps
+    }
+
+
+
+
+    fun epcoToDate(date : Int) :String {
+        val date = Date(date * 1000L)
+        val format: DateFormat = SimpleDateFormat(TIME_JSON_HM)
+        format.setTimeZone(TimeZone.getTimeZone("Etc/UTC"))
+        var formatted: String = format.format(date)
+        if(formatted.contains(":")) {
+            formatted = formatted.replace(":",".")
         }
+        return formatted
+    }
 
     companion object {
         var REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 911

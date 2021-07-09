@@ -26,7 +26,7 @@ class Constants  {
         val TIME_hA = "h a"
         val TIME_hM = "h:mm"
         val TIME_MS = "mm:ss"
-        val TIME_JSON_HM = "HH:mm"
+        val TIME_JSON_HM = "HH.mm"
         val TIME_JSON_HMS = "HH:mm:ss"
         val DATE_MONTH = "dd MMM yyyy"
         val DATE_MONTH_FULL = "dd MMMM yyyy"

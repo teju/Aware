@@ -82,7 +82,7 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
         val f = DeviceListingDialogFragment()
         f.listener = n
         f.arrayList = arrayList
-        f.isCancelable = false
+        f.isCancelable = true
         f.show(activity!!.supportFragmentManager, DeviceListingDialogFragment.TAG)
 
     }

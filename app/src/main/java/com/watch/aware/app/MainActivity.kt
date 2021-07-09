@@ -10,6 +10,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.amitshekhar.DebugDB
 import com.franmontiel.localechanger.LocaleChanger
 import com.iapps.libs.helpers.BaseHelper
 import com.szabh.smable3.component.BleCache
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             BaseHelper.triggerNotifLog(this)
         };
-
+        DebugDB.getAddressLog();
     }
 
     fun triggerMainProcess() {

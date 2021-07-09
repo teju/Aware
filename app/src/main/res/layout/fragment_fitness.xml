@@ -29,7 +29,7 @@
                     android:layout_gravity="center_horizontal"
                     android:text="Syncing ..."
                     android:id="@+id/syncing_fitness"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:layout_height="wrap_content">
                 </TextView>
                 <RelativeLayout

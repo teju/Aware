@@ -13,6 +13,7 @@ class UserInfoManager private constructor() {
     private val KEY_AGE = "key_age"
     private val KEY_GENDER = "key_gender"
     private val KEY_LOGGED_IN = "key_logged_in"
+    private val KEY_IS_FIRST_TIME = "key_is_first_time"
     private var accessToken: String? = null
     private var accountName: String? = ""
     private var email: String? = ""
@@ -20,6 +21,7 @@ class UserInfoManager private constructor() {
     private var age: String? = ""
     private var gender: String? = ""
     private var isLoggedIn: Boolean = false
+    private var isFirstTime: Boolean = false
 
 
     private var prefs: SharedPreferences? = null
@@ -96,11 +98,23 @@ class UserInfoManager private constructor() {
         editor.putBoolean(KEY_LOGGED_IN, isLoggedIn)
         editor.commit()
     }
+    fun saveIsFirstTime(isFirstTime: Boolean) {
+        this.isFirstTime = isFirstTime
+        val editor = this.prefs!!.edit()
+        editor.putBoolean(KEY_IS_FIRST_TIME, isFirstTime)
+        editor.commit()
+    }
 
     fun getISLoggedIn(): Boolean {
         this.isLoggedIn = this.prefs!!.getBoolean(KEY_LOGGED_IN, false)
         return isLoggedIn!!
     }
+
+    fun getISFirstTime(): Boolean {
+        this.isFirstTime = this.prefs!!.getBoolean(KEY_IS_FIRST_TIME, false)
+        return isFirstTime!!
+    }
+
     fun getEmail(): String {
         this.email = this.prefs!!.getString(KEY_EMAIL, "")
         return email!!

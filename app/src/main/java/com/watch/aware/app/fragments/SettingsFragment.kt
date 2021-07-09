@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_settings.*
 
 class SettingsFragment : BaseFragment() ,View.OnClickListener{
@@ -24,6 +25,7 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
         super.onViewCreated(view, savedInstanceState)
         profile.setOnClickListener(this)
         settings.setOnClickListener(this)
+        UserInfoManager.getInstance(activity!!).saveIsFirstTime(false)
     }
 
     override fun onClick(v: View?) {

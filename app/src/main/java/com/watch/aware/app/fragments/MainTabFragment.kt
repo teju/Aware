@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.CbnMenuItem
 import kotlinx.android.synthetic.main.main_tab_fragment.*
 
@@ -67,15 +68,21 @@ class MainTabFragment : BaseFragment() {
             )
         )
 
+        if(UserInfoManager.getInstance(activity!!).getISFirstTime()) {
+            instance = 4
+            setCurrentItem(R.id.navigation_settings)
+        } else{
+            instance = 0
+            setCurrentItem(R.id.navigation_welness)
+        }
         nav_view.setMenuItems(menuItems, instance)
         nav_view.onMenuItemClick(instance)
-        setCurrentItem(R.id.navigation_settings)
         nav_view.setOnMenuItemClickListener { item, _ ->
             setCurrentItem(item.destinationId)
         }
         showTab()
-
     }
+
     open fun showTab() {
         activity?.runOnUiThread(object:Runnable {
             override fun run() {

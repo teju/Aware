@@ -109,11 +109,22 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:id="@+id/progressBar"
+                    android:layout_centerInParent="true"
+                    app:background_progressbar_color="@color/WhiteSmoke"
+                    app:background_progressbar_width="15dp"
+                    android:layout_marginTop="20dp"
+                    app:progressbar_color="@color/colorAccent"
+                    app:progressbar_width="10dp" />
                 <ProgressBar
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:layout_centerInParent="true"
                     android:progress="10"
                     android:indeterminate="true"
@@ -166,7 +177,6 @@
                 </TextView>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="1 am"
                     android:layout_marginLeft="10dp"
                     android:layout_alignParentRight="true"
                     android:textSize="@dimen/text_med"
