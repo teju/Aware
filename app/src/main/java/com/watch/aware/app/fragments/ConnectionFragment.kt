@@ -1,9 +1,11 @@
 package com.watch.aware.app.fragments
 
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Html
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +17,8 @@ import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
 import com.szabh.smable3.component.BleConnector
 import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.*
+import com.szabh.smable3.entity.BleActivity
+import com.szabh.smable3.entity.BleDeviceInfo
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.DeviceItemClickListener
 import com.watch.aware.app.callback.NotifyListener
@@ -40,16 +43,30 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
                 }
 
                 override fun onScan(scan: Boolean) {
-                    if(scan) {
-                        search.text = "Searching ..."
-                    } else {
-                        search.text = "Scan"
-                        showDeviceListingDialog(arrayList,object :DeviceItemClickListener {
-                            override fun onItemClick(pos: Int) {
-                                BleConnector.setBleDevice(arrayList.get(pos)).connect(true)
-                            }
+                    try {
+                        if (scan) {
+                            search.text = "Searching ..."
+                        } else {
+                            search.text = "Scan"
+                            if(BleCache.mDeviceInfo == null) {
+                                if(arrayList.size != 0) {
+                                    showDeviceListingDialog(
+                                        arrayList,
+                                        object : DeviceItemClickListener {
+                                            override fun onItemClick(pos: Int) {
+                                                BleConnector.setBleDevice(arrayList.get(pos))
+                                                    .connect(true)
+                                            }
 
-                        })
+                                        })
+                                }
+
+                            } else {
+                                home()?.setFragment(CoughSettingsFragment())
+                            }
+                        }
+                    } catch (e:java.lang.Exception) {
+
                     }
                 }
 
@@ -95,7 +112,11 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
             }
 
             override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+                try {
+                    Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ, activity!!)
+                } catch (e : Exception) {
+
+                }
             }
 
             override fun onReadActivity(activities: List<BleActivity>) {
@@ -107,6 +128,7 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
 
     override fun onHiddenChanged(hidden: Boolean) {
         if(!hidden) {
+            checkBluetoothGps()
             mBleScanner.scan(!mBleScanner.isScanning)
         }
     }
@@ -116,6 +138,10 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
                 mBleScanner.scan(!mBleScanner.isScanning)
             }
         }
+    }
+
+    override fun onBackTriggered() {
+        home()?.exitApp()
     }
 
 }

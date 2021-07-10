@@ -71,34 +71,35 @@ class WelnessFragment : BaseFragment() {
                     last_synced.text = BaseHelper.parseDate(Date(), Constants.TIME_hMA)
                     heart_rate.text = heartRates.get(0).mBpm.toString()
                     HR = heartRates.get(0).mBpm.toString()
-                    postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                        BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
-
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
+                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
+                    BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
             }
 
             override fun onReadTemperature(temperatures: List<BleTemperature>) {
                 try {
                     temp.text = temperatures.get(0).mTemperature.toString()
                     Temp = temperatures.get(0).mTemperature.toString()
-                    postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                        BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
+
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
+                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
+                    BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
             }
 
             override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
                 try {
                     oxygen_level.text = bloodOxygen.get(0).mValue.toString()
                     SPO2 = bloodOxygen.get(0).mValue.toString()
-                    postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                        BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
+
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
+                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
+                    BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
             }
 
             override fun onReadActivity(activities: List<BleActivity>) {
@@ -107,7 +108,6 @@ class WelnessFragment : BaseFragment() {
             }
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -125,15 +125,11 @@ class WelnessFragment : BaseFragment() {
         })
         welcome.text = "Welcome back, "+UserInfoManager.getInstance(activity!!).getAccountName()
         if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
-            //human.setImageDrawable(activity?.resources.getDrawable(R.drawable.human_male))
+            human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_female))
         } else{
             human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
-
         }
-
-
     }
-
 
     fun onConnected() {
         try {
@@ -141,7 +137,8 @@ class WelnessFragment : BaseFragment() {
                 swiperefresh_items.setRefreshing(false);
             }
         if(BleCache.mDeviceInfo?.mBleName != null){
-            postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
+            postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
+                BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
         }
         syncing.visibility = View.GONE
         } catch (e:Exception){

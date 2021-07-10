@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.watch.aware.app.R
+import com.watch.aware.app.callback.NotifyListener
+import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.CbnMenuItem
 import kotlinx.android.synthetic.main.main_tab_fragment.*
 
 class MainTabFragment : BaseFragment() {
-    var instance : Int = 4
+    var instance : Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -68,13 +70,7 @@ class MainTabFragment : BaseFragment() {
             )
         )
 
-        if(UserInfoManager.getInstance(activity!!).getISFirstTime()) {
-            instance = 4
-            setCurrentItem(R.id.navigation_settings)
-        } else{
-            instance = 0
-            setCurrentItem(R.id.navigation_welness)
-        }
+        setCurrentItem(R.id.navigation_welness)
         nav_view.setMenuItems(menuItems, instance)
         nav_view.onMenuItemClick(instance)
         nav_view.setOnMenuItemClickListener { item, _ ->
@@ -140,6 +136,16 @@ class MainTabFragment : BaseFragment() {
         }
     }
     override fun onBackTriggered() {
-        home()?.resetAndExit();
+        showNotifyDialog("Are you sure you want to exit ?",
+            "", "OK",
+            "Cancel", object : NotifyListener {
+                override fun onButtonClicked(which: Int) {
+                    if (which == NotifyDialogFragment.BUTTON_POSITIVE) {
+                       home()?.exitApp()
+                    }
+                }
+            } as NotifyListener
+        )
+
     }
 }

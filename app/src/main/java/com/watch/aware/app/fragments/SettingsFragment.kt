@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.watch.aware.app.R
+import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_settings.*
@@ -25,6 +26,7 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
         super.onViewCreated(view, savedInstanceState)
         profile.setOnClickListener(this)
         settings.setOnClickListener(this)
+        logout.setOnClickListener(this)
         UserInfoManager.getInstance(activity!!).saveIsFirstTime(false)
     }
 
@@ -32,6 +34,14 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
         when(v?.id) {
             R.id.profile -> {
                 home()?.setFragment(ProfileUpdateFragment())
+            }
+            R.id.logout -> {
+                showNotifyDialog("","Are you sure you want to exit ?",
+                    "OK","Cancel",object :NotifyListener {
+                        override fun onButtonClicked(which: Int) {
+                            UserInfoManager.getInstance(activity!!).logout(activity!!)
+                        }
+                    })
             }
             R.id.settings -> {
                 if(llsettings.visibility == View.VISIBLE) {

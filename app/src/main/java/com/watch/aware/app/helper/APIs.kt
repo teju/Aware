@@ -9,6 +9,9 @@ class APIs : BaseKeys() {
         val postRegister : String
             get() = BASE_URL!!  + "Register_Profile"
 
+        val postLogin : String
+            get() = BASE_URL!!  + "Login"
+
         val postProfileUpdate : String
             get() = BASE_URL!!  + "Update_Profile"
 

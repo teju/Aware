@@ -8,10 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.anychart.chart.common.dataentry.DataEntry
-import com.anychart.chart.common.dataentry.ValueDataEntry
-import com.anychart.charts.Cartesian
-import com.anychart.core.cartesian.series.Column
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -123,13 +119,15 @@ class GoalProgressFragment : BaseFragment() {
     fun setAnylasisData() {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                "AND stepsCount != 0  LIMIT 1")
+                "AND total_count != 0 ORDER by total_count DESC LIMIT 1")
         if(dteps!= null && dteps.size > 0) {
             val lasthr = Helper.convertStringToDate(TIME_JSON_HM,dteps.get(0).time)
             last_active_hr.text = BaseHelper.parseDate(lasthr,TIME_hM)
+            val avg_steps = (dteps.get(0).total_count.toInt() /(BaseHelper.parseDate(Date(),Constants.TIME_hA).toInt()))
+            average_steps.text = avg_steps.toString()
+            val sync_date = BaseHelper.parseDate(dteps?.get(0)?.time,Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(sync_date,Constants.TIME_hM)
         }
-
-
     }
 
     fun renderData() {

@@ -1,7 +1,12 @@
 package com.watch.aware.app.helper
 
+import android.app.ActivityManager
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.SharedPreferences
+import android.os.Build
+import androidx.core.content.ContextCompat.getSystemService
+
 
 class UserInfoManager private constructor() {
 
@@ -138,12 +143,26 @@ class UserInfoManager private constructor() {
         return accountName!!
     }
 
-    fun logout() {
+    fun logout(activity : Context) {
         saveAuthToken(null)
         prefs!!.edit().clear().commit()
+        clearAppData(activity)
         _userInfo = null
     }
-
+    private fun clearAppData(activity: Context) {
+        try {
+            // clearing app data
+            if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
+                (activity.getSystemService(ACTIVITY_SERVICE) as ActivityManager?)?.clearApplicationUserData() // note: it has a return value!
+            } else {
+                val packageName: String = activity.getApplicationContext().getPackageName()
+                val runtime = Runtime.getRuntime()
+                runtime.exec("pm clear $packageName")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
 
 

@@ -44,13 +44,16 @@ class FitnessFragment : BaseFragment() {
             override fun onReadActivity(activities: List<BleActivity>) {
                 super.onReadActivity(activities)
                 try {
-                    val dateTimeAsString = epcoToDate(activities.get(0).mTime)
-
                     last_synced.text =  BaseHelper.parseDate(Date(), Constants.TIME_hMA)
                     syncing_fitness.visibility = View.GONE
                     calories.text = (activities.get(0).mCalorie/10000).toString()
-                    dist.text = (activities.get(0).mDistance/1000000).toString()
+                    val mDistance = (activities.get(0).mDistance/10000).toDouble()
+                    val mDist = (mDistance/1000).toDouble()
+                    dist.text = String.format("%.2f",mDist)
                     steps.text = (activities.get(0).mStep).toString()
+                    if(swiperefresh_items.isRefreshing) {
+                        swiperefresh_items.setRefreshing(false);
+                    }
                 }catch (e:Exception) {
                     e.printStackTrace()
                 }
@@ -69,6 +72,17 @@ class FitnessFragment : BaseFragment() {
         return v;
     }
 
+    fun setData() {
+        val stepsArray = lastestHRSteps()
+        if(stepsArray?.size != 0) {
+            val sync_date = BaseHelper.parseDate(stepsArray?.get(0)?.time,Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(sync_date,Constants.TIME_hM)
+            calories.text = stepsArray?.get(0)?.total_cal
+            dist.text = String.format("%.2f",stepsArray?.get(0)?.total_dist)
+            steps.text = stepsArray?.get(0)?.total_count
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         try {
@@ -77,19 +91,15 @@ class FitnessFragment : BaseFragment() {
             swiperefresh_items.setOnRefreshListener(OnRefreshListener {
                 BleConnector.addHandleCallback(mBleHandleCallback)
             })
-            welcome.text =
-                "Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
+            welcome.text = "Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
             if (UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
-                //fitness_human.setImageDrawable(activity?.resources.getDrawable(R.drawable.human_male))
+                fitness_human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_female))
             } else {
                 fitness_human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
-
             }
+            setData()
         } catch (e:java.lang.Exception){
-
         }
-
-
     }
 
 

@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.amitshekhar.DebugDB
-import com.franmontiel.localechanger.LocaleChanger
 import com.iapps.libs.helpers.BaseHelper
 import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.callback.NotifyListener
@@ -265,13 +264,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        var newBase = newBase
-        newBase = LocaleChanger.configureBaseContext(newBase)
-        super.attachBaseContext(newBase)
-    }
+
 
     fun exitApp() {
+        clearFragment()
         finish()
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

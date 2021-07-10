@@ -1,11 +1,17 @@
 package com.watch.aware.app.fragments.settings
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
+import android.content.Context.LOCATION_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Observer
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
@@ -28,6 +34,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 open class BaseFragment : GenericFragment() {
 
@@ -80,8 +87,45 @@ open class BaseFragment : GenericFragment() {
         if (BleCache.mDeviceInfo?.mBleName != null) {
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }
+        checkBluetoothGps()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden) {
+            checkBluetoothGps()
+        }
+    }
+
+    fun checkBluetoothGps() {
+        val mBluetoothAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        val locationManager: LocationManager? = activity?.getSystemService(LOCATION_SERVICE) as LocationManager?
+
+        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+            showNotifyDialog("","Please Enable your bluetooth",
+                "OK","Cancel",object :NotifyListener {
+                    override fun onButtonClicked(which: Int) {
+                        if(which == NotifyDialogFragment.BUTTON_POSITIVE) {
+                            val intentOpenBluetoothSettings = Intent()
+                            intentOpenBluetoothSettings.setAction(Settings.ACTION_BLUETOOTH_SETTINGS)
+                            startActivity(intentOpenBluetoothSettings)
+                        }
+                    }
+                })
+
+        } else  if (!locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER)!!){
+            showNotifyDialog("","Please Enable your Gps",
+                "OK","Cancel",object :NotifyListener {
+                    override fun onButtonClicked(which: Int) {
+                        if(which == NotifyDialogFragment.BUTTON_POSITIVE) {
+                            val intentOpenBluetoothSettings = Intent()
+                            intentOpenBluetoothSettings.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                            startActivity(intentOpenBluetoothSettings)
+                        }
+                    }
+                })
+
+        }
+    }
     fun checkPermissions(
         permissionsThatNeedTobeCheck: MutableList<String>,
         permissionListener: PermissionListener?
@@ -250,23 +294,28 @@ open class BaseFragment : GenericFragment() {
         for(a in activities) {
             val lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
             if(lastHRSteps != null && lastHRSteps.size != 0) {
-                val dist : Int = (a.mDistance / 10000).toInt()  - lastHRSteps.get(0).total_dist.trim().toInt()
+                val mDistance = (activities.get(0).mDistance/10000).toDouble()
+                val mDist = (mDistance/1000).toDouble()
+                val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
+                val dist : Double = mDist  - lasthrdist
                 val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
                 dataBaseHelper.stepsInsert(
                     dataBaseHelper,
                     (a.mStep - lastHRSteps.get(0).total_count.toInt()).toString(),
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    (dist.toInt()).toString(),
+                    String.format("%.3f",dist),
                     (cal.toInt()).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep,activities[0].mDistance/10000,activities[0].mCalorie/10000)
+                    epcoToDate(a.mTime), activities[0].mStep,mDist,activities[0].mCalorie/10000)
             } else {
+                val mDistance = (activities.get(0).mDistance/10000).toDouble()
+                val mDist = (mDistance/1000).toDouble()
                 dataBaseHelper.stepsInsert(
                     dataBaseHelper,
                     a.mStep.toString(),
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    ((a.mDistance / 10000)).toString(),
+                    String.format("%.3f",mDist),
                     ((a.mCalorie / 10000)).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep,activities[0].mDistance/10000,activities[0].mCalorie/10000)
+                    epcoToDate(a.mTime), activities[0].mStep, mDist,activities[0].mCalorie/10000)
             }
         }
     }
@@ -278,6 +327,12 @@ open class BaseFragment : GenericFragment() {
         return dteps
     }
 
+    fun lastestHRSteps(): List<Steps>? {
+        val dataBaseHelper = DataBaseHelper(activity)
+        val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
+                " ORDER BY total_count DESC LIMIT 1")
+        return dteps
+    }
 
 
 

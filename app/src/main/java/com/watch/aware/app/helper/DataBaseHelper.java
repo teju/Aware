@@ -40,20 +40,24 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     public boolean stepsInsert(DataBaseHelper dbh, String stepsCount, String date,String distance,
-                               String cal,String time,int total_count,int total_dist,int total_cal){
-        SQLiteDatabase sq=dbh.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        System.out.println("DataBaseHelper123 stepsInsert " + stepsCount+" time "+time);
+                               String cal,String time,int total_count,Double total_dist,int total_cal){
+        try {
+            SQLiteDatabase sq = dbh.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            System.out.println("DataBaseHelper123 stepsInsert " + stepsCount + " time " + time);
 
-        cv.put("stepsCount", stepsCount);
-        cv.put("date", date);
-        cv.put("distance", distance);
-        cv.put("cal", cal);
-        cv.put("time", time);
-        cv.put("total_count", total_count);
-        cv.put("total_dist", total_dist);
-        cv.put("total_cal", total_cal);
-        sq.insert("StepsCount", null, cv);
+            cv.put("stepsCount", stepsCount);
+            cv.put("date", date);
+            cv.put("distance", distance);
+            cv.put("cal", cal);
+            cv.put("time", time);
+            cv.put("total_count", total_count);
+            cv.put("total_dist", total_dist);
+            cv.put("total_cal", total_cal);
+            sq.insert("StepsCount", null, cv);
+        }catch (Exception e){
+
+        }
         return true;
 
     }
