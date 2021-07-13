@@ -254,6 +254,24 @@ public abstract class HTTPAsyncTask
 		}
 		this.setMethod(BaseConstants.POST);
 	}
+	public void setPostParams(String key, Double value) {
+		if (key == null || key.trim().length() <= 0 || value == null ) { return; }
+		try {
+			this.params.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		this.setMethod(BaseConstants.POST);
+	}
+	public void setPostParams(String key, int value) {
+		if (key == null || key.trim().length() <= 0 ) { return; }
+		try {
+			this.params.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		this.setMethod(BaseConstants.POST);
+	}
 
 	public void setPostParams(String key, String value, boolean allowWhiteSpace) {
 		if (key == null || key.trim().length() <= 0) { return; }

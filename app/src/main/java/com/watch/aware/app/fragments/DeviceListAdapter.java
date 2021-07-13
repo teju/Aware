@@ -45,7 +45,7 @@ public class DeviceListAdapter extends BaseAdapter {
             LayoutInflater layoutInflater = LayoutInflater.from(context);
             convertView=layoutInflater.inflate(R.layout.device_list_adapter, null);
             TextView tittle=convertView.findViewById(R.id.deviceNAme);
-            tittle.setText(arrayList.get(position).getMBluetoothDevice().getName());
+            tittle.setText(arrayList.get(position).getMBluetoothDevice().getName()+"\n"+arrayList.get(position).getMBluetoothDevice().getAddress());
         }
         return convertView;
     }

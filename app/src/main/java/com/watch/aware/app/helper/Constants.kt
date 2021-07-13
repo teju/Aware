@@ -40,6 +40,11 @@ class Constants  {
         var TYPE_STUDENT = "student"
         var TYPE_STAFF = "staff"
         val REQUEST_CODE_QR_CODE = 1231
+        var COUGH = 0
+        var SPO2 = 0
+        var HR = 0
+        var Temp = 0.0
+        var _activity = 68
 
 
     }

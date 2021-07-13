@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.Constants
 import kotlinx.android.synthetic.main.fragment_cough_settings.*
 
 
@@ -30,12 +31,12 @@ class CoughSettingsFragment : BaseFragment() ,View.OnClickListener{
     override fun onClick(v: View?) {
         when(v?.id) {
             R.id.btnno -> {
-                cough = 0
+                Constants.COUGH = 0
                 home()?.setFragment(MainTabFragment())
             }
             R.id.btnyes -> {
-                cough = 1
-                home()?.setFragment(RecordCoughFragment())
+                Constants.COUGH = 1
+                home()?.setFragment(MainTabFragment())
             }
         }
     }

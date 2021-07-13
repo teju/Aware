@@ -66,6 +66,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.iapps.common_library.R;
 import com.iapps.libs.objects.BottomSheetMediaSelectionListener;
+import com.iapps.libs.objects.LastSyncDate;
 import com.iapps.libs.objects.Response;
 import com.iapps.libs.views.LoadingCompound;
 import com.iapps.logs.com.pascalabs.util.log.activity.ActivityPascaLog;
@@ -755,7 +756,6 @@ public class BaseHelper {
 			dateObj = curFormater.format(sqlDate);
 			return dateObj;
 		} catch (Exception e) {
-
 			e.printStackTrace();
 			return null;
 		}
@@ -1821,6 +1821,37 @@ public class BaseHelper {
 			}
 		}
 	}
+	public static LastSyncDate printDifference(Date startDate, Date endDate) {
+		//milliseconds
+		long different = endDate.getTime() - startDate.getTime();
+
+		System.out.println("startDate : " + startDate+" endDate : "+ endDate+ "different : " + different);
+
+		long secondsInMilli = 1000;
+		long minutesInMilli = secondsInMilli * 60;
+		long hoursInMilli = minutesInMilli * 60;
+		long daysInMilli = hoursInMilli * 24;
+
+		long elapsedDays = different / daysInMilli;
+		different = different % daysInMilli;
+
+		long elapsedHours = different / hoursInMilli;
+		different = different % hoursInMilli;
+
+		long elapsedMinutes = different / minutesInMilli;
+		different = different % minutesInMilli;
+
+		long elapsedSeconds = different / secondsInMilli;
+		LastSyncDate lastSyncDate = new LastSyncDate();
+		lastSyncDate.days = elapsedDays;
+		lastSyncDate.hours = elapsedHours;
+
+		System.out.printf(
+				"%d days, %d hours, %d minutes, %d seconds%n",
+				elapsedDays, elapsedHours, elapsedMinutes, elapsedSeconds);
+		return lastSyncDate;
+	}
+
 	public static boolean containsIgnoreCase(List<String> list, String soughtFor) {
 		for (String current : list) {
 			if (current.equalsIgnoreCase(soughtFor)) {

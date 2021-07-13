@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.main_tab_fragment.*
 
 class MainTabFragment : BaseFragment() {
     var instance : Int = 0
+    var cough = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -27,7 +27,6 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
         profile.setOnClickListener(this)
         settings.setOnClickListener(this)
         logout.setOnClickListener(this)
-        UserInfoManager.getInstance(activity!!).saveIsFirstTime(false)
     }
 
     override fun onClick(v: View?) {

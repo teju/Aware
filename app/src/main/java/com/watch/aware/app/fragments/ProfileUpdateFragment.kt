@@ -51,6 +51,7 @@ class ProfileUpdateFragment : BaseFragment() {
             home()?.proceedDoOnBackPressed()
         }
     }
+
     fun setUSerData() {
         username.setText(UserInfoManager.getInstance(activity!!).getAccountName())
         email.setText(UserInfoManager.getInstance(activity!!).getEmail())

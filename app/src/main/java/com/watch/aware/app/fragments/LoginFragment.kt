@@ -106,15 +106,7 @@ class LoginFragment : BaseFragment(),View.OnClickListener {
                                 "", obj?.errorDesc,
                                 getString(R.string.ok),"",object : NotifyListener {
                                     override fun onButtonClicked(which: Int) {
-                                        home()?.setFragment(RegistrationSuccessFragment())
-                                        UserInfoManager.getInstance(activity!!).saveEmail(email.text.toString())
-                                        UserInfoManager.getInstance(activity!!).saveIsLoggedIn(true)
-                                        UserInfoManager.getInstance(activity!!).saveIsFirstTime(true)
-                                        if(BleCache.mDeviceInfo == null) {
-                                            home()?.setFragment(ConnectionFragment())
-                                        } else{
-                                            home()?.setFragment(CoughSettingsFragment())
-                                        }
+
                                     }
                                 }
                             )

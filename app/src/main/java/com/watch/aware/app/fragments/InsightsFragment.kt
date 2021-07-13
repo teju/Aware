@@ -31,10 +31,10 @@ import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
 import com.szabh.smable3.component.BleConnector
 import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.BleActivity
-import com.szabh.smable3.entity.BleDeviceInfo
+import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.Constants.Companion.COUGH
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
@@ -58,17 +58,46 @@ class InsightsFragment : BaseFragment() {
         object : BleHandleCallback {
 
             override fun onDeviceConnected(_device: BluetoothDevice) {
-                onConnected()
             }
 
             override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-                onConnected()
             }
 
+            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
+                super.onReadHeartRate(heartRates)
+                try {
+                    heartRateInsert(heartRates)
+                    setHeartData()
+                } catch (e:java.lang.Exception){ }
+            }
+
+            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
+                super.onReadBloodOxygen(bloodOxygen)
+                try {
+                    SpoRateInsert(bloodOxygen)
+                    setSPoData()
+                } catch (e:java.lang.Exception){ }
+            }
+
+            override fun onReadTemperature(temperatures: List<BleTemperature>) {
+                super.onReadTemperature(temperatures)
+                try {
+                    TempInsert(temperatures)
+                    setTempData()
+                } catch (e:java.lang.Exception){ }
+            }
 
             override fun onReadActivity(activities: List<BleActivity>) {
                 super.onReadActivity(activities)
+                try {
+                    insertStepData(activities)
+                    setDistanceData()
+                    setStepsData()
+                    setCaloriesData()
+                } catch (e:java.lang.Exception){
 
+                }
+                connect()
             }
         }
     }
@@ -87,26 +116,216 @@ class InsightsFragment : BaseFragment() {
         BleConnector.addHandleCallback(mBleHandleCallback)
         getWeeklyEntries()
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
+
+            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
             connect()
-            onConnected()
+
         })
+        refresh.setOnClickListener {
+            swiperefresh_items.setRefreshing(true);
+            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+            connect()
+        }
+        try {
+            setHeartData()
+            setSPoData()
+            setDistanceData()
+            setStepsData()
+            setCaloriesData()
+            setTempData()
+        }catch (e : Exception){
+
+        }
+        if(COUGH == 1) {
+            cough.text = "Yes"
+            cough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
+        } else {
+            cough.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
+            cough.text = "NO"
+
+        }
 
         connect()
         welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
         last_synced.text =  BaseHelper.parseDate(Date(), Constants.TIME_hMA)
     }
+
     fun connect() {
-        if(BleCache.mDeviceInfo != null) {
-            onConnected()
-            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+        try {
+            swiperefresh_items.setRefreshing(false);
+
+            if (BleCache.mDeviceInfo != null) {
+                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ, activity!!)
+            }
+        }catch (e:Exception){
 
         }
     }
+    fun setCaloriesData() {
+        val db = DataBaseHelper(activity!!)
+        val diatnceArray = db.getAllSteps("ORDER by Id DESC LIMIT 1")
+        if(diatnceArray.size != 0) {
+            calories.text = diatnceArray.get(0).total_cal.toString()
 
-    fun onConnected() {
-
+            val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
+            val lastSyncDateStr = BaseHelper.parseDate(diatnceArray.get(0).date +" "+
+                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
+            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
+            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
+            System.out.println(" ")
+            if(diff.days.toInt() == 0) {
+                if(diff.hours.toInt() == 0) {
+                    cal_last_sync.text = "Current"
+                } else{
+                    cal_last_sync.text =  Math.abs(diff.hours).toInt().toString()+ " hours ago"
+                }
+            } else if(diff.days.toInt() == 1) {
+                cal_last_sync.text = "Yesterday"
+            } else {
+                cal_last_sync.text = diatnceArray.get(0).date
+            }
+        }
 
     }
+
+    fun setDistanceData() {
+        val db = DataBaseHelper(activity!!)
+        val diatnceArray = db.getAllSteps("ORDER by Id DESC LIMIT 1")
+        if(diatnceArray.size != 0) {
+            distance.text = diatnceArray.get(0).total_dist.toString() +" km"
+
+            val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
+            val lastSyncDateStr = BaseHelper.parseDate(diatnceArray.get(0).date +" "+
+                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
+            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
+            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
+            System.out.println(" ")
+            if(diff.days.toInt() == 0) {
+                if(diff.hours.toInt() == 0) {
+                    dist_last_sync.text = "Current"
+                } else{
+                    dist_last_sync.text =  Math.abs(diff.hours).toInt().toString()+ " hours ago"
+                }
+            } else if(diff.days.toInt() == 1) {
+                dist_last_sync.text = "Yesterday"
+            } else {
+                dist_last_sync.text = diatnceArray.get(0).date
+            }
+        }
+
+    }
+    fun setStepsData() {
+        val db = DataBaseHelper(activity!!)
+        val stepsArray = db.getAllSteps("Where total_count > 0 ORDER by Id DESC LIMIT 1")
+        if(stepsArray.size != 0) {
+            stepsCount.text = stepsArray.get(0).total_count.toString()
+
+            val parsetime = BaseHelper.parseDate(stepsArray.get(0).time,Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
+            val lastSyncDateStr = BaseHelper.parseDate(stepsArray.get(0).date +" "+
+                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
+            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
+            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
+            System.out.println(" ")
+            if(diff.days.toInt() == 0) {
+                if(diff.hours.toInt() == 0) {
+                    steps_last_sync.text = "Current"
+                } else{
+                    steps_last_sync.text =  Math.abs(diff.hours).toInt().toString()+ " hours ago"
+                }
+            } else if(diff.days.toInt() == 1) {
+                steps_last_sync.text = "Yesterday"
+            } else {
+                steps_last_sync.text = stepsArray.get(0).date
+            }
+        }
+
+    }
+
+    fun setHeartData() {
+        val db = DataBaseHelper(activity!!)
+        val heartRates = db.getAllHeartRate("Where heartRate != 0 ORDER by Id DESC LIMIT 1")
+        if(heartRates.size != 0) {
+            heart_rate.text = heartRates.get(0).heartRate.toString() +" bpm"
+            com.watch.aware.app.helper.Constants.HR = heartRates.get(0).heartRate.toInt()
+            val parsetime = BaseHelper.parseDate(heartRates.get(0).time,Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
+            val lastSyncDateStr = BaseHelper.parseDate(heartRates.get(0).date +" "+
+                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
+            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
+            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
+            System.out.println(" ")
+            if(diff.days.toInt() == 0) {
+                if(diff.hours.toInt() == 0) {
+                    heart_last_sync.text = "Current"
+                } else{
+                    heart_last_sync.text =  Math.abs(diff.hours).toInt().toString()+ " hours ago"
+                }
+            } else if(diff.days.toInt() == 1) {
+                heart_last_sync.text = "Yesterday"
+            } else {
+                heart_last_sync.text = heartRates.get(0).date
+            }
+        }
+    }
+    fun setTempData() {
+        val db = DataBaseHelper(activity!!)
+        val tempRates = db.getAllTemp("Where TempRate != 0 ORDER by Id DESC LIMIT 1")
+        if(tempRates.size != 0) {
+            temp.text = String.format("%.1f",tempRates.get(0).tempRate)+" C"
+            com.watch.aware.app.helper.Constants.Temp = tempRates.get(0).tempRate.toDouble()
+
+            val parsetime = BaseHelper.parseDate(tempRates.get(0).time,Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
+            val lastSyncDateStr = BaseHelper.parseDate(tempRates.get(0).date +" "+
+                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
+            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
+            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
+            if(diff.days.toInt() == 0) {
+                if(diff.hours.toInt() == 0) {
+                    temp_last_sync.text = "Current"
+                } else{
+                    temp_last_sync.text =  Math.abs(diff.hours).toInt().toString()+ " hours ago"
+                }
+            } else if(diff.days.toInt() == 1) {
+                temp_last_sync.text = "Yesterday"
+            } else {
+                temp_last_sync.text = tempRates.get(0).date
+            }
+        }
+    }
+
+    fun setSPoData() {
+        val db = DataBaseHelper(activity!!)
+        val spoRates = db.getAllSpoRate("Where SpoRate != 0 ORDER BY Id DESC LIMIT 1")
+        if(spoRates.size != 0) {
+            oxygen_level.text = spoRates.get(0).spoRate.toString()+" %"
+            com.watch.aware.app.helper.Constants.SPO2 = spoRates.get(0).spoRate
+
+            val parsetime = BaseHelper.parseDate(spoRates.get(0).time,Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
+            val lastSyncDateStr = BaseHelper.parseDate(spoRates.get(0).date +" "+
+                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
+            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
+            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
+            System.out.println(" ")
+            if(diff.days.toInt() == 0) {
+                if(diff.hours.toInt() == 0) {
+                    spo_last_sync.text = "Current"
+                } else{
+                    spo_last_sync.text = Math.abs(diff.hours).toInt().toString() + " hours ago"
+                }
+            } else if(diff.days.toInt() == 1) {
+                spo_last_sync.text = "Yesterday"
+            } else {
+                spo_last_sync.text = spoRates.get(0).date
+            }
+        }
+    }
+
+
     private fun getWeeklyEntries() {
         data.clear()
 

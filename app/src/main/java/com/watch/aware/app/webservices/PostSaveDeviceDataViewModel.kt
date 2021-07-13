@@ -30,7 +30,7 @@ class PostSaveDeviceDataViewModel(application: Application) : BaseViewModel(appl
         this.apl = application
     }
 
-    fun loadData(SPO2: String,HR:String,Temp:String,cough:String,deviceId:String,activity:String,timestamp:String) {
+    fun loadData(SPO2: Int,HR:Int,Temp:Double,cough:Int,deviceId:String,activity:Int,timestamp:String) {
         genericHttpAsyncTask = Helper.GenericHttpAsyncTask(object : Helper.GenericHttpAsyncTask.TaskListener {
 
             override fun onPreExecute() {

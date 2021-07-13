@@ -7,29 +7,39 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
 import com.szabh.smable3.entity.BleActivity
+import com.szabh.smable3.entity.BleBloodOxygen
+import com.szabh.smable3.entity.BleHeartRate
+import com.szabh.smable3.entity.BleTemperature
 import com.watch.aware.app.MainActivity
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.callback.PermissionListener
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
+import com.watch.aware.app.helper.Constants.Companion.COUGH
+import com.watch.aware.app.helper.Constants.Companion.HR
+import com.watch.aware.app.helper.Constants.Companion.SPO2
 import com.watch.aware.app.helper.Constants.Companion.TIME_JSON_HM
+import com.watch.aware.app.helper.Constants.Companion.Temp
+import com.watch.aware.app.helper.Constants.Companion._activity
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.Helper.isEmpty
 import com.watch.aware.app.models.BaseParams
 import com.watch.aware.app.models.Steps
+import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,6 +47,7 @@ import kotlin.collections.ArrayList
 
 
 open class BaseFragment : GenericFragment() {
+    lateinit var postSaveDeviceDataViewModel: PostSaveDeviceDataViewModel
 
     var permissionsThatNeedTobeCheck: List<String> =
         ArrayList()
@@ -47,11 +58,9 @@ open class BaseFragment : GenericFragment() {
         home()!!.proceedDoOnBackPressed()
     }
 
-    public var cough = 0
     fun home(): MainActivity? {
         return activity as MainActivity?
     }
-
 
     var obsNoInternet =
         object : Observer<Boolean> {
@@ -88,6 +97,8 @@ open class BaseFragment : GenericFragment() {
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }
         checkBluetoothGps()
+
+        setSaveDeviceDataAPIObserver()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -289,9 +300,36 @@ open class BaseFragment : GenericFragment() {
         }
     }
 
+    fun heartRateInsert(heartRates: List<BleHeartRate>) {
+        val dataBaseHelper = DataBaseHelper(activity)
+        for(heartrate in heartRates) {
+            dataBaseHelper.heartInsert(dataBaseHelper,heartrate.mBpm,BaseHelper.parseDate(Date(),
+                Constants.DATE_JSON),epcoToDate(heartrate.mTime))
+        }
+        if(dataBaseHelper.getAllTemp("Where date is date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"')").size == 0) {
+            dataBaseHelper.TempInsert(dataBaseHelper,36.1,BaseHelper.parseDate(Date(),
+                Constants.DATE_JSON),epcoToDate(heartRates.get(0).mTime))
+        }
+    }
+    fun SpoRateInsert(bloodOxygen: List<BleBloodOxygen>) {
+        val dataBaseHelper = DataBaseHelper(activity)
+        for(bloodOxyge in bloodOxygen) {
+            dataBaseHelper.SPoInsert(dataBaseHelper,bloodOxyge.mValue,BaseHelper.parseDate(Date(),
+                Constants.DATE_JSON),epcoToDate(bloodOxyge.mTime))
+        }
+    }
+    fun TempInsert(temps: List<BleTemperature>) {
+        val dataBaseHelper = DataBaseHelper(activity)
+        for(temp in temps) {
+            dataBaseHelper.TempInsert(dataBaseHelper,temp.mTemperature.toDouble(),BaseHelper.parseDate(Date(),
+                Constants.DATE_JSON),epcoToDate(temp.mTime))
+        }
+
+    }
+
     fun insertStepData(activities: List<BleActivity>) {
         val dataBaseHelper = DataBaseHelper(activity)
-        for(a in activities) {
+            val a = activities.get(0)
             val lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
             if(lastHRSteps != null && lastHRSteps.size != 0) {
                 val mDistance = (activities.get(0).mDistance/10000).toDouble()
@@ -299,13 +337,19 @@ open class BaseFragment : GenericFragment() {
                 val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
                 val dist : Double = mDist  - lasthrdist
                 val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
+                val steps = (a.mStep - lastHRSteps.get(0).total_count.toInt())
                 dataBaseHelper.stepsInsert(
                     dataBaseHelper,
-                    (a.mStep - lastHRSteps.get(0).total_count.toInt()).toString(),
+                    steps.toString(),
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
                     String.format("%.3f",dist),
                     (cal.toInt()).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep,mDist,activities[0].mCalorie/10000)
+                    epcoToDate(a.mTime), activities[0].mStep,mDist,
+                    activities[0].mCalorie/10000," time : "+epcoToDate(a.mTime)+
+                            "\ntotal_count: "+activities[0].mStep+
+                            "\nmStep : "+a.mStep+
+                            "\nlastHRSteps : "+lastHRSteps.get(0).total_count.toInt()+
+                            "\nSubtract : "+((a.mStep - lastHRSteps.get(0).total_count.toInt())))
             } else {
                 val mDistance = (activities.get(0).mDistance/10000).toDouble()
                 val mDist = (mDistance/1000).toDouble()
@@ -315,25 +359,69 @@ open class BaseFragment : GenericFragment() {
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
                     String.format("%.3f",mDist),
                     ((a.mCalorie / 10000)).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep, mDist,activities[0].mCalorie/10000)
+                    epcoToDate(a.mTime), activities[0].mStep, mDist,
+                    activities[0].mCalorie/10000,
+                    " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : "+a.mStep)
             }
-        }
+
+
     }
 
     fun lastHRSteps(mTime: String): List<Steps>? {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                "AND total_count != 0  AND time != '"+mTime+"' ORDER BY total_count DESC LIMIT 1")
+                "AND total_count != 0  AND time != '"+mTime+"' ORDER BY Id DESC LIMIT 1")
         return dteps
     }
 
     fun lastestHRSteps(): List<Steps>? {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                " ORDER BY total_count DESC LIMIT 1")
+                " AND stepsCount != 0 ORDER BY Id DESC LIMIT 1")
         return dteps
     }
+    fun runTimer( ){
+        val handler = Handler()
+        val runnable: Runnable = object : Runnable {
+            override fun run() {
+                try {
+                    if(BleCache.mDeviceInfo?.mBleName != null){
+                        postSaveDeviceDataViewModel.loadData(SPO2,HR, Temp, COUGH,
+                            BleCache.mDeviceInfo?.mBleAddress!!, _activity, Helper.getCurrentDate().toString())
+                        Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+                    }
+                } catch (e: java.lang.Exception) {
+                    // TODO: handle exception
+                } finally {
+                    //also call the same runnable to call it at regular interval
+                    handler.postDelayed(this, 100000)
+                }
+            }
+        }
+        handler.postDelayed(runnable, 100000)
+    }
 
+    fun setSaveDeviceDataAPIObserver() {
+        postSaveDeviceDataViewModel = ViewModelProviders.of(this).get(PostSaveDeviceDataViewModel::class.java).apply {
+            this@BaseFragment.let { thisFragReference ->
+                isLoading.observe(thisFragReference, Observer { aBoolean ->
+
+                })
+                errorMessage.observe(thisFragReference, Observer { s ->
+                    showNotifyDialog(
+                        s.title, s.message!!,
+                        getString(R.string.ok),"",object : NotifyListener {
+                            override fun onButtonClicked(which: Int) { }
+                        }
+                    )
+                })
+                isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
+                getTrigger().observe(thisFragReference, Observer {
+                    //postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
+                })
+            }
+        }
+    }
 
 
     fun epcoToDate(date : Int) :String {

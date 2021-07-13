@@ -19,22 +19,20 @@ import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_hM
+import com.szabh.smable3.BleKey
+import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
 import com.szabh.smable3.component.BleConnector
 import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.BleActivity
-import com.szabh.smable3.entity.BleDeviceInfo
+import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.MyMarkerView
 import com.watch.aware.app.helper.UserInfoManager
-import kotlinx.android.synthetic.main.fragment_fitness.*
 import kotlinx.android.synthetic.main.fragment_goal_progress.*
-import kotlinx.android.synthetic.main.fragment_goal_progress.last_synced
-import kotlinx.android.synthetic.main.fragment_goal_progress.swiperefresh_items
-import kotlinx.android.synthetic.main.fragment_goal_progress.welcome
+
 import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
@@ -51,7 +49,7 @@ class GoalProgressFragment : BaseFragment() {
             "12 pm",
             "3 pm",
             "6 pm",
-            "9 pm")
+            "9 pm" )
     )
     val values: MutableList<Entry> = ArrayList()
     private val mBleHandleCallback by lazy {
@@ -71,6 +69,32 @@ class GoalProgressFragment : BaseFragment() {
                 } catch (e : Exception) {
                 }
             }
+            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
+                super.onReadHeartRate(heartRates)
+                try {
+                    heartRateInsert(heartRates)
+                } catch (e:java.lang.Exception){
+
+                }
+            }
+
+            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
+                super.onReadBloodOxygen(bloodOxygen)
+                try {
+                    SpoRateInsert(bloodOxygen)
+                } catch (e:java.lang.Exception){
+
+                }
+            }
+
+            override fun onReadTemperature(temperatures: List<BleTemperature>) {
+                super.onReadTemperature(temperatures)
+                try {
+                    TempInsert(temperatures)
+                } catch (e:java.lang.Exception){
+
+                }
+            }
 
 
             override fun onReadActivity(activities: List<BleActivity>) {
@@ -86,6 +110,7 @@ class GoalProgressFragment : BaseFragment() {
                     average_steps.text = (activities.get(0).mStep/(BaseHelper.parseDate(Date(),Constants.TIME_hA).toInt())).toString()
                 } catch (e:java.lang.Exception){
                 }
+                renderData()
                 insertStepData(activities)
             }
         }
@@ -105,10 +130,17 @@ class GoalProgressFragment : BaseFragment() {
 
         BleConnector.addHandleCallback(mBleHandleCallback)
         connect()
-        swiperefresh_items.setOnRefreshListener(OnRefreshListener {
-           connect()
-        })
+        swiperefresh_items.run {
+            swiperefresh_items.setOnRefreshListener(OnRefreshListener {
+                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+               connect()
+            })
+        }
         welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
+        refresh.setOnClickListener {
+            swiperefresh_items.setRefreshing(true);
+            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+        }
     }
 
     fun connect() {
@@ -117,16 +149,25 @@ class GoalProgressFragment : BaseFragment() {
         }
     }
     fun setAnylasisData() {
-        val dataBaseHelper = DataBaseHelper(activity)
-        val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                "AND total_count != 0 ORDER by total_count DESC LIMIT 1")
-        if(dteps!= null && dteps.size > 0) {
-            val lasthr = Helper.convertStringToDate(TIME_JSON_HM,dteps.get(0).time)
-            last_active_hr.text = BaseHelper.parseDate(lasthr,TIME_hM)
-            val avg_steps = (dteps.get(0).total_count.toInt() /(BaseHelper.parseDate(Date(),Constants.TIME_hA).toInt()))
-            average_steps.text = avg_steps.toString()
-            val sync_date = BaseHelper.parseDate(dteps?.get(0)?.time,Constants.TIME_JSON_HM)
-            last_synced.text = BaseHelper.parseDate(sync_date,Constants.TIME_hM)
+        try {
+            val dataBaseHelper = DataBaseHelper(activity)
+            val dteps = dataBaseHelper.getAllSteps(
+                "WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
+                        "AND total_count != 0 ORDER by total_count DESC LIMIT 1"
+            )
+            if (dteps != null && dteps.size > 0) {
+                val lasthr = Helper.convertStringToDate(TIME_JSON_HM, dteps.get(0).time)
+                last_active_hr.text = BaseHelper.parseDate(lasthr, TIME_hM)
+                val avg_steps = (dteps.get(0).total_count.toInt() / (BaseHelper.parseDate(
+                    Date(),
+                    Constants.TIME_hA
+                ).toInt()))
+                average_steps.text = avg_steps.toString()
+                val sync_date = BaseHelper.parseDate(dteps?.get(0)?.time, Constants.TIME_JSON_HM)
+                last_synced.text = BaseHelper.parseDate(sync_date, Constants.TIME_hM)
+            }
+        } catch (e:Exception) {
+
         }
     }
 
@@ -135,9 +176,7 @@ class GoalProgressFragment : BaseFragment() {
             if(swiperefresh_items.isRefreshing) {
                 swiperefresh_items.setRefreshing(false);
             }
-        } catch (e:Exception){
 
-        }
         setAnylasisData()
         mChart.setTouchEnabled(true)
         mChart.setPinchZoom(true)
@@ -166,7 +205,9 @@ class GoalProgressFragment : BaseFragment() {
 
 
         setGraphData()
+        } catch (e:Exception){
 
+        }
     }
 
     private fun setGraphData() {
@@ -178,7 +219,7 @@ class GoalProgressFragment : BaseFragment() {
         values.add(Entry(5f, getStepCount(12.0,15.0)))
         values.add(Entry(6f, getStepCount(15.0,18.0)))
         values.add(Entry(7f, getStepCount(18.0,21.0)))
-        values.add(Entry(8f, getStepCount(21.0,23.9)))
+        values.add(Entry(8f, getStepCount(21.0,23.59)))
 
         val set1: LineDataSet
         if (mChart.getData() != null && mChart.getData().getDataSetCount() > 0) {
@@ -216,10 +257,9 @@ class GoalProgressFragment : BaseFragment() {
         try {
             val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
                 Date(), Constants.DATE_JSON)+"') AND time >= CAST ('"+fromnumber+"' as decimal) AND  time < CAST ('"+toNumber+"' " +
-                    "as decimal) ORDER BY stepsCount DESC" )
+                    "as decimal) ORDER BY Id DESC" )
             if (dteps.size > 0) {
                 for (step in dteps){
-
                     stepsCnt = stepsCnt + step.stepCount.toInt()
                     System.out.println(" getStepCount "+stepsCnt)
                 }

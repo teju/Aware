@@ -5,6 +5,16 @@ public class Steps {
     String stepCount = "0";
     String distance;
 
+    public String getLogs() {
+        return Logs;
+    }
+
+    public void setLogs(String logs) {
+        Logs = logs;
+    }
+
+    String Logs;
+
     public String getDistance() {
         return distance;
     }

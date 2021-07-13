@@ -1,7 +1,6 @@
 package com.watch.aware.app.fragments
 
 import android.bluetooth.BluetoothDevice
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,11 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.bestmafen.baseble.scanner.BleDevice
-import com.bestmafen.baseble.scanner.BleScanCallback
-import com.bestmafen.baseble.scanner.ScannerFactory
-import com.etebarian.meowbottomnavigation.MeowBottomNavigation
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.amitshekhar.utils.DatabaseHelper
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.szabh.smable3.BleKey
@@ -26,24 +21,35 @@ import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.Constants.Companion.COUGH
+import com.watch.aware.app.helper.Constants.Companion.HR
+import com.watch.aware.app.helper.Constants.Companion.SPO2
+import com.watch.aware.app.helper.Constants.Companion.Temp
+import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
+import com.watch.aware.app.models.HeartRate
+import com.watch.aware.app.models.SpoRate
 import com.watch.aware.app.webservices.PostCovidStatusDataViewModel
+import com.watch.aware.app.webservices.PostRegisterViewModel
 import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
+import com.watch.aware.app.webservices.PostUpdateProfileModel
 import kotlinx.android.synthetic.main.fragment_welness.*
 import java.lang.Exception
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class WelnessFragment : BaseFragment() {
-    lateinit var postSaveDeviceDataViewModel: PostSaveDeviceDataViewModel
+    private var heartlastsynced: Date? = null
+    private var spolastsynced: Date? = null
+    private var heartRates: List<HeartRate> = ArrayList()
+    private var spoRates: List<SpoRate> = ArrayList()
     lateinit var postGetCovidStatusDataViewModel: PostCovidStatusDataViewModel
+    lateinit var postUpdateProfileModel: PostUpdateProfileModel
 
 
-    var SPO2 = "0"
-    var HR = "0"
-    var Temp = "0"
-    var _activity = "68"
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,38 +74,33 @@ class WelnessFragment : BaseFragment() {
 
             override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
                 try {
-                    last_synced.text = BaseHelper.parseDate(Date(), Constants.TIME_hMA)
-                    heart_rate.text = heartRates.get(0).mBpm.toString()
-                    HR = heartRates.get(0).mBpm.toString()
+                    setHeartData()
+                    onConnected()
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
-                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                    BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
+                heartRateInsert(heartRates)
+
             }
 
             override fun onReadTemperature(temperatures: List<BleTemperature>) {
                 try {
-                    temp.text = temperatures.get(0).mTemperature.toString()
-                    Temp = temperatures.get(0).mTemperature.toString()
-
+                   setTempData()
+                    onConnected()
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
-                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                    BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
+                TempInsert(temperatures)
             }
 
             override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
                 try {
-                    oxygen_level.text = bloodOxygen.get(0).mValue.toString()
-                    SPO2 = bloodOxygen.get(0).mValue.toString()
-
+                   setSPoData()
+                    onConnected()
                 } catch (e:Exception){
                     e.printStackTrace()
                 }
-                postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                    BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
+                SpoRateInsert(bloodOxygen)
             }
 
             override fun onReadActivity(activities: List<BleActivity>) {
@@ -111,17 +112,33 @@ class WelnessFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setSaveDeviceDataAPIObserver()
+
         setGetCovidStatusDataAPIObserver()
+        setUpdateProfileAPIObserver()
         syncing.visibility = View.VISIBLE
         BleConnector.addHandleCallback(mBleHandleCallback)
+        var deviceAddress = ""
         if(BleCache.mDeviceInfo != null) {
+            deviceAddress = BleCache.mDeviceInfo?.mBleAddress!!
             onConnected()
         }
+        if( UserInfoManager.getInstance(activity!!).getISFirstTime()) {
+            postUpdateProfileModel.loadData(
+                "",
+                "",
+                UserInfoManager.getInstance(activity!!).getEmail(),
+                "",
+                "",
+                deviceAddress
+            )
+            UserInfoManager.getInstance(activity!!).saveIsFirstTime(false)
+
+        }
+        runTimer()
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
-            if(BleCache.mDeviceInfo != null) {
-                onConnected()
-            }
+            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+            onConnected()
+
         })
         welcome.text = "Welcome back, "+UserInfoManager.getInstance(activity!!).getAccountName()
         if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
@@ -129,6 +146,24 @@ class WelnessFragment : BaseFragment() {
         } else{
             human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
         }
+        setTempData()
+        setSPoData()
+        setHeartData()
+        refresh.setOnClickListener {
+            swiperefresh_items.setRefreshing(true);
+            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+        }
+
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden) {
+            BleConnector.addHandleCallback(mBleHandleCallback)
+            if(BleCache.mDeviceInfo != null) {
+                onConnected()
+            }
+        }
+
     }
 
     fun onConnected() {
@@ -136,15 +171,72 @@ class WelnessFragment : BaseFragment() {
             if(swiperefresh_items.isRefreshing) {
                 swiperefresh_items.setRefreshing(false);
             }
-        if(BleCache.mDeviceInfo?.mBleName != null){
-            postSaveDeviceDataViewModel.loadData(SPO2,HR,Temp,cough.toString(),
-                BleCache.mDeviceInfo?.mBleAddress!!,_activity, Helper.getCurrentDate().toString())
-        }
+            if(heartRates.size != 0 || spoRates.size != 0) {
+                postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
+            }
         syncing.visibility = View.GONE
+            if(COUGH == 1) {
+                tvcough.setText("Yes")
+                tvcough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
+            } else {
+                tvcough.setText("NO")
+                tvcough.setTextColor(activity?.resources?.getColor(R.color.Black)!!)
+            }
         } catch (e:Exception){
-
+            e.toString()
         }
     }
+
+    fun setHeartData() {
+        val db = DataBaseHelper(activity!!)
+        heartRates = db.getAllHeartRate("Where heartRate != 0 AND" +
+                " date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER by Id DESC")
+        if(heartRates.size != 0) {
+            try {
+                heartlastsynced =
+                    BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
+                if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() >
+                    BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
+                ) {
+                    last_synced.text = BaseHelper.parseDate(heartlastsynced, Constants.TIME_hMA)
+                }
+            }catch (e:Exception) {
+                last_synced.text = BaseHelper.parseDate(heartlastsynced, Constants.TIME_hMA)
+            }
+            heart_rate.text = heartRates.get(0).heartRate.toString()
+            HR = heartRates.get(0).heartRate.toInt()
+        }
+    }
+    fun setTempData() {
+        val db = DataBaseHelper(activity!!)
+        val tempRates = db.getAllTemp("Where TempRate != 0 AND" +
+                " date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER by Id DESC")
+        if(tempRates.size != 0) {
+            temp.text = String.format("%.1f",tempRates.get(0).tempRate)
+            Temp = tempRates.get(0).tempRate.toDouble()
+        }
+    }
+
+    fun setSPoData() {
+        val db = DataBaseHelper(activity!!)
+        spoRates = db.getAllSpoRate("Where SpoRate != 0 AND" +
+                " date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER BY Id DESC")
+        if(spoRates.size != 0) {
+            try {
+                spolastsynced = BaseHelper.parseDate(spoRates.get(0).time, Constants.TIME_JSON_HM)
+                if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() <
+                    BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
+                ) {
+                    last_synced.text = BaseHelper.parseDate(spolastsynced, Constants.TIME_hMA)
+                }
+            }catch (e:Exception){
+                last_synced.text = BaseHelper.parseDate(spolastsynced, Constants.TIME_hMA)
+            }
+            oxygen_level.text = spoRates.get(0).spoRate.toString()
+            SPO2 = spoRates.get(0).spoRate
+        }
+    }
+
 
 
     fun setGetCovidStatusDataAPIObserver() {
@@ -167,7 +259,6 @@ class WelnessFragment : BaseFragment() {
                 })
                 isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
                 getTrigger().observe(thisFragReference, Observer { state ->
-                    last_synced.text = BaseHelper.parseDate(Date(), Constants.TIME_hMA)
 
                     when (state) {
                         PostCovidStatusDataViewModel.NEXT_STEP -> {
@@ -175,21 +266,18 @@ class WelnessFragment : BaseFragment() {
                                 "G" ->{
                                     info_txt.text = "Your wellness data\nseems ok !"
                                     info_txt.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
-                                    tvcough.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
                                     circle.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
 
                                 }
                                 "Y" -> {
                                     info_txt.text = "There is some issue\nwith your wellness data"
                                     info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkOrange)!!)
-                                    tvcough.setTextColor(activity?.resources?.getColor(R.color.DarkOrange)!!)
                                     circle.setColorFilter(ContextCompat.getColor(activity!!, R.color.DarkOrange), android.graphics.PorterDuff.Mode.SRC_IN);
 
                                 }
                                 "R" -> {
                                     info_txt.text = "Please contact\nyour doctor"
                                     info_txt.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
-                                    tvcough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
                                     circle.setColorFilter(ContextCompat.getColor(activity!!, R.color.Red), android.graphics.PorterDuff.Mode.SRC_IN);
 
                                 }
@@ -202,14 +290,14 @@ class WelnessFragment : BaseFragment() {
         }
     }
 
-    fun setSaveDeviceDataAPIObserver() {
-        postSaveDeviceDataViewModel = ViewModelProviders.of(this).get(PostSaveDeviceDataViewModel::class.java).apply {
-            this@WelnessFragment.let { thisFragReference ->
+    fun setUpdateProfileAPIObserver() {
+        postUpdateProfileModel = ViewModelProviders.of(this).get(PostUpdateProfileModel::class.java).apply {
+           this@WelnessFragment.let { thisFragReference ->
                 isLoading.observe(thisFragReference, Observer { aBoolean ->
                     if(aBoolean!!) {
-                        syncing.visibility = View.VISIBLE
+                        ld.showLoadingV2()
                     } else {
-                        syncing.visibility = View.GONE
+                        ld.hide()
                     }
                 })
                 errorMessage.observe(thisFragReference, Observer { s ->
@@ -221,10 +309,17 @@ class WelnessFragment : BaseFragment() {
                     )
                 })
                 isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
-                getTrigger().observe(thisFragReference, Observer {
-                    postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
+                getTrigger().observe(thisFragReference, Observer { state ->
+                    when (state) {
+                        PostRegisterViewModel.NEXT_STEP -> {
+
+                        }
+                        PostRegisterViewModel.ERROR -> {
+                        }
+                    }
                 })
             }
         }
     }
+
 }
