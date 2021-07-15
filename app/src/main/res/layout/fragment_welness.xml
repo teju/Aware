@@ -40,7 +40,6 @@
                             android:text="Connected"
                             android:drawableRight="@drawable/check_circle"
                             android:drawablePadding="10dp"
-                            android:drawableTint="@color/colorAccent"
                             android:textSize="@dimen/text_small"
                             android:gravity="center_vertical"
                             android:layout_marginLeft="15dp"
@@ -110,7 +109,7 @@
                     android:textSize="22dp"
                     android:id="@+id/info_txt"
                     android:layout_marginTop="20dp"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/DarkSlateGray"
                     android:fontFamily="@font/opensansextrabold"
                     android:layout_height="wrap_content">
 

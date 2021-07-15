@@ -24,7 +24,7 @@ class Keys : BaseKeys() {
         @kotlin.jvm.JvmField
         val NEARBYTELLERSERVICECOMPELETE = "NearbyTellerServiceCompleted"
 
-        val username = "username"
+        val username = "name"
         val age = "age"
         val contactNumber = "contactNumber"
         val email = "email"

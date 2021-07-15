@@ -18,7 +18,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
-import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_hM
+
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
@@ -100,7 +100,9 @@ class GoalProgressFragment : BaseFragment() {
             override fun onReadActivity(activities: List<BleActivity>) {
                 super.onReadActivity(activities)
                 try {
-                    last_synced.text  = BaseHelper.parseDate(Date(), Constants.TIME_hMA)
+                    last_synced.text  = BaseHelper.parseDate(Date(),
+                        com.watch.aware.app.helper.Constants.TIMEFORMAT
+                    )
                     val amount: Double = (activities.get(0).mStep).toDouble()
                     val res = amount / 10000 * 100
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -141,11 +143,21 @@ class GoalProgressFragment : BaseFragment() {
             swiperefresh_items.setRefreshing(true);
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }
+        if(!BleConnector.isAvailable()) {
+            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+
+        }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden) {
+            connect()
+        }
+    }
     fun connect() {
         if(BleCache.mDeviceInfo != null) {
            renderData()
+            setAnylasisData()
         }
     }
     fun setAnylasisData() {
@@ -157,14 +169,18 @@ class GoalProgressFragment : BaseFragment() {
             )
             if (dteps != null && dteps.size > 0) {
                 val lasthr = Helper.convertStringToDate(TIME_JSON_HM, dteps.get(0).time)
-                last_active_hr.text = BaseHelper.parseDate(lasthr, TIME_hM)
+                last_active_hr.text = BaseHelper.parseDate(lasthr,
+                    com.watch.aware.app.helper.Constants.TIMEFORMAT
+                )
                 val avg_steps = (dteps.get(0).total_count.toInt() / (BaseHelper.parseDate(
                     Date(),
                     Constants.TIME_hA
                 ).toInt()))
                 average_steps.text = avg_steps.toString()
-                val sync_date = BaseHelper.parseDate(dteps?.get(0)?.time, Constants.TIME_JSON_HM)
-                last_synced.text = BaseHelper.parseDate(sync_date, Constants.TIME_hM)
+               // val sync_date = BaseHelper.parseDate(dteps?.get(0)?.time, Constants.TIME_JSON_HM)
+                //last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+
+
             }
         } catch (e:Exception) {
 
@@ -257,7 +273,7 @@ class GoalProgressFragment : BaseFragment() {
         try {
             val dteps = dataBaseHelper.getAllSteps("WHERE  date is DATE('"+ BaseHelper.parseDate(
                 Date(), Constants.DATE_JSON)+"') AND time >= CAST ('"+fromnumber+"' as decimal) AND  time < CAST ('"+toNumber+"' " +
-                    "as decimal) ORDER BY Id DESC" )
+                    "as decimal) ORDER BY time DESC" )
             if (dteps.size > 0) {
                 for (step in dteps){
                     stepsCnt = stepsCnt + step.stepCount.toInt()

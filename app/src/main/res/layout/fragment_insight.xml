@@ -29,7 +29,6 @@
                         android:text="Connected"
                         android:drawableRight="@drawable/check_circle"
                         android:drawablePadding="10dp"
-                        android:drawableTint="@color/colorAccent"
                         android:textSize="@dimen/text_small"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="15dp"

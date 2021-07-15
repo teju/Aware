@@ -19,6 +19,11 @@ class UserInfoManager private constructor() {
     private val KEY_GENDER = "key_gender"
     private val KEY_LOGGED_IN = "key_logged_in"
     private val KEY_IS_FIRST_TIME = "key_is_first_time"
+    private val KEY_TIME_FORMAT = "key_time_format"
+    private val KEY_SLEEP_HOURS_START = "key_sleep_hours_start"
+    private val KEY_SLEEP_HOURS_END = "key_sleep_hours_end"
+    private val KEY_GOAL_TYPE = "key_goal_type"
+    private val KEY_GOAL_VALUE= "key_goal_value"
     private var accessToken: String? = null
     private var accountName: String? = ""
     private var email: String? = ""
@@ -27,6 +32,11 @@ class UserInfoManager private constructor() {
     private var gender: String? = ""
     private var isLoggedIn: Boolean = false
     private var isFirstTime: Boolean = false
+    private var timeFormat: Int = 0
+    private var sleepHoursStart = ""
+    private var sleepHourEnd  = ""
+    private var goalType  = 0
+    private var goalValue  = 10000
 
 
     private var prefs: SharedPreferences? = null
@@ -96,6 +106,18 @@ class UserInfoManager private constructor() {
         editor.putString(KEY_GENDER, gender)
         editor.commit()
     }
+    fun saveSleepStartTime(sleepHoursStart: String) {
+        this.sleepHoursStart = sleepHoursStart
+        val editor = this.prefs!!.edit()
+        editor.putString(KEY_SLEEP_HOURS_START, sleepHoursStart)
+        editor.commit()
+    }
+    fun saveSleepEndTime(sleepHourEnd: String) {
+        this.sleepHourEnd = sleepHourEnd
+        val editor = this.prefs!!.edit()
+        editor.putString(KEY_SLEEP_HOURS_END, sleepHourEnd)
+        editor.commit()
+    }
 
     fun saveIsLoggedIn(isLoggedIn: Boolean) {
         this.isLoggedIn = isLoggedIn
@@ -109,7 +131,37 @@ class UserInfoManager private constructor() {
         editor.putBoolean(KEY_IS_FIRST_TIME, isFirstTime)
         editor.commit()
     }
+    fun saveTimeFormat(timeFormat: Int) {
+        this.timeFormat = timeFormat
+        val editor = this.prefs!!.edit()
+        editor.putInt(KEY_TIME_FORMAT, timeFormat)
+        editor.commit()
+    }
+    fun saveGoalType(goalType: Int) {
+        this.goalType = goalType
+        val editor = this.prefs!!.edit()
+        editor.putInt(KEY_GOAL_TYPE, goalType)
+        editor.commit()
+    }
+    fun saveGoalValue(goalValue: Int) {
+        this.goalValue = goalValue
+        val editor = this.prefs!!.edit()
+        editor.putInt(KEY_GOAL_VALUE, goalValue)
+        editor.commit()
+    }
+    fun getGoalType(): Int {
+        this.goalType = this.prefs!!.getInt(KEY_GOAL_TYPE, 0)
+        return goalType!!
+    }
+    fun getGoalValue(): Int {
+        this.goalValue = this.prefs!!.getInt(KEY_GOAL_VALUE, 10000)
+        return goalValue!!
+    }
 
+    fun getTimeFormat(): Int {
+        this.timeFormat = this.prefs!!.getInt(KEY_TIME_FORMAT, 0)
+        return timeFormat!!
+    }
     fun getISLoggedIn(): Boolean {
         this.isLoggedIn = this.prefs!!.getBoolean(KEY_LOGGED_IN, false)
         return isLoggedIn!!
@@ -124,6 +176,15 @@ class UserInfoManager private constructor() {
         this.email = this.prefs!!.getString(KEY_EMAIL, "")
         return email!!
     }
+    fun getSleepHoursStart(): String {
+        this.sleepHoursStart = this.prefs!!.getString(KEY_SLEEP_HOURS_START, "")!!
+        return sleepHoursStart!!
+    }
+    fun getSleepHoursEnd(): String {
+        this.sleepHourEnd = this.prefs!!.getString(KEY_SLEEP_HOURS_END, "")!!
+        return sleepHourEnd!!
+    }
+
     fun getAge(): String {
         this.age = this.prefs!!.getString(KEY_AGE, "")
         return age!!

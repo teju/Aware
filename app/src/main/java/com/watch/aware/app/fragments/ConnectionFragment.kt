@@ -48,21 +48,16 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
                             search.text = "Searching ..."
                         } else {
                             search.text = "Scan"
-                            if(BleCache.mDeviceInfo == null) {
-                                if(arrayList.size != 0) {
-                                    showDeviceListingDialog(
-                                        arrayList,
-                                        object : DeviceItemClickListener {
-                                            override fun onItemClick(pos: Int) {
-                                                BleConnector.setBleDevice(arrayList.get(pos))
-                                                    .connect(true)
-                                            }
+                            if(arrayList.size != 0) {
+                                showDeviceListingDialog(
+                                    arrayList,
+                                    object : DeviceItemClickListener {
+                                        override fun onItemClick(pos: Int) {
+                                            BleConnector.setBleDevice(arrayList.get(pos))
+                                                .connect(true)
+                                        }
 
-                                        })
-                                }
-
-                            } else {
-                                home()?.setFragment(CoughSettingsFragment())
+                                    })
                             }
                         }
                     } catch (e:java.lang.Exception) {

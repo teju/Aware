@@ -15,6 +15,7 @@ import com.szabh.smable3.component.BleHandleCallback
 import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_fitness.*
@@ -105,15 +106,16 @@ class FitnessFragment : BaseFragment() {
         val stepsArray = lastestHRSteps()
         if(stepsArray?.size != 0) {
             val sync_date = BaseHelper.parseDate(stepsArray?.get(0)?.time,Constants.TIME_JSON_HM)
-            last_synced.text = BaseHelper.parseDate(sync_date,Constants.TIME_hM)
-            calories.text = stepsArray?.get(0)?.total_cal
-            dist.text = String.format("%.2f",stepsArray?.get(0)?.total_dist)
-            steps.text = stepsArray?.get(0)?.total_count
+            last_synced.text = BaseHelper.parseDate(sync_date,TIMEFORMAT)
+            calories.text = stepsArray?.get(0)?.total_cal.toString()
+            dist.text = String.format("%.2f",stepsArray?.get(0)?.total_dist?.toDouble())
+            steps.text = stepsArray?.get(0)?.total_count.toString()
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         try {
             BleConnector.addHandleCallback(mBleHandleCallback)
             syncing_fitness.visibility = View.VISIBLE
@@ -129,13 +131,23 @@ class FitnessFragment : BaseFragment() {
             setData()
 
         } catch (e:java.lang.Exception){
+            e.printStackTrace()
         }
         refresh.setOnClickListener {
             swiperefresh_items.setRefreshing(true);
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }
+        if(!BleConnector.isAvailable()) {
+            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+
+        }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden) {
+            setData()
+        }
+    }
 
     fun onConnected() {
         try {

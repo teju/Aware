@@ -35,10 +35,12 @@ import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Constants.Companion.COUGH
+import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_insight.*
+
 
 import java.util.*
 import kotlin.collections.ArrayList
@@ -113,8 +115,9 @@ class InsightsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         BleConnector.addHandleCallback(mBleHandleCallback)
-        getWeeklyEntries()
+
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
 
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
@@ -125,6 +128,10 @@ class InsightsFragment : BaseFragment() {
             swiperefresh_items.setRefreshing(true);
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
             connect()
+        }
+        if(!BleConnector.isAvailable()) {
+            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+
         }
         try {
             setHeartData()
@@ -147,7 +154,30 @@ class InsightsFragment : BaseFragment() {
 
         connect()
         welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
-        last_synced.text =  BaseHelper.parseDate(Date(), Constants.TIME_hMA)
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        if(!hidden) {
+            try {
+                setHeartData()
+                setSPoData()
+                setDistanceData()
+                setStepsData()
+                setCaloriesData()
+                setTempData()
+            }catch (e : Exception){
+
+            }
+            if(COUGH == 1) {
+                cough.text = "Yes"
+                cough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
+            } else {
+                cough.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
+                cough.text = "NO"
+
+            }
+
+        }
     }
 
     fun connect() {
@@ -163,7 +193,7 @@ class InsightsFragment : BaseFragment() {
     }
     fun setCaloriesData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("ORDER by Id DESC LIMIT 1")
+        val diatnceArray = db.getAllSteps("Where cal > 0 ORDER by time DESC LIMIT 1")
         if(diatnceArray.size != 0) {
             calories.text = diatnceArray.get(0).total_cal.toString()
 
@@ -191,7 +221,7 @@ class InsightsFragment : BaseFragment() {
 
     fun setDistanceData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("ORDER by Id DESC LIMIT 1")
+        val diatnceArray = db.getAllSteps("Where distance > 0 ORDER by time DESC LIMIT 1")
         if(diatnceArray.size != 0) {
             distance.text = diatnceArray.get(0).total_dist.toString() +" km"
 
@@ -218,7 +248,7 @@ class InsightsFragment : BaseFragment() {
     }
     fun setStepsData() {
         val db = DataBaseHelper(activity!!)
-        val stepsArray = db.getAllSteps("Where total_count > 0 ORDER by Id DESC LIMIT 1")
+        val stepsArray = db.getAllSteps("Where total_count > 0 ORDER by time DESC LIMIT 1")
         if(stepsArray.size != 0) {
             stepsCount.text = stepsArray.get(0).total_count.toString()
 
@@ -240,8 +270,8 @@ class InsightsFragment : BaseFragment() {
             } else {
                 steps_last_sync.text = stepsArray.get(0).date
             }
+            last_synced.text =  BaseHelper.parseDate(parsetime, TIMEFORMAT)
         }
-
     }
 
     fun setHeartData() {

@@ -11,7 +11,10 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.amitshekhar.utils.DatabaseHelper
 import com.iapps.libs.helpers.BaseHelper
+import com.iapps.libs.objects.LastSyncDate
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_hM
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
@@ -24,6 +27,8 @@ import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Constants.Companion.COUGH
 import com.watch.aware.app.helper.Constants.Companion.HR
 import com.watch.aware.app.helper.Constants.Companion.SPO2
+import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
+import com.watch.aware.app.helper.Constants.Companion.TWELVE_HOUR_FORMAT
 import com.watch.aware.app.helper.Constants.Companion.Temp
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
@@ -48,8 +53,8 @@ class WelnessFragment : BaseFragment() {
     lateinit var postGetCovidStatusDataViewModel: PostCovidStatusDataViewModel
     lateinit var postUpdateProfileModel: PostUpdateProfileModel
 
-
-
+    var diffDaysSpo: LastSyncDate? = null
+    var diffHeartRate : LastSyncDate? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,10 +117,10 @@ class WelnessFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setGetCovidStatusDataAPIObserver()
         setUpdateProfileAPIObserver()
         syncing.visibility = View.VISIBLE
+
         BleConnector.addHandleCallback(mBleHandleCallback)
         var deviceAddress = ""
         if(BleCache.mDeviceInfo != null) {
@@ -124,16 +129,16 @@ class WelnessFragment : BaseFragment() {
         }
         if( UserInfoManager.getInstance(activity!!).getISFirstTime()) {
             postUpdateProfileModel.loadData(
-                "",
-                "",
+                UserInfoManager.getInstance(activity!!).getAccountName(),
+                UserInfoManager.getInstance(activity!!).getAge(),
                 UserInfoManager.getInstance(activity!!).getEmail(),
-                "",
-                "",
+                UserInfoManager.getInstance(activity!!).getContactNumber(),
+                UserInfoManager.getInstance(activity!!).getGEnder(),
                 deviceAddress
             )
-            UserInfoManager.getInstance(activity!!).saveIsFirstTime(false)
 
         }
+
         runTimer()
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
@@ -171,8 +176,15 @@ class WelnessFragment : BaseFragment() {
             if(swiperefresh_items.isRefreshing) {
                 swiperefresh_items.setRefreshing(false);
             }
-            if(heartRates.size != 0 || spoRates.size != 0) {
-                postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
+            if(!BleConnector.isAvailable()) {
+                connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+            } else {
+                if (heartRates.size != 0 && spoRates.size != 0) {
+                    postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
+                } else{
+                    info_txt.text = "Please wait, data being transferred ..."
+                    info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
+                }
             }
         syncing.visibility = View.GONE
             if(COUGH == 1) {
@@ -189,28 +201,37 @@ class WelnessFragment : BaseFragment() {
 
     fun setHeartData() {
         val db = DataBaseHelper(activity!!)
-        heartRates = db.getAllHeartRate("Where heartRate != 0 AND" +
-                " date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER by Id DESC")
+        heartRates = db.getAllHeartRate("Where heartRate != 0  ORDER by Id DESC")
         if(heartRates.size != 0) {
             try {
-                heartlastsynced =
-                    BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
-                if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() >
-                    BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
-                ) {
-                    last_synced.text = BaseHelper.parseDate(heartlastsynced, Constants.TIME_hMA)
+                heartlastsynced = BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
+                val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
+                diffHeartRate = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
+                    BaseHelper.parseDate(heartRates.get(0).date,Constants.DATE_JSON))
+                if(diffHeartRate?.days?.toInt()!! < diffDaysSpo?.days?.toInt()!!) {
+                    if(diffHeartRate?.days?.toInt() == 0) {
+                        if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
+                            BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
+                            last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
+                        }
+                    } else if(diffHeartRate?.days?.toInt() == 1) {
+                        last_synced.text = "Yesterday"
+                    }
+                    else {
+                        last_synced.text = heartRates.get(0).date
+                    }
                 }
             }catch (e:Exception) {
-                last_synced.text = BaseHelper.parseDate(heartlastsynced, Constants.TIME_hMA)
+                last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
             }
             heart_rate.text = heartRates.get(0).heartRate.toString()
             HR = heartRates.get(0).heartRate.toInt()
         }
     }
+
     fun setTempData() {
         val db = DataBaseHelper(activity!!)
-        val tempRates = db.getAllTemp("Where TempRate != 0 AND" +
-                " date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER by Id DESC")
+        val tempRates = db.getAllTemp("Where TempRate != 0 ORDER by Id DESC")
         if(tempRates.size != 0) {
             temp.text = String.format("%.1f",tempRates.get(0).tempRate)
             Temp = tempRates.get(0).tempRate.toDouble()
@@ -219,18 +240,30 @@ class WelnessFragment : BaseFragment() {
 
     fun setSPoData() {
         val db = DataBaseHelper(activity!!)
-        spoRates = db.getAllSpoRate("Where SpoRate != 0 AND" +
-                " date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER BY Id DESC")
+        spoRates = db.getAllSpoRate("Where SpoRate != 0 ORDER BY Id DESC")
         if(spoRates.size != 0) {
             try {
                 spolastsynced = BaseHelper.parseDate(spoRates.get(0).time, Constants.TIME_JSON_HM)
-                if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() <
-                    BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
-                ) {
-                    last_synced.text = BaseHelper.parseDate(spolastsynced, Constants.TIME_hMA)
+                val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
+                diffDaysSpo = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
+                    BaseHelper.parseDate(spoRates.get(0).date,Constants.DATE_JSON))
+                if(diffHeartRate?.days?.toInt()!! > diffDaysSpo?.days?.toInt()!!) {
+                    if (diffDaysSpo?.days?.toInt() == 0) {
+                        if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM)
+                                .toDouble() <
+                            BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
+                        ) {
+                            last_synced.text =
+                                BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+                        }
+                    } else if (diffDaysSpo?.days?.toInt() == 1) {
+                        last_synced.text = "Yesterday"
+                    } else {
+                        last_synced.text = spoRates.get(0).date
+                    }
                 }
             }catch (e:Exception){
-                last_synced.text = BaseHelper.parseDate(spolastsynced, Constants.TIME_hMA)
+                last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
             }
             oxygen_level.text = spoRates.get(0).spoRate.toString()
             SPO2 = spoRates.get(0).spoRate
@@ -311,7 +344,8 @@ class WelnessFragment : BaseFragment() {
                 isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
                 getTrigger().observe(thisFragReference, Observer { state ->
                     when (state) {
-                        PostRegisterViewModel.NEXT_STEP -> {
+                        PostUpdateProfileModel.NEXT_STEP -> {
+                            UserInfoManager.getInstance(activity!!).saveIsFirstTime(false)
 
                         }
                         PostRegisterViewModel.ERROR -> {

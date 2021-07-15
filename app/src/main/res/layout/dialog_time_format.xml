@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/transparent"
+    app:cardBackgroundColor="@color/transparent"
+    android:layout_margin="10dp"
+    app:cardCornerRadius="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/White"
+        android:orientation="vertical"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/twelve_hr"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="12 hour format"
+                android:fontFamily="@font/opensansregular"
+                android:layout_centerVertical="true"
+                android:padding="15dp"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content">
+            </TextView>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true"
+                android:id="@+id/twenty_four_tick"
+                android:src="@drawable/check_circle"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:layout_height="wrap_content">
+
+            </ImageView>
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/WhiteSmoke"
+            android:layout_height="1dp"></View>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/twenty_fout_hr"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="24 hour format"
+                android:fontFamily="@font/opensansregular"
+                android:layout_centerVertical="true"
+                android:padding="15dp"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content">
+            </TextView>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true"
+                android:id="@+id/twelve_tick"
+                android:layout_marginRight="10dp"
+                android:visibility="gone"
+                android:src="@drawable/check_circle"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content">
+
+            </ImageView>
+        </RelativeLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

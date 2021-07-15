@@ -57,12 +57,12 @@ class ProfileUpdateFragment : BaseFragment() {
         email.setText(UserInfoManager.getInstance(activity!!).getEmail())
         contact_number.setText(UserInfoManager.getInstance(activity!!).getContactNumber())
         age.setText(UserInfoManager.getInstance(activity!!).getAge())
-        if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("M")) {
-            male.isChecked = true
-            female.isChecked = false
-        } else{
+        if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
             male.isChecked = false
             female.isChecked = true
+        } else{
+            male.isChecked = true
+            female.isChecked = false
         }
     }
     fun validate() :Boolean {

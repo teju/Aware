@@ -1823,7 +1823,7 @@ public class BaseHelper {
 	}
 	public static LastSyncDate printDifference(Date startDate, Date endDate) {
 		//milliseconds
-		long different = endDate.getTime() - startDate.getTime();
+		long different = startDate.getTime() - endDate.getTime();
 
 		System.out.println("startDate : " + startDate+" endDate : "+ endDate+ "different : " + different);
 

@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
@@ -25,13 +26,14 @@ import com.szabh.smable3.entity.BleHeartRate
 import com.szabh.smable3.entity.BleTemperature
 import com.watch.aware.app.MainActivity
 import com.watch.aware.app.R
+import com.watch.aware.app.callback.EditSlotsListener
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.callback.PermissionListener
+import com.watch.aware.app.fragments.dialog.EditSleepDialogFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.helper.Constants.Companion.COUGH
 import com.watch.aware.app.helper.Constants.Companion.HR
 import com.watch.aware.app.helper.Constants.Companion.SPO2
-import com.watch.aware.app.helper.Constants.Companion.TIME_JSON_HM
 import com.watch.aware.app.helper.Constants.Companion.Temp
 import com.watch.aware.app.helper.Constants.Companion._activity
 import com.watch.aware.app.helper.DataBaseHelper
@@ -299,6 +301,12 @@ open class BaseFragment : GenericFragment() {
             f.show(activity!!.supportFragmentManager, NotifyDialogFragment.TAG)
         }
     }
+    open fun showEDitSlotsDialog(n: EditSlotsListener?) {
+        val f = EditSleepDialogFragment()
+        f.listener = n
+        f.setCancelable(true)
+        f.show(activity!!.supportFragmentManager, EditSleepDialogFragment.TAG)
+    }
 
     fun heartRateInsert(heartRates: List<BleHeartRate>) {
         val dataBaseHelper = DataBaseHelper(activity)
@@ -306,9 +314,21 @@ open class BaseFragment : GenericFragment() {
             dataBaseHelper.heartInsert(dataBaseHelper,heartrate.mBpm,BaseHelper.parseDate(Date(),
                 Constants.DATE_JSON),epcoToDate(heartrate.mTime))
         }
-        if(dataBaseHelper.getAllTemp("Where date is date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"')").size == 0) {
-            dataBaseHelper.TempInsert(dataBaseHelper,36.1,BaseHelper.parseDate(Date(),
-                Constants.DATE_JSON),epcoToDate(heartRates.get(0).mTime))
+        if(heartRates.get(0).mBpm != 0) {
+            if (dataBaseHelper.getAllTemp(
+                    "Where date is date is DATE('" + BaseHelper.parseDate(
+                        Date(),
+                        Constants.DATE_JSON
+                    ) + "')"
+                ).size == 0
+            ) {
+                dataBaseHelper.TempInsert(
+                    dataBaseHelper, 36.1, BaseHelper.parseDate(
+                        Date(),
+                        Constants.DATE_JSON
+                    ), epcoToDate(heartRates.get(0).mTime)
+                )
+            }
         }
     }
     fun SpoRateInsert(bloodOxygen: List<BleBloodOxygen>) {
@@ -324,7 +344,6 @@ open class BaseFragment : GenericFragment() {
             dataBaseHelper.TempInsert(dataBaseHelper,temp.mTemperature.toDouble(),BaseHelper.parseDate(Date(),
                 Constants.DATE_JSON),epcoToDate(temp.mTime))
         }
-
     }
 
     fun insertStepData(activities: List<BleActivity>) {
@@ -338,46 +357,49 @@ open class BaseFragment : GenericFragment() {
                 val dist : Double = mDist  - lasthrdist
                 val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
                 val steps = (a.mStep - lastHRSteps.get(0).total_count.toInt())
+
                 dataBaseHelper.stepsInsert(
                     dataBaseHelper,
                     steps.toString(),
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    String.format("%.3f",dist),
+                    String.format("%.3f", dist),
                     (cal.toInt()).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep,mDist,
-                    activities[0].mCalorie/10000," time : "+epcoToDate(a.mTime)+
-                            "\ntotal_count: "+activities[0].mStep+
-                            "\nmStep : "+a.mStep+
-                            "\nlastHRSteps : "+lastHRSteps.get(0).total_count.toInt()+
-                            "\nSubtract : "+((a.mStep - lastHRSteps.get(0).total_count.toInt())))
-            } else {
-                val mDistance = (activities.get(0).mDistance/10000).toDouble()
-                val mDist = (mDistance/1000).toDouble()
-                dataBaseHelper.stepsInsert(
-                    dataBaseHelper,
-                    a.mStep.toString(),
-                    BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    String.format("%.3f",mDist),
-                    ((a.mCalorie / 10000)).toString(),
                     epcoToDate(a.mTime), activities[0].mStep, mDist,
-                    activities[0].mCalorie/10000,
-                    " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : "+a.mStep)
+                    activities[0].mCalorie / 10000, " time : " + epcoToDate(a.mTime) +
+                            "\ntotal_count: " + activities[0].mStep +
+                            "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
+                            "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt()))
+                )
+
+            } else {
+                val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "')  ORDER BY Id DESC LIMIT 1")
+                if(dteps.size == 0) {
+                    val mDistance = (activities.get(0).mDistance/10000).toDouble()
+                    val mDist = (mDistance/1000).toDouble()
+                    dataBaseHelper.stepsInsert(
+                        dataBaseHelper,
+                        a.mStep.toString(),
+                        BaseHelper.parseDate(Date(), Constants.DATE_JSON),
+                        String.format("%.3f",mDist),
+                        ((a.mCalorie / 10000)).toString(),
+                        epcoToDate(a.mTime), activities[0].mStep, mDist,
+                        activities[0].mCalorie/10000,
+                        " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : "+a.mStep)
+                }
             }
-
-
     }
 
     fun lastHRSteps(mTime: String): List<Steps>? {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                "AND total_count != 0  AND time != '"+mTime+"' ORDER BY Id DESC LIMIT 1")
+                "AND total_count != 0  AND time != '"+mTime+"' ORDER BY time DESC")
         return dteps
     }
 
     fun lastestHRSteps(): List<Steps>? {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                " AND stepsCount != 0 ORDER BY Id DESC LIMIT 1")
+                " AND stepsCount != 0 ORDER BY time DESC LIMIT 1")
         return dteps
     }
     fun runTimer( ){
@@ -386,8 +408,10 @@ open class BaseFragment : GenericFragment() {
             override fun run() {
                 try {
                     if(BleCache.mDeviceInfo?.mBleName != null){
-                        postSaveDeviceDataViewModel.loadData(SPO2,HR, Temp, COUGH,
-                            BleCache.mDeviceInfo?.mBleAddress!!, _activity, Helper.getCurrentDate().toString())
+                        if(SPO2 != 0 && HR != 0 && Temp != 0.0) {
+                            postSaveDeviceDataViewModel.loadData(SPO2,HR, Temp, COUGH,
+                                BleCache.mDeviceInfo?.mBleAddress!!, _activity, Helper.getCurrentDate().toString())
+                        }
                         Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
                     }
                 } catch (e: java.lang.Exception) {

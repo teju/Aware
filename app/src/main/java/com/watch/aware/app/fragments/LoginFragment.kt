@@ -18,7 +18,6 @@ import com.watch.aware.app.webservices.PostLoginViewModel
 import com.watch.aware.app.webservices.PostRegisterViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
 
-
 class LoginFragment : BaseFragment(),View.OnClickListener {
     lateinit var postLoginFragment: PostLoginViewModel
 
@@ -90,8 +89,11 @@ class LoginFragment : BaseFragment(),View.OnClickListener {
                 isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
                 getTrigger().observe(thisFragReference, Observer { state ->
                     when (state) {
-                        PostRegisterViewModel.NEXT_STEP -> {
+                        PostLoginViewModel.NEXT_STEP -> {
                             home()?.setFragment(RegistrationSuccessFragment())
+                            if(obj?.Name != null) {
+                                UserInfoManager.getInstance(activity!!).saveAccountName(obj?.Name!!)
+                            }
                             UserInfoManager.getInstance(activity!!).saveEmail(email.text.toString())
                             UserInfoManager.getInstance(activity!!).saveIsLoggedIn(true)
                             UserInfoManager.getInstance(activity!!).saveIsFirstTime(true)

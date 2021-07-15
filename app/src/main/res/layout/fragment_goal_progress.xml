@@ -28,7 +28,6 @@
                         android:text="Connected"
                         android:drawableRight="@drawable/check_circle"
                         android:drawablePadding="10dp"
-                        android:drawableTint="@color/colorAccent"
                         android:textSize="@dimen/text_small"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="15dp"
@@ -116,7 +115,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginTop="20dp"
                     app:background_progressbar_color="@color/WhiteSmoke"
-                    app:background_progressbar_width="25dp"
+                    app:background_progressbar_width="15dp"
                     app:progressbar_color="@color/colorAccent"
                     app:progressbar_width="10dp" />
 
