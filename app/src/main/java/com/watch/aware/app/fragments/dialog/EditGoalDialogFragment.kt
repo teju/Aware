@@ -42,6 +42,21 @@ class EditGoalDialogFragment : DialogFragment() ,View.OnClickListener{
         cal.setOnClickListener(this)
         dist.setOnClickListener(this)
         done.setOnClickListener(this)
+
+        if( UserInfoManager.getInstance(activity!!).getGoalType() == Constants.STEPS_GOAL) {
+            steps.isChecked = true
+            cal.isChecked = false
+            dist.isChecked = false
+        } else if( UserInfoManager.getInstance(activity!!).getGoalType() == Constants.CAL_GOAL) {
+            steps.isChecked = false
+            cal.isChecked = true
+            dist.isChecked = false
+        } else{
+            steps.isChecked = false
+            cal.isChecked = false
+            dist.isChecked = true
+        }
+        goal_value.setText(UserInfoManager.getInstance(activity!!).getGoalValue().toString())
     }
 
 

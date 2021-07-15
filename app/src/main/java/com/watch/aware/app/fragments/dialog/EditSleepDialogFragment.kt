@@ -100,6 +100,7 @@ class EditSleepDialogFragment : DialogFragment(),TimePicker.OnTimeChangedListene
             dismiss()
         }
     }
+
     override fun onTimeChanged(view: TimePicker?, hourOfDay: Int, minute: Int) {
         hour = hourOfDay
         minutes = minute
