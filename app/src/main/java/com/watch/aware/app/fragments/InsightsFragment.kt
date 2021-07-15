@@ -248,30 +248,47 @@ class InsightsFragment : BaseFragment() {
     }
     fun setStepsData() {
         val db = DataBaseHelper(activity!!)
-        val stepsArray = db.getAllSteps("Where total_count > 0 ORDER by time DESC LIMIT 1")
-        if(stepsArray.size != 0) {
-            stepsCount.text = stepsArray.get(0).total_count.toString()
+        try {
+            val stepsArray = db.getAllSteps("Where total_count > 0 ORDER by time DESC LIMIT 1")
+            if (stepsArray.size != 0) {
+                stepsCount.text = stepsArray.get(0).total_count.toString()
 
-            val parsetime = BaseHelper.parseDate(stepsArray.get(0).time,Constants.TIME_JSON_HM)
-            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
-            val lastSyncDateStr = BaseHelper.parseDate(stepsArray.get(0).date +" "+
-                    BaseHelper.parseDate(parsetime,Constants.TIME_JSON_HM_),Constants.DATE_TIME)
-            val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr,Constants.DATE_TIME)
-            val diff = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_TIME),BaseHelper.parseDate(lastSyncDate,Constants.DATE_TIME))
-            System.out.println(" ")
-            if(diff.days.toInt() == 0) {
-                if(diff.hours.toInt() == 0) {
-                    steps_last_sync.text = "Current"
-                } else{
-                    steps_last_sync.text =  Math.abs(diff.hours).toInt().toString()+ " hours ago"
+                val parsetime = BaseHelper.parseDate(stepsArray.get(0).time, Constants.TIME_JSON_HM)
+                val today_date = BaseHelper.parseDate(Date(), Constants.DATE_TIME)
+                val lastSyncDateStr = BaseHelper.parseDate(
+                    stepsArray.get(0).date + " " +
+                            BaseHelper.parseDate(parsetime, Constants.TIME_JSON_HM_),
+                    Constants.DATE_TIME
+                )
+                val lastSyncDate = BaseHelper.parseDate(lastSyncDateStr, Constants.DATE_TIME)
+                val diff = BaseHelper.printDifference(
+                    BaseHelper.parseDate(
+                        today_date,
+                        Constants.DATE_TIME
+                    ), BaseHelper.parseDate(lastSyncDate, Constants.DATE_TIME)
+                )
+                System.out.println(" ")
+                if (diff.days.toInt() == 0) {
+                    if (diff.hours.toInt() == 0) {
+                        steps_last_sync.text = "Current"
+                    } else {
+                        steps_last_sync.text =
+                            Math.abs(diff.hours).toInt().toString() + " hours ago"
+                    }
+                } else if (diff.days.toInt() == 1) {
+                    steps_last_sync.text = "Yesterday"
+                } else {
+                    steps_last_sync.text = stepsArray.get(0).date
                 }
-            } else if(diff.days.toInt() == 1) {
-                steps_last_sync.text = "Yesterday"
-            } else {
-                steps_last_sync.text = stepsArray.get(0).date
             }
-            last_synced.text =  BaseHelper.parseDate(parsetime, TIMEFORMAT)
+        } catch (e:java.lang.Exception) {
+
         }
+        val activities = db.getAllSteps("WHERE  " +
+                "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') AND stepsCount != 0 ORDER BY time DESC")
+        val lastSync =  BaseHelper.parseDate(activities.get(0).time,Constants.TIME_JSON_HM)
+        last_synced.text = BaseHelper.parseDate(lastSync, TIMEFORMAT)
+
     }
 
     fun setHeartData() {

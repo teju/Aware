@@ -1,7 +1,7 @@
 package com.iapps.libs.objects;
 
 public class LastSyncDate {
-    public long days;
+    public long days = 0;
 
     public long getDays() {
         return days;
@@ -19,6 +19,6 @@ public class LastSyncDate {
         this.hours = hours;
     }
 
-    public long hours;
+    public long hours = 0;
 
 }

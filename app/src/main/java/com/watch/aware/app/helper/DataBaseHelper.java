@@ -155,11 +155,12 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
+
             for (Steps data : dataListList) {
                 System.out.println(" DataBaseHelper123 getAllSteps Data :"
                         + data.getID() +
                         " time " + data.getTime() +
-                        " date " + data.getDate() + " total " + data.getTotal_count());
+                        " date " + data.getDate() + " total " + data.getMaxStepCount());
 
             }
             System.out.println("DataBaseHelper123 getAllSteps " + selectQuery + " dataListList " + dataListList.size());
@@ -167,6 +168,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         }
         return dataListList;
+    }
+    public int getMaxSteps(String where) {
+       int maxStep = 0;
+        try {
+
+            String selectQuery = "SELECT rowid, Max(stepsCount) as MAxCount FROM StepsCount " + where;
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            cursor.moveToFirst();
+            maxStep = cursor.getInt(1);
+
+        } catch (Exception e){
+
+        }
+        return maxStep;
     }
 
     public List<com.watch.aware.app.models.HeartRate> getAllHeartRate(String where) {

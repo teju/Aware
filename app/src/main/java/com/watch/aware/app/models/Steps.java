@@ -5,6 +5,16 @@ public class Steps {
     String stepCount = "0";
     String distance;
 
+    public int getMaxStepCount() {
+        return maxStepCount;
+    }
+
+    public void setMaxStepCount(int maxStepCount) {
+        this.maxStepCount = maxStepCount;
+    }
+
+    int maxStepCount = 0;
+
     public String getLogs() {
         return Logs;
     }

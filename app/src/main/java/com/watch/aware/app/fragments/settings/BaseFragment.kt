@@ -357,42 +357,40 @@ open class BaseFragment : GenericFragment() {
                 val dist : Double = mDist  - lasthrdist
                 val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
                 val steps = (a.mStep - lastHRSteps.get(0).total_count.toInt())
-
-                dataBaseHelper.stepsInsert(
-                    dataBaseHelper,
-                    steps.toString(),
-                    BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    String.format("%.3f", dist),
-                    (cal.toInt()).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep, mDist,
-                    activities[0].mCalorie / 10000, " time : " + epcoToDate(a.mTime) +
-                            "\ntotal_count: " + activities[0].mStep +
-                            "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
-                            "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt()))
-                )
-
-            } else {
-                val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "')  ORDER BY Id DESC LIMIT 1")
-                if(dteps.size == 0) {
-                    val mDistance = (activities.get(0).mDistance/10000).toDouble()
-                    val mDist = (mDistance/1000).toDouble()
+                if(epcoToDate(a.mTime).toDouble() >  0.005) {
                     dataBaseHelper.stepsInsert(
                         dataBaseHelper,
-                        a.mStep.toString(),
+                        steps.toString(),
                         BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                        String.format("%.3f",mDist),
-                        ((a.mCalorie / 10000)).toString(),
+                        String.format("%.3f", dist),
+                        (cal.toInt()).toString(),
                         epcoToDate(a.mTime), activities[0].mStep, mDist,
-                        activities[0].mCalorie/10000,
-                        " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : "+a.mStep)
+                        activities[0].mCalorie / 10000, " time : " + epcoToDate(a.mTime) +
+                                "\ntotal_count: " + activities[0].mStep +
+                                "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
+                                "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt()))
+                    )
                 }
+            } else {
+                val mDistance = (activities.get(0).mDistance/10000).toDouble()
+                val mDist = (mDistance/1000).toDouble()
+                dataBaseHelper.stepsInsert(
+                    dataBaseHelper,
+                    a.mStep.toString(),
+                    BaseHelper.parseDate(Date(), Constants.DATE_JSON),
+                    String.format("%.3f",mDist),
+                    ((a.mCalorie / 10000)).toString(),
+                    epcoToDate(a.mTime), activities[0].mStep, mDist,
+                    activities[0].mCalorie/10000,
+                    " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : "+a.mStep)
+
             }
     }
 
     fun lastHRSteps(mTime: String): List<Steps>? {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                "AND total_count != 0  AND time != '"+mTime+"' ORDER BY time DESC")
+                "AND total_count != 0  ORDER BY time DESC")
         return dteps
     }
 

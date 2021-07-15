@@ -5,15 +5,11 @@
     android:id="@+id/swiperefresh_items"
     android:layout_height="match_parent"
     android:background="@color/white"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-        <ScrollView android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:layout_width="match_parent">
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
+    xmlns:android="http://schemas.android.com/apk/res/android">oer
+    
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -117,24 +113,15 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <ImageView
-                        android:layout_width="500dp"
+                        android:layout_width="300dp"
                         android:layout_centerInParent="true"
                         android:adjustViewBounds="true"
                         android:src="@drawable/circle"
-                        android:layout_height="500dp"
+                        android:layout_height="300dp"
                         android:id="@+id/circle"
                         app:tint="@color/white">
-                    </ImageView>
-                    <ImageView
-                        android:layout_width="500dp"
-                        android:layout_centerInParent="true"
-                        android:adjustViewBounds="true"
-                        android:id="@+id/human"
-                        android:src="@drawable/human_male"
-                        android:layout_height="500dp"
-                        app:tint="@color/black">
-
                     </ImageView>
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -228,6 +215,15 @@
                             </LinearLayout>
 
                         </LinearLayout>
+                        <ImageView
+                            android:layout_width="500dp"
+                            android:layout_centerInParent="true"
+                            android:adjustViewBounds="true"
+                            android:id="@+id/human"
+                            android:src="@drawable/human_male"
+                            android:layout_height="match_parent"
+                            app:tint="@color/black">
+                        </ImageView>
 
                     </RelativeLayout>
                     <RelativeLayout
@@ -324,6 +320,5 @@
                     android:layout_height="match_parent"
                     android:background="@color/transparent"
                     android:visibility="gone" />
-            </FrameLayout>
-    </ScrollView>
+    </FrameLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

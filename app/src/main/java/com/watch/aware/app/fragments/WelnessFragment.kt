@@ -208,7 +208,19 @@ class WelnessFragment : BaseFragment() {
                 val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
                 diffHeartRate = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
                     BaseHelper.parseDate(heartRates.get(0).date,Constants.DATE_JSON))
-                if(diffHeartRate?.days?.toInt()!! < diffDaysSpo?.days?.toInt()!!) {
+                if(diffDaysSpo == null) {
+                    if(diffHeartRate?.days?.toInt() == 0) {
+                        if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
+                            BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
+                            last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
+                        }
+                    } else if(diffHeartRate?.days?.toInt() == 1) {
+                        last_synced.text = "Yesterday"
+                    }
+                    else {
+                        last_synced.text = heartRates.get(0).date
+                    }
+                } else if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
                     if(diffHeartRate?.days?.toInt() == 0) {
                         if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
                             BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
@@ -247,7 +259,23 @@ class WelnessFragment : BaseFragment() {
                 val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
                 diffDaysSpo = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
                     BaseHelper.parseDate(spoRates.get(0).date,Constants.DATE_JSON))
-                if(diffHeartRate?.days?.toInt()!! > diffDaysSpo?.days?.toInt()!!) {
+                if(diffHeartRate == null) {
+                    if (diffDaysSpo?.days?.toInt() == 0) {
+                        if (heartlastsynced != null && BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM)
+                                .toDouble() <
+                            BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
+                        ) {
+                            last_synced.text =
+                                BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+                        }
+                    } else if (diffDaysSpo?.days?.toInt() == 1) {
+                        last_synced.text = "Yesterday"
+                    } else {
+                        last_synced.text = spoRates.get(0).date
+                    }
+
+                } else
+                if(diffHeartRate?.days?.toInt()!! <= diffDaysSpo?.days?.toInt()!!) {
                     if (diffDaysSpo?.days?.toInt() == 0) {
                         if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM)
                                 .toDouble() <
@@ -263,7 +291,7 @@ class WelnessFragment : BaseFragment() {
                     }
                 }
             }catch (e:Exception){
-                last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+                e.printStackTrace()
             }
             oxygen_level.text = spoRates.get(0).spoRate.toString()
             SPO2 = spoRates.get(0).spoRate

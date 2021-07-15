@@ -719,7 +719,7 @@ object Helper {
         val calendar = Calendar.getInstance()
         calendar.time = myDate
         val time = calendar.time
-        val outputFmt = SimpleDateFormat("YYYY-MM-dd HH:MM:SS zz")
+        val outputFmt = SimpleDateFormat("yyyy-MM-dd hh:mm:ss zz")
         outputFmt.setTimeZone(TimeZone.getTimeZone("UTC"));
         val dateAsString = outputFmt.format(time)
         return dateAsString
