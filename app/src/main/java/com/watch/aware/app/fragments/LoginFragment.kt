@@ -98,7 +98,9 @@ class LoginFragment : BaseFragment(),View.OnClickListener {
                             UserInfoManager.getInstance(activity!!).saveIsLoggedIn(true)
                             UserInfoManager.getInstance(activity!!).saveIsFirstTime(true)
                             if(BleCache.mDeviceInfo == null) {
-                                home()?.setFragment(ConnectionFragment())
+                                home()?.setFragment(ConnectionFragment().apply {
+
+                                })
                             } else{
                                 home()?.setFragment(CoughSettingsFragment())
                             }

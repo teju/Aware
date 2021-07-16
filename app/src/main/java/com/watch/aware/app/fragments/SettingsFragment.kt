@@ -63,6 +63,7 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
             }
             R.id.unbind -> {
                 BleConnector.unbind()
+                BleConnector.closeConnection(true)
             }
             R.id.goal -> {
                 val f = EditGoalDialogFragment()
@@ -70,7 +71,9 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
                 f.show(activity!!.supportFragmentManager, EditGoalDialogFragment.TAG)
             }
             R.id.in_app_paring -> {
-                home()?.setFragment(ConnectionFragment())
+                home()?.setFragment(ConnectionFragment().apply {
+                    isFromSettings = true
+                })
             }
             R.id.time_format -> {
                 val f = TimeFormatDialogFragment()

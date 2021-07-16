@@ -349,41 +349,59 @@ open class BaseFragment : GenericFragment() {
     fun insertStepData(activities: List<BleActivity>) {
         val dataBaseHelper = DataBaseHelper(activity)
             val a = activities.get(0)
-            val lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
-            if(lastHRSteps != null && lastHRSteps.size != 0) {
+        var lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
+        if(epcoToDate(a.mTime).toDouble() <  0.005) {
+            dataBaseHelper.stepsInsert(
+                dataBaseHelper,
+                "0",
+                BaseHelper.parseDate(Date(), Constants.DATE_JSON),
+                "0",
+                "0",
+                epcoToDate(a.mTime), 0, 0.0,
+                0, "when time is 0 min time : " + epcoToDate(a.mTime) +
+                        "\ntotal_count: " + activities[0].mStep +
+                        "\nlastHRSteps : " + lastHRSteps?.get(0)?.total_count?.toInt() +
+                        "\nSubtract : " + ((a.mStep - lastHRSteps?.get(0)?.total_count?.toInt()!!)))
+
+        } else if(lastHRSteps != null && lastHRSteps.size != 0) {
                 val mDistance = (activities.get(0).mDistance/10000).toDouble()
                 val mDist = (mDistance/1000).toDouble()
                 val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
                 val dist : Double = mDist  - lasthrdist
                 val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
                 val steps = (a.mStep - lastHRSteps.get(0).total_count.toInt())
-                if(epcoToDate(a.mTime).toDouble() >  0.005) {
-                    dataBaseHelper.stepsInsert(
-                        dataBaseHelper,
-                        steps.toString(),
-                        BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                        String.format("%.3f", dist),
-                        (cal.toInt()).toString(),
-                        epcoToDate(a.mTime), activities[0].mStep, mDist,
-                        activities[0].mCalorie / 10000, " time : " + epcoToDate(a.mTime) +
-                                "\ntotal_count: " + activities[0].mStep +
-                                "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
-                                "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt()))
-                    )
+                if(steps < 0) {
+                    return
                 }
-            } else {
-                val mDistance = (activities.get(0).mDistance/10000).toDouble()
-                val mDist = (mDistance/1000).toDouble()
                 dataBaseHelper.stepsInsert(
                     dataBaseHelper,
-                    a.mStep.toString(),
+                    steps.toString(),
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    String.format("%.3f",mDist),
-                    ((a.mCalorie / 10000)).toString(),
+                    String.format("%.3f", dist),
+                    (cal.toInt()).toString(),
                     epcoToDate(a.mTime), activities[0].mStep, mDist,
-                    activities[0].mCalorie/10000,
-                    " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : "+a.mStep)
+                    activities[0].mCalorie / 10000, " time : " + epcoToDate(a.mTime) +
+                            "\ntotal_count: " + activities[0].mStep +
+                            "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
+                            "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt())))
 
+
+            } else {
+                if(lastHRSteps != null) {
+                    val mDistance = (activities.get(0).mDistance/10000).toDouble()
+                    val mDist = (mDistance/1000).toDouble()
+                    dataBaseHelper.stepsInsert(
+                        dataBaseHelper,
+                        a.mStep.toString(),
+                        BaseHelper.parseDate(Date(), Constants.DATE_JSON),
+                        String.format("%.3f",mDist),
+                        ((a.mCalorie / 10000)).toString(),
+                        epcoToDate(a.mTime), activities[0].mStep, mDist,
+                        activities[0].mCalorie/10000,
+                        " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : " +
+                                ""+a.mStep)
+
+                }
             }
     }
 

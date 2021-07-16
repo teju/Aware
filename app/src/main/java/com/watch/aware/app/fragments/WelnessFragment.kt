@@ -167,6 +167,9 @@ class WelnessFragment : BaseFragment() {
             if(BleCache.mDeviceInfo != null) {
                 onConnected()
             }
+            if(!BleConnector.isAvailable()) {
+                connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+            }
         }
 
     }
@@ -220,7 +223,7 @@ class WelnessFragment : BaseFragment() {
                     else {
                         last_synced.text = heartRates.get(0).date
                     }
-                } else if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
+                } else if(diffHeartRate?.days?.toInt()!! <= diffDaysSpo?.days?.toInt()!!) {
                     if(diffHeartRate?.days?.toInt() == 0) {
                         if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
                             BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
@@ -275,7 +278,7 @@ class WelnessFragment : BaseFragment() {
                     }
 
                 } else
-                if(diffHeartRate?.days?.toInt()!! <= diffDaysSpo?.days?.toInt()!!) {
+                if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
                     if (diffDaysSpo?.days?.toInt() == 0) {
                         if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM)
                                 .toDouble() <

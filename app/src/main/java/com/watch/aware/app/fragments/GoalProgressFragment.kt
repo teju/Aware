@@ -168,11 +168,16 @@ class GoalProgressFragment : BaseFragment() {
         } catch (e:java.lang.Exception){
             e.printStackTrace()
         }
-        val activities = dataBaseHelper.getAllSteps("WHERE  " +
-                "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') AND stepsCount != 0 ORDER BY time DESC")
-        if(activities.size != 0) {
-            val lastSync =  BaseHelper.parseDate(activities.get(0).time,Constants.TIME_JSON_HM)
-            last_synced.text  = BaseHelper.parseDate(lastSync, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+        try {
+            val activities = dataBaseHelper.getAllSteps("WHERE  " +
+                    "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') AND stepsCount != 0 ORDER BY time DESC")
+            if(activities !=null && activities != null && activities.size != 0) {
+                val lastSync = BaseHelper.parseDate(activities.get(0).time, Constants.TIME_JSON_HM)
+                last_synced.text =
+                    BaseHelper.parseDate(lastSync, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+            }
+        }catch (e:Exception){
+
         }
 
     }

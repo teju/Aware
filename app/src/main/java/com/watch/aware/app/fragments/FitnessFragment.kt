@@ -104,7 +104,7 @@ class FitnessFragment : BaseFragment() {
 
     fun setData() {
         val stepsArray = lastestHRSteps()
-        if(stepsArray?.size != 0) {
+        if(stepsArray!= null && stepsArray?.size != 0) {
             val sync_date = BaseHelper.parseDate(stepsArray?.get(0)?.time,Constants.TIME_JSON_HM)
             last_synced.text = BaseHelper.parseDate(sync_date,TIMEFORMAT)
             calories.text = stepsArray?.get(0)?.total_cal.toString()

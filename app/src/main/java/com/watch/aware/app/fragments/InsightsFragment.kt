@@ -194,7 +194,7 @@ class InsightsFragment : BaseFragment() {
     fun setCaloriesData() {
         val db = DataBaseHelper(activity!!)
         val diatnceArray = db.getAllSteps("Where cal > 0 ORDER by time DESC LIMIT 1")
-        if(diatnceArray.size != 0) {
+        if(diatnceArray != null && diatnceArray.size != 0) {
             calories.text = diatnceArray.get(0).total_cal.toString()
 
             val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
@@ -221,8 +221,8 @@ class InsightsFragment : BaseFragment() {
 
     fun setDistanceData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("Where distance > 0 ORDER by time DESC LIMIT 1")
-        if(diatnceArray.size != 0) {
+        val diatnceArray = db.getAllSteps("Where distance != 0 ORDER by time DESC LIMIT 1")
+        if(diatnceArray != null && diatnceArray.size != 0) {
             distance.text = diatnceArray.get(0).total_dist.toString() +" km"
 
             val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
@@ -249,8 +249,8 @@ class InsightsFragment : BaseFragment() {
     fun setStepsData() {
         val db = DataBaseHelper(activity!!)
         try {
-            val stepsArray = db.getAllSteps("Where total_count > 0 ORDER by time DESC LIMIT 1")
-            if (stepsArray.size != 0) {
+            val stepsArray = db.getAllSteps("Where stepsCount > 0 ORDER by time DESC LIMIT 1")
+            if (stepsArray != null && stepsArray.size != 0) {
                 stepsCount.text = stepsArray.get(0).total_count.toString()
 
                 val parsetime = BaseHelper.parseDate(stepsArray.get(0).time, Constants.TIME_JSON_HM)
@@ -284,10 +284,19 @@ class InsightsFragment : BaseFragment() {
         } catch (e:java.lang.Exception) {
 
         }
-        val activities = db.getAllSteps("WHERE  " +
-                "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') AND stepsCount != 0 ORDER BY time DESC")
-        val lastSync =  BaseHelper.parseDate(activities.get(0).time,Constants.TIME_JSON_HM)
-        last_synced.text = BaseHelper.parseDate(lastSync, TIMEFORMAT)
+        try {
+            val activities = db.getAllSteps(
+                "WHERE  " +
+                        "date is DATE('" + BaseHelper.parseDate(
+                    Date(),
+                    Constants.DATE_JSON
+                ) + "') AND stepsCount != 0 ORDER BY time DESC"
+            )
+            val lastSync = BaseHelper.parseDate(activities.get(0).time, Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(lastSync, TIMEFORMAT)
+        }catch (e:Exception){
+
+        }
 
     }
 
@@ -414,7 +423,7 @@ class InsightsFragment : BaseFragment() {
         val dataBaseHelper = DataBaseHelper(activity!!)
         var stepsCnt = 0
         val dteps = dataBaseHelper.getAllStepsWeekly(day)
-        if(dteps.size > 0) {
+        if(dteps!= null && dteps.size > 0) {
 
             when (type) {
                 "dist" -> {

@@ -26,12 +26,13 @@ import com.watch.aware.app.fragments.dialog.DeviceListingDialogFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_connection.*
 
 
 class ConnectionFragment : BaseFragment(),View.OnClickListener {
     var arrayList = java.util.ArrayList<BleDevice>()
-
+    var isFromSettings = false
     val mBleScanner by lazy {
         // ScannerFactory.newInstance(arrayOf(UUID.fromString(BleConnector.BLE_SERVICE)))
         ScannerFactory.newInstance()
@@ -102,8 +103,11 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
     val mBleHandleCallback by lazy {
         object : BleHandleCallback {
             override fun onDeviceConnected(_device: BluetoothDevice) {
-
+                if(isFromSettings) {
+                    home()?.proceedDoOnBackPressed()
+                } else {
                     home()?.setFragment(CoughSettingsFragment())
+                }
             }
 
             override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
@@ -136,7 +140,12 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener {
     }
 
     override fun onBackTriggered() {
-        home()?.exitApp()
+        if(isFromSettings) {
+            home()?.proceedDoOnBackPressed()
+        } else {
+            home()?.exitApp()
+        }
+
     }
 
 }

@@ -155,17 +155,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
-
-            for (Steps data : dataListList) {
-                System.out.println(" DataBaseHelper123 getAllSteps Data :"
-                        + data.getID() +
-                        " time " + data.getTime() +
-                        " date " + data.getDate() + " total " + data.getMaxStepCount());
-
-            }
             System.out.println("DataBaseHelper123 getAllSteps " + selectQuery + " dataListList " + dataListList.size());
         } catch (Exception e){
-
+            e.printStackTrace();
         }
         return dataListList;
     }
