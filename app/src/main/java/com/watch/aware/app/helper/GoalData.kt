@@ -12,7 +12,7 @@ class GoalData {
         this.activity = activity
         val values: MutableList<Entry> = ArrayList()
         values.clear()
-        values.add(Entry(1f, getStepCount(0.02, 3.0)))
+        values.add(Entry(1f, getStepCount(0.00, 3.0)))
         values.add(Entry(2f, getStepCount(3.0, 6.0)))
         values.add(Entry(3f, getStepCount(6.0, 9.0)))
         values.add(Entry(4f, getStepCount(9.0, 12.0)))

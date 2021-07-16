@@ -121,6 +121,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:padding="15dp"
+                        android:id="@+id/lldistance"
                         android:backgroundTint="@color/DodgerBlue"
                         android:background="@drawable/theme_rounded_rectangle_black"
                         android:layout_height="wrap_content">
@@ -269,6 +270,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:padding="15dp"
+                        android:id="@+id/llheartrate"
                         android:backgroundTint="@color/DodgerBlue"
                         android:background="@drawable/theme_rounded_rectangle_black"
                         android:layout_height="wrap_content">
@@ -326,6 +328,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:padding="15dp"
+                        android:id="@+id/llsteps"
                         android:backgroundTint="@color/DodgerBlue"
                         android:background="@drawable/theme_rounded_rectangle_black"
                         android:layout_height="wrap_content">
@@ -372,6 +375,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:padding="15dp"
+                        android:id="@+id/llspo"
                         android:backgroundTint="@color/DodgerBlue"
                         android:background="@drawable/theme_rounded_rectangle_black"
                         android:layout_height="wrap_content">
@@ -430,6 +434,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:padding="15dp"
+                        android:id="@+id/lltemp"
                         android:backgroundTint="@color/DodgerBlue"
                         android:background="@drawable/theme_rounded_rectangle_black"
                         android:layout_height="wrap_content">
@@ -476,6 +481,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical"
                         android:padding="15dp"
+                        android:id="@+id/llcal"
                         android:backgroundTint="@color/DodgerBlue"
                         android:background="@drawable/theme_rounded_rectangle_black"
                         android:layout_height="wrap_content">

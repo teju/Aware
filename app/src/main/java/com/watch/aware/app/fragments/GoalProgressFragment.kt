@@ -36,7 +36,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class GoalProgressFragment : BaseFragment() {
+class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
     var xAxisValues: List<String> = ArrayList(
         Arrays.asList("",
@@ -230,7 +230,7 @@ class GoalProgressFragment : BaseFragment() {
                 last_active_hr.text = BaseHelper.parseDate(lasthr, com.watch.aware.app.helper.Constants.TIMEFORMAT)
                 val avg_steps = (dteps.get(0).total_count.toInt() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toInt()))
                 average_steps.text = avg_steps.toString()
-               // max_step.text = dataBaseHelper.getMaxSteps("").toString()
+                max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON)).toString()
 
             }
         } catch (e:Exception) {
@@ -246,10 +246,12 @@ class GoalProgressFragment : BaseFragment() {
             }
         setAnylasisData()
 
-        mChart.setTouchEnabled(false)
+        mChart.setTouchEnabled(true)
+        mChart.isDragEnabled = false
         mChart.setPinchZoom(true)
         val mv = MyMarkerView(activity, R.layout.custom_marker_view)
         mv.setChartView(mChart)
+        mChart.setOnChartValueSelectedListener(this)
         mChart.marker = mv
 
         val xAxis: XAxis = mChart.getXAxis()
@@ -324,6 +326,16 @@ class GoalProgressFragment : BaseFragment() {
             val data = LineData(dataSets)
             mChart.setData(data)
         }
+    }
+
+    override fun onNothingSelected() {
+        val x:Float = 0f
+    }
+
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+        val x:Float =e!!.x
+        val y:Float =e!!.y
+        mChart.highlightValue(h)
     }
 
 }

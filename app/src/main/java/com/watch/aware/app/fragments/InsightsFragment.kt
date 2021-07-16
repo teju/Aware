@@ -33,6 +33,7 @@ import com.szabh.smable3.component.BleConnector
 import com.szabh.smable3.component.BleHandleCallback
 import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
+import com.watch.aware.app.fragments.graphs.*
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Constants.Companion.COUGH
 import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
@@ -45,7 +46,7 @@ import kotlinx.android.synthetic.main.fragment_insight.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class InsightsFragment : BaseFragment() {
+class InsightsFragment : BaseFragment() ,View.OnClickListener{
 
 
     private var cartesian: Cartesian? = null
@@ -56,6 +57,7 @@ class InsightsFragment : BaseFragment() {
     var type = "steps"
     var datatype = "week"
     var colour = "#78B8F1"
+/*
     private val mBleHandleCallback by lazy {
         object : BleHandleCallback {
 
@@ -103,6 +105,7 @@ class InsightsFragment : BaseFragment() {
             }
         }
     }
+*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -116,7 +119,13 @@ class InsightsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        BleConnector.addHandleCallback(mBleHandleCallback)
+        //BleConnector.addHandleCallback(mBleHandleCallback)
+        lltemp.setOnClickListener(this)
+        llsteps.setOnClickListener(this)
+        llcal.setOnClickListener(this)
+        lldistance.setOnClickListener(this)
+        llheartrate.setOnClickListener(this)
+        llspo.setOnClickListener(this)
 
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
 
@@ -193,7 +202,7 @@ class InsightsFragment : BaseFragment() {
     }
     fun setCaloriesData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("Where cal > 0 ORDER by time DESC LIMIT 1")
+        val diatnceArray = db.getAllSteps("Where cal > 0 ORDER by rowid DESC LIMIT 1")
         if(diatnceArray != null && diatnceArray.size != 0) {
             calories.text = diatnceArray.get(0).total_cal.toString()
 
@@ -221,7 +230,7 @@ class InsightsFragment : BaseFragment() {
 
     fun setDistanceData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("Where distance != 0 ORDER by time DESC LIMIT 1")
+        val diatnceArray = db.getAllSteps("Where distance > 0.01 ORDER by rowid DESC LIMIT 1")
         if(diatnceArray != null && diatnceArray.size != 0) {
             distance.text = diatnceArray.get(0).total_dist.toString() +" km"
 
@@ -249,7 +258,7 @@ class InsightsFragment : BaseFragment() {
     fun setStepsData() {
         val db = DataBaseHelper(activity!!)
         try {
-            val stepsArray = db.getAllSteps("Where stepsCount > 0 ORDER by time DESC LIMIT 1")
+            val stepsArray = db.getAllSteps("Where stepsCount > 0 ORDER by rowid DESC LIMIT 1")
             if (stepsArray != null && stepsArray.size != 0) {
                 stepsCount.text = stepsArray.get(0).total_count.toString()
 
@@ -483,6 +492,29 @@ class InsightsFragment : BaseFragment() {
             }
         }
         return  stepsCnt
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id){
+            R.id.lldistance -> {
+                home()?.setFragment(DistanceGraphFragment())
+            }
+            R.id.llheartrate -> {
+                home()?.setFragment(HeartRateGraphFragment())
+            }
+            R.id.llsteps -> {
+                home()?.setFragment(StepsGraphFragment())
+            }
+            R.id.llspo -> {
+                home()?.setFragment(SpoGraphFragment())
+            }
+            R.id.lltemp -> {
+                home()?.setFragment(TempGraphFragment())
+            }
+            R.id.llcal -> {
+                home()?.setFragment(CaloriesGraphFragment())
+            }
+        }
     }
 
 /*

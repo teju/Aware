@@ -350,20 +350,7 @@ open class BaseFragment : GenericFragment() {
         val dataBaseHelper = DataBaseHelper(activity)
             val a = activities.get(0)
         var lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
-        if(epcoToDate(a.mTime).toDouble() <  0.005) {
-            dataBaseHelper.stepsInsert(
-                dataBaseHelper,
-                "0",
-                BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                "0",
-                "0",
-                epcoToDate(a.mTime), 0, 0.0,
-                0, "when time is 0 min time : " + epcoToDate(a.mTime) +
-                        "\ntotal_count: " + activities[0].mStep +
-                        "\nlastHRSteps : " + lastHRSteps?.get(0)?.total_count?.toInt() +
-                        "\nSubtract : " + ((a.mStep - lastHRSteps?.get(0)?.total_count?.toInt()!!)))
-
-        } else if(lastHRSteps != null && lastHRSteps.size != 0) {
+        if(lastHRSteps != null && lastHRSteps.size != 0) {
                 val mDistance = (activities.get(0).mDistance/10000).toDouble()
                 val mDist = (mDistance/1000).toDouble()
                 val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()

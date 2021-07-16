@@ -3,6 +3,7 @@ package com.watch.aware.app.helper;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -156,20 +157,26 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 } while (cursor.moveToNext());
             }
             System.out.println("DataBaseHelper123 getAllSteps " + selectQuery + " dataListList " + dataListList.size());
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (SQLiteCantOpenDatabaseException e){
+            return null;
+        }
+        catch (Exception e){
+            return dataListList;
         }
         return dataListList;
     }
-    public int getMaxSteps(String where) {
+    public int getMaxSteps(String date) {
        int maxStep = 0;
         try {
 
-            String selectQuery = "SELECT rowid, Max(stepsCount) as MAxCount FROM StepsCount " + where;
+            String selectQuery = "SELECT SUM(stepsCount) as steps,date,time from StepsCount where date is '" +date+
+                    "' GROUP BY TIME(time) order by steps desc Limit 1";
+            System.out.println("DataBaseHelper123 getAllSteps " + selectQuery );
+
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
             cursor.moveToFirst();
-            maxStep = cursor.getInt(1);
+            maxStep = cursor.getInt(0);
 
         } catch (Exception e){
 

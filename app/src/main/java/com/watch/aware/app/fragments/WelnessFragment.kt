@@ -235,6 +235,8 @@ class WelnessFragment : BaseFragment() {
                     else {
                         last_synced.text = heartRates.get(0).date
                     }
+                } else {
+                    last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
                 }
             }catch (e:Exception) {
                 last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
@@ -295,6 +297,7 @@ class WelnessFragment : BaseFragment() {
                 }
             }catch (e:Exception){
                 e.printStackTrace()
+                last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
             }
             oxygen_level.text = spoRates.get(0).spoRate.toString()
             SPO2 = spoRates.get(0).spoRate
