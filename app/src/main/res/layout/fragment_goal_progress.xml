@@ -210,6 +210,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="50dp"
                     android:textSize="@dimen/text_small"
+                    android:id="@+id/tv_avg_steps"
                     android:fontFamily="@font/opensanssemibold"
                     android:textColor="@color/white"
                     android:layout_height="wrap_content">
@@ -247,6 +248,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="50dp"
                     android:textSize="@dimen/text_small"
+                    android:id="@+id/tv_dist_travelled"
                     android:fontFamily="@font/opensanssemibold"
                     android:textColor="@color/white"
                     android:layout_height="wrap_content">

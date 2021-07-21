@@ -348,7 +348,10 @@ open class BaseFragment : GenericFragment() {
 
     fun insertStepData(activities: List<BleActivity>) {
         val dataBaseHelper = DataBaseHelper(activity)
-            val a = activities.get(0)
+        val a = activities.get(0)
+        if(epcoToDate(a.mTime).toDouble() > 23.57) {
+            return
+        }
         var lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
         if(lastHRSteps != null && lastHRSteps.size != 0) {
                 val mDistance = (activities.get(0).mDistance/10000).toDouble()

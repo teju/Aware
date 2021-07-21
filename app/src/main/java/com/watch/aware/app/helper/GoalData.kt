@@ -60,8 +60,8 @@ class GoalData {
                     "as decimal) ORDER BY time DESC" )
             if (dteps.size > 0) {
                 for (step in dteps){
-                    distCnt = distCnt + step.distance.toInt()
-                    System.out.println(" getCalCount "+distCnt)
+                    distCnt = distCnt + step.distance.toFloat()
+                    System.out.println(" getDistanceCount "+distCnt)
                 }
             }
         } catch (e:java.lang.Exception){

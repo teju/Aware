@@ -16,6 +16,7 @@ import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
+import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
 import kotlinx.android.synthetic.main.fragment_fitness.*
@@ -82,6 +83,7 @@ class FitnessFragment : BaseFragment() {
                     if(swiperefresh_items.isRefreshing) {
                         swiperefresh_items.setRefreshing(false);
                     }
+                    setData()
                 }catch (e:Exception) {
                     e.printStackTrace()
                 }
@@ -109,6 +111,10 @@ class FitnessFragment : BaseFragment() {
             calories.text = stepsArray?.get(0)?.total_cal.toString()
             dist.text = String.format("%.2f",stepsArray?.get(0)?.total_dist?.toDouble())
             steps.text = stepsArray?.get(0)?.total_count.toString()
+        } else {
+            val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
+            val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(sync_date,TIMEFORMAT)
         }
     }
 
@@ -119,6 +125,7 @@ class FitnessFragment : BaseFragment() {
             BleConnector.addHandleCallback(mBleHandleCallback)
             syncing_fitness.visibility = View.VISIBLE
             swiperefresh_items.setOnRefreshListener(OnRefreshListener {
+                syncing_fitness.visibility = View.VISIBLE
                 Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
             })
             welcome.text = "Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
@@ -133,6 +140,7 @@ class FitnessFragment : BaseFragment() {
             e.printStackTrace()
         }
         refresh.setOnClickListener {
+            syncing_fitness.visibility = View.VISIBLE
             swiperefresh_items.setRefreshing(true);
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }

@@ -38,17 +38,7 @@ import kotlin.collections.ArrayList
 
 class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
-    var xAxisValues: List<String> = ArrayList(
-        Arrays.asList("",
-            "12 am",
-            "3 am",
-            "6 am",
-            "9 am",
-            "12 pm",
-            "3 pm",
-            "6 pm",
-            "9 pm" )
-    )
+    var xAxisValues: List<String> = ArrayList()
     var values: MutableList<Entry> = ArrayList()
     private val mBleHandleCallback by lazy {
         object : BleHandleCallback {
@@ -164,26 +154,53 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 progressBar.progress = res.toFloat()
             }
             step_count.text = ""+ String.format("%.2f",res) + "%\n"+appendText
-            average_steps.text = (activities.get(0).total_count.toInt()/(BaseHelper.parseDate(Date(),Constants.TIME_hA).toInt())).toString()
         } catch (e:java.lang.Exception){
             e.printStackTrace()
         }
         try {
             val activities = dataBaseHelper.getAllSteps("WHERE  " +
                     "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') AND stepsCount != 0 ORDER BY time DESC")
-            if(activities !=null && activities != null && activities.size != 0) {
+            if(activities !=null && activities.size != 0) {
                 val lastSync = BaseHelper.parseDate(activities.get(0).time, Constants.TIME_JSON_HM)
                 last_synced.text =
                     BaseHelper.parseDate(lastSync, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+            } else {
+                val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
+                val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
+                last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
             }
-        }catch (e:Exception){
-
+        } catch (e:Exception){
+            val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
+            val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
         }
 
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        if(UserInfoManager.getInstance(activity!!).getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT) {
+            xAxisValues = ArrayList(
+                Arrays.asList("",
+                    "12 am",
+                    "3 am",
+                    "6 am",
+                    "9 am",
+                    "12 pm",
+                    "3 pm",
+                    "6 pm",
+                    "9 pm" ))
+        } else {
+            xAxisValues = ArrayList(
+                Arrays.asList("",
+                    "12",
+                    "3",
+                    "6",
+                    "9",
+                    "12",
+                    "15",
+                    "18",
+                    "21"))
+        }
         BleConnector.addHandleCallback(mBleHandleCallback)
         connect()
         swiperefresh_items.run {
@@ -201,6 +218,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
 
         }
+
         setData()
     }
 
@@ -219,25 +237,45 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
     }
     fun setAnylasisData() {
         val dataBaseHelper = DataBaseHelper(activity)
+        if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
+            tv_avg_steps.text = "Average steps per hour : "
+            tv_dist_travelled.text = "Max step in 1 hour :"
+        } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
+            tv_avg_steps.text = "Average calories burnt\nper hour : "
+            tv_dist_travelled.text = "Max calories burnt\nin 1 hour :"
+        } else {
+            tv_avg_steps.text = "Average distance travelled\nper hour : "
+            tv_dist_travelled.text = "Max distance travelled\nin 1 hour :"
+        }
         try {
 
             val dteps = dataBaseHelper.getAllSteps(
                 "WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                        "AND total_count != 0 ORDER by total_count DESC LIMIT 1"
-            )
+                        "AND total_count != 0 ORDER by total_count DESC LIMIT 1")
             if (dteps != null && dteps.size > 0) {
                 val lasthr = Helper.convertStringToDate(TIME_JSON_HM, dteps.get(0).time)
                 last_active_hr.text = BaseHelper.parseDate(lasthr, com.watch.aware.app.helper.Constants.TIMEFORMAT)
-                val avg_steps = (dteps.get(0).total_count.toInt() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toInt()))
-                average_steps.text = avg_steps.toString()
-                max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON)).toString()
+                if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
+                    val avg_steps = (dteps.get(0).total_count.toInt() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toInt()))
+                    average_steps.text = avg_steps.toString()
+                    max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"stepsCount").toString()
+                } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
+                    val avg_steps = (dteps.get(0).total_cal.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
+                    average_steps.text =String.format("%.2f",avg_steps)
+                    max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"cal").toString()
+                } else {
+                    val avg_steps = (dteps.get(0).total_dist.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
+                    average_steps.text =String.format("%.2f",avg_steps)
+                    max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
+                }
 
             }
         } catch (e:Exception) {
-
+            e.toString()
+            average_steps.text = "0"
+            max_step.text = "0"
         }
     }
-
 
     fun renderData() {
         try {
@@ -261,13 +299,16 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
         val leftAxis: YAxis = mChart.getAxisLeft()
         leftAxis.removeAllLimitLines()
-        leftAxis.axisMaximum = UserInfoManager.getInstance(activity!!).getGoalValue().toFloat()
         if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
-            leftAxis.granularity = 2000f
+            leftAxis.axisMaximum = 2500f
+            leftAxis.granularity = 500f
         } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
-            leftAxis.granularity = 1000f
+            leftAxis.axisMaximum = 1500f
+            leftAxis.granularity = 300f
         } else {
-            leftAxis.granularity = 2f
+            leftAxis.axisMaximum = 5f
+
+            leftAxis.granularity = 1f
         }
         leftAxis.axisMinimum = 0f
         leftAxis.setLabelCount(50)
@@ -280,9 +321,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         mChart.getXAxis().setDrawGridLines(false);
         mChart.getXAxis().setValueFormatter(IndexAxisValueFormatter(xAxisValues))
         mChart.getLegend().setEnabled(false);
-
-
-            setGraphData()
+        setGraphData()
         } catch (e:Exception){
 
         }
@@ -306,7 +345,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             mChart.notifyDataSetChanged()
         } else {
             set1 = LineDataSet(values, "")
-            set1.setDrawValues(true);
+            set1.setDrawValues(false);
             set1.setDrawCircles(false);
             set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
             set1.setDrawIcons(false)

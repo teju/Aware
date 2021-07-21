@@ -202,7 +202,7 @@
                         </TextView>
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="Cough"
+                            android:text="Cough\n"
                             android:textSize="15dp"
                             android:fontFamily="@font/opensansbold"
                             android:textColor="@color/White"

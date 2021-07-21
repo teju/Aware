@@ -165,11 +165,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return dataListList;
     }
-    public int getMaxSteps(String date) {
+    public int getMaxSteps(String date,String type) {
        int maxStep = 0;
         try {
 
-            String selectQuery = "SELECT SUM(stepsCount) as steps,date,time from StepsCount where date is '" +date+
+            String selectQuery = "SELECT SUM("+type+") as steps,date,time from StepsCount where date is '" +date+
                     "' GROUP BY TIME(time) order by steps desc Limit 1";
             System.out.println("DataBaseHelper123 getAllSteps " + selectQuery );
 
