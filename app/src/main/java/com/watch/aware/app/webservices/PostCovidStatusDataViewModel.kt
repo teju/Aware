@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder
 
 import com.iapps.libs.helpers.BaseConstants
 import com.iapps.libs.objects.Response
-import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.helper.APIs
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.Keys

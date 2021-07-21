@@ -90,7 +90,8 @@ class WelnessFragment : BaseFragment() {
 
             override fun onReadTemperature(temperatures: List<BleTemperature>) {
                 try {
-                   setTempData()
+                    temp.text = String.format("%.1f",temperatures.get(0).mTemperature)
+                   //setTempData()
                     onConnected()
                 } catch (e:Exception){
                     e.printStackTrace()
