@@ -90,20 +90,15 @@ class LoginFragment : BaseFragment(),View.OnClickListener {
                 getTrigger().observe(thisFragReference, Observer { state ->
                     when (state) {
                         PostLoginViewModel.NEXT_STEP -> {
-                            home()?.setFragment(RegistrationSuccessFragment())
                             if(obj?.Name != null) {
                                 UserInfoManager.getInstance(activity!!).saveAccountName(obj?.Name!!)
                             }
                             UserInfoManager.getInstance(activity!!).saveEmail(email.text.toString())
                             UserInfoManager.getInstance(activity!!).saveIsLoggedIn(true)
                             UserInfoManager.getInstance(activity!!).saveIsFirstTime(true)
-                            if(BleCache.mDeviceInfo == null) {
-                                home()?.setFragment(ConnectionFragment().apply {
+                            home()?.setFragment(ConnectionFragment().apply {
 
-                                })
-                            } else{
-                                home()?.setFragment(CoughSettingsFragment())
-                            }
+                            })
                         }
                         PostRegisterViewModel.ERROR -> {
                             showNotifyDialog(

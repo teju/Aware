@@ -214,10 +214,8 @@ class WelnessFragment : BaseFragment() {
                     BaseHelper.parseDate(heartRates.get(0).date,Constants.DATE_JSON))
                 if(diffDaysSpo == null) {
                     if(diffHeartRate?.days?.toInt() == 0) {
-                        if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
-                            BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
-                            last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
-                        }
+                        last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
+
                     } else if(diffHeartRate?.days?.toInt() == 1) {
                         last_synced.text = "Yesterday"
                     }
@@ -267,13 +265,8 @@ class WelnessFragment : BaseFragment() {
                     BaseHelper.parseDate(spoRates.get(0).date,Constants.DATE_JSON))
                 if(diffHeartRate == null) {
                     if (diffDaysSpo?.days?.toInt() == 0) {
-                        if (heartlastsynced != null && BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM)
-                                .toDouble() <
-                            BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
-                        ) {
-                            last_synced.text =
-                                BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
-                        }
+                        last_synced.text =
+                            BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
                     } else if (diffDaysSpo?.days?.toInt() == 1) {
                         last_synced.text = "Yesterday"
                     } else {
@@ -283,8 +276,7 @@ class WelnessFragment : BaseFragment() {
                 } else
                 if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
                     if (diffDaysSpo?.days?.toInt() == 0) {
-                        if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM)
-                                .toDouble() <
+                        if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() <
                             BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
                         ) {
                             last_synced.text =

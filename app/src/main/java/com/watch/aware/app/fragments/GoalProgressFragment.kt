@@ -145,7 +145,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 appendText = "of calories burnt"
             } else {
                 val mDistance = (activities.get(0).total_dist.toDouble()).toDouble()
-                totalVal = (mDistance/1000).toDouble()
+                totalVal = (mDistance).toDouble()
                 appendText = "of distance travelled"
             }
 

@@ -83,7 +83,6 @@ class FitnessFragment : BaseFragment() {
                     if(swiperefresh_items.isRefreshing) {
                         swiperefresh_items.setRefreshing(false);
                     }
-                    setData()
                 }catch (e:Exception) {
                     e.printStackTrace()
                 }

@@ -714,14 +714,9 @@ object Helper {
         }
     }
     fun getCurrentDate(): String? {
-        val myDate = Date()
-
-        val calendar = Calendar.getInstance()
-        calendar.time = myDate
-        val time = calendar.time
         val outputFmt = SimpleDateFormat("yyyy-MM-dd hh:mm:ss zz")
         outputFmt.setTimeZone(TimeZone.getTimeZone("UTC"));
-        val dateAsString = outputFmt.format(time)
+        val dateAsString = outputFmt.format(Date())
         return dateAsString
     }
 

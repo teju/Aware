@@ -424,11 +424,11 @@ open class BaseFragment : GenericFragment() {
                     // TODO: handle exception
                 } finally {
                     //also call the same runnable to call it at regular interval
-                    handler.postDelayed(this, 100000)
+                    handler.postDelayed(this, 200000)
                 }
             }
         }
-        handler.postDelayed(runnable, 100000)
+        handler.postDelayed(runnable, 200000)
     }
 
     fun setSaveDeviceDataAPIObserver() {
