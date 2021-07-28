@@ -44,7 +44,7 @@ class ProfileUpdateFragment : BaseFragment() {
                     deviceAddress = BleCache.mDeviceInfo?.mBleAddress!!
                 }
                 postUpdateProfileModel.loadData(username.text.toString(),age.text.toString(),
-                    email.text.toString(),contact_number.text.toString(),gender,deviceAddress )
+                    email.text.toString(),contact_number.text.toString(),gender,UserInfoManager.getInstance(activity!!).getEmail() )
             }
         }
         back.setOnClickListener {

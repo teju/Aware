@@ -20,28 +20,21 @@ import com.watch.aware.app.R;
 public class MyMarkerView extends MarkerView {
 
     private TextView tvContent;
-
+    public String type ="Steps";
     public MyMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
 
         tvContent = (TextView) findViewById(R.id.tvContent);
     }
 
-    // callbacks everytime the MarkerView is redrawn, can be used to update the
-    // content (user-interface)
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-
         if (e instanceof CandleEntry) {
-
             CandleEntry ce = (CandleEntry) e;
-
-            tvContent.setText("" + Utils.formatNumber(ce.getHigh(), 0, true)+"\nSteps");
+            tvContent.setText(String.format("%.2f\n"+type, ce.getHigh()));
         } else {
-
-            tvContent.setText("" + Utils.formatNumber(e.getY(), 0, true)+"\nSteps");
+            tvContent.setText(String.format("%.2f\n"+type, e.getY()));
         }
-
         super.refreshContent(e, highlight);
     }
 

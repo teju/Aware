@@ -57,55 +57,6 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     var type = "steps"
     var datatype = "week"
     var colour = "#78B8F1"
-/*
-    private val mBleHandleCallback by lazy {
-        object : BleHandleCallback {
-
-            override fun onDeviceConnected(_device: BluetoothDevice) {
-            }
-
-            override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-            }
-
-            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
-                super.onReadHeartRate(heartRates)
-                try {
-                    heartRateInsert(heartRates)
-                    setHeartData()
-                } catch (e:java.lang.Exception){ }
-            }
-
-            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
-                super.onReadBloodOxygen(bloodOxygen)
-                try {
-                    SpoRateInsert(bloodOxygen)
-                    setSPoData()
-                } catch (e:java.lang.Exception){ }
-            }
-
-            override fun onReadTemperature(temperatures: List<BleTemperature>) {
-                super.onReadTemperature(temperatures)
-                try {
-                    TempInsert(temperatures)
-                    setTempData()
-                } catch (e:java.lang.Exception){ }
-            }
-
-            override fun onReadActivity(activities: List<BleActivity>) {
-                super.onReadActivity(activities)
-                try {
-                    insertStepData(activities)
-                    setDistanceData()
-                    setStepsData()
-                    setCaloriesData()
-                } catch (e:java.lang.Exception){
-
-                }
-                connect()
-            }
-        }
-    }
-*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -119,7 +70,6 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //BleConnector.addHandleCallback(mBleHandleCallback)
         lltemp.setOnClickListener(this)
         llsteps.setOnClickListener(this)
         llcal.setOnClickListener(this)
@@ -391,24 +341,6 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     }
 
 
-    private fun getWeeklyEntries() {
-        data.clear()
-
-        data.add(ValueDataEntry("Sun", isValideDataWeek(0)))
-        data.add(ValueDataEntry("Mon", isValideDataWeek(1)))
-        data.add(ValueDataEntry("Tue", isValideDataWeek(2)))
-        data.add(ValueDataEntry("Wed", isValideDataWeek(3)))
-        data.add(ValueDataEntry("Thur", isValideDataWeek(4)))
-        data.add(ValueDataEntry("Fri", isValideDataWeek(5)))
-        data.add(ValueDataEntry("Sat", isValideDataWeek(6)))
-
-
-    }
-    private fun getYearlyEntries() {
-        data.clear()
-        data.add(ValueDataEntry("2021", isValideDataYearly(2021) ))
-    }
-
     private fun getMonthlyEntries() {
         data.clear()
 
@@ -426,50 +358,6 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         data.add(ValueDataEntry("Dex",  isValideDataWeekMonthly(12)))
 
 
-    }
-    fun isValideDataWeek(day : Int) :Int {
-
-        val dataBaseHelper = DataBaseHelper(activity!!)
-        var stepsCnt = 0
-        val dteps = dataBaseHelper.getAllStepsWeekly(day)
-        if(dteps!= null && dteps.size > 0) {
-
-            when (type) {
-                "dist" -> {
-                    stepsCnt = stepsCnt + dteps.get(0).distance.toInt()
-                }
-                "steps" -> {
-                    stepsCnt = stepsCnt + dteps.get(0).total_count.toInt()
-
-                }
-                "cal" -> {
-                    stepsCnt = stepsCnt + dteps.get(0).cal.toInt()
-                }
-            }
-
-        }
-        return  stepsCnt
-    }
-    fun isValideDataYearly(day : Int) :Int {
-
-        val dataBaseHelper = DataBaseHelper(activity!!)
-        var stepsCnt = 0
-        val dteps = dataBaseHelper.getAllStepsYearly(day)
-        for (steps in dteps ) {
-            when(type) {
-                "dist" -> {
-                    stepsCnt = stepsCnt + steps.distance.toInt()
-                }
-                "steps" -> {
-                    stepsCnt = stepsCnt + steps.total_count.toInt()
-
-                }
-                "cal" -> {
-                    stepsCnt = stepsCnt + steps.cal.toInt()
-                }
-            }
-        }
-        return  stepsCnt
     }
 
     fun isValideDataWeekMonthly(day : Int) :Int {
@@ -516,100 +404,4 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
             }
         }
     }
-
-/*
-    fun selectDataType() {
-        year.setOnClickListener {
-            year.setBackgroundColor(resources.getColor(R.color.colorPrimary))
-            month.setBackgroundColor(resources.getColor(R.color.black))
-            week.setBackgroundColor(resources.getColor(R.color.black))
-            datatype = "year"
-            getYearlyEntries()
-            resetData()
-
-        }
-        month.setOnClickListener {
-            year.setBackgroundColor(resources.getColor(R.color.black))
-            month.setBackgroundColor(resources.getColor(R.color.colorPrimary))
-            week.setBackgroundColor(resources.getColor(R.color.black))
-            datatype = "month"
-            getMonthlyEntries()
-            resetData()
-
-        }
-        week.setOnClickListener {
-            year.setBackgroundColor(resources.getColor(R.color.black))
-            month.setBackgroundColor(resources.getColor(R.color.black))
-            week.setBackgroundColor(resources.getColor(R.color.colorPrimary))
-            datatype = "week"
-            getWeeklyEntries()
-            resetData()
-
-        }
-    }
-*/
-
-/*
-    fun checkBoxFun() {
-
-        distnce.setOnClickListener {
-            steps.isChecked = false
-            calories.isChecked = false
-            type = "dist"
-            colour = "#4CAF50"
-            when(datatype) {
-                "week" -> {
-                    getWeeklyEntries()
-                }
-                "month" -> {
-                    getMonthlyEntries()
-                }
-                "year" -> {
-                    getYearlyEntries()
-                }
-            }
-            resetData()
-
-
-        }
-        steps.setOnClickListener {
-            distnce.isChecked = false
-            calories.isChecked = false
-            type = "steps"
-            colour = "#2196F3"
-            when(datatype) {
-                "week" -> {
-                    getWeeklyEntries()
-                }
-                "month" -> {
-                    getMonthlyEntries()
-                }
-                "year" -> {
-                    getYearlyEntries()
-                }
-            }
-            resetData()
-
-        }
-        calories.setOnClickListener {
-            steps.isChecked = false
-            distnce.isChecked = false
-            type = "cal"
-            colour = "#FF9800"
-            when(datatype) {
-                "week" -> {
-                    getWeeklyEntries()
-                }
-                "month" -> {
-                    getMonthlyEntries()
-                }
-                "year" -> {
-                    getYearlyEntries()
-                }
-            }
-            resetData()
-
-        }
-    }
-*/
 }

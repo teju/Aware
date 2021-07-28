@@ -31,6 +31,7 @@ import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.*
 import com.watch.aware.app.helper.Constants.Companion.CAL_GOAL
 import com.watch.aware.app.helper.Constants.Companion.STEPS_GOAL
+import com.watch.aware.app.models.DailyData
 import kotlinx.android.synthetic.main.fragment_goal_progress.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -180,26 +181,56 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         super.onViewCreated(view, savedInstanceState)
         if(UserInfoManager.getInstance(activity!!).getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT) {
             xAxisValues = ArrayList(
-                Arrays.asList("",
-                    "12 am",
-                    "3 am",
-                    "6 am",
-                    "9 am",
-                    "12 pm",
-                    "3 pm",
-                    "6 pm",
-                    "9 pm" ))
+                Arrays.asList("12am",
+                    "1am",
+                    "2am",
+                    "3am",
+                    "4am",
+                    "5am",
+                    "6am",
+                    "7am",
+                    "8am",
+                    "9am",
+                    "10am",
+                    "11am",
+                    "12pm",
+                    "1pm",
+                    "2pm",
+                    "3pm",
+                    "4pm",
+                    "5pm",
+                    "6pm",
+                    "7pm",
+                    "8pm",
+                    "9pm" ,
+                    "10pm" ,
+                    "11pm" ))
         } else {
             xAxisValues = ArrayList(
-                Arrays.asList("",
-                    "12",
+                Arrays.asList("12",
+                    "1",
+                    "2",
                     "3",
+                    "4",
+                    "5",
                     "6",
+                    "7",
+                    "8",
                     "9",
+                    "10",
+                    "11",
                     "12",
+                    "13",
+                    "14",
                     "15",
+                    "16",
+                    "17",
                     "18",
-                    "21"))
+                    "19",
+                    "20",
+                    "21",
+                    "22",
+                    "23"))
         }
         BleConnector.addHandleCallback(mBleHandleCallback)
         connect()
@@ -265,7 +296,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"cal").toString()
                 } else {
                     val avg_steps = (dteps.get(0).total_dist.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
-                    average_steps.text =String.format("%.2f",avg_steps)
+                    average_steps.text =String.format("%.3f",avg_steps)
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
                 }
 
@@ -286,22 +317,32 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
         mChart.setTouchEnabled(true)
         mChart.isDragEnabled = false
-        mChart.setPinchZoom(true)
+        mChart.setPinchZoom(false)
         val mv = MyMarkerView(activity, R.layout.custom_marker_view)
+        if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
+            mv.type = "Steps"
+        } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
+            mv.type = "Calories"
+        } else {
+            mv.type = "Distance"
+        }
         mv.setChartView(mChart)
         mChart.setOnChartValueSelectedListener(this)
         mChart.marker = mv
 
         val xAxis: XAxis = mChart.getXAxis()
         xAxis.textColor = Color.BLACK
+        xAxis.setAvoidFirstLastClipping(true);
         xAxis.setDrawLimitLinesBehindData(false)
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+
 
         val leftAxis: YAxis = mChart.getAxisLeft()
         leftAxis.removeAllLimitLines()
         if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
-            leftAxis.axisMaximum = 2500f
-            leftAxis.granularity = 500f
+            leftAxis.axisMaximum = 6000f
+            leftAxis.granularity = 1000f
         } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
             leftAxis.axisMaximum = 1500f
             leftAxis.granularity = 300f
@@ -330,11 +371,11 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
     private fun setGraphData() {
         values.clear()
         if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
-            values = GoalData().getXAxisStepGoal(activity!!)
+            values = DailyData().getXAxisDailyGoal(activity!!,"steps")
         } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
-            values = GoalData().getXAxisCAlGoal(activity!!)
+            values = DailyData().getXAxisDailyGoal(activity!!,"cal")
         } else {
-            values = GoalData().getXAxisDistGoal(activity!!)
+            values = DailyData().getXAxisDailyGoal(activity!!,"dist")
         }
 
         val set1: LineDataSet
@@ -346,13 +387,13 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         } else {
             set1 = LineDataSet(values, "")
             set1.setDrawValues(false);
-            set1.setDrawCircles(false);
+            set1.setDrawCircles(true);
             set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
             set1.setDrawIcons(false)
             set1.color = activity?.resources?.getColor(R.color.colorAccent)!!
             set1.setCircleColor(Color.DKGRAY)
             set1.lineWidth = 2f
-            set1.circleRadius = 3f
+            set1.circleRadius = 2f
             set1.setDrawCircleHole(false)
             set1.valueTextSize = 9f
             set1.setDrawFilled(true)
@@ -376,5 +417,4 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         val y:Float =e!!.y
         mChart.highlightValue(h)
     }
-
 }

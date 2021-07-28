@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.watch.aware.app">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -8,14 +9,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:name=".MyApplication"
-        android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:hardwareAccelerated="false"
         android:roundIcon="@drawable/logo"
         android:largeHeap="true"
+        android:allowBackup="false"
+        android:fullBackupOnly="false"
         android:windowSoftInputMode="adjustResize|adjustPan"
         android:supportsRtl="true"
+        tools:replace="android:allowBackup"
         android:theme="@style/AppTheme">
         <activity android:name="com.watch.aware.app.MainActivity"
             android:exported="true">
@@ -40,7 +43,8 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-
+        <receiver android:name=".helper.MyBroadcastReceiver" >
+        </receiver>
     </application>
 
 </manifest>

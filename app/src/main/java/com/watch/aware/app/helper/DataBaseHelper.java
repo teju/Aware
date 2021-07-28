@@ -165,8 +165,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return dataListList;
     }
-    public int getMaxSteps(String date,String type) {
-       int maxStep = 0;
+    public double getMaxSteps(String date,String type) {
+       double maxStep = 0.0;
         try {
 
             String selectQuery = "SELECT SUM("+type+") as steps,date,time from StepsCount where date is '" +date+
@@ -176,7 +176,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             Cursor cursor = db.rawQuery(selectQuery, null);
             cursor.moveToFirst();
-            maxStep = cursor.getInt(0);
+            maxStep = cursor.getDouble(0);
 
         } catch (Exception e){
 
@@ -193,7 +193,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
 
             Cursor cursor = db.rawQuery(selectQuery, null);
-            // looping through all rows and adding to list
             if (cursor.moveToFirst()) {
                 do {
                     HeartRate steps = new HeartRate();
@@ -204,7 +203,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
-            System.out.println("DataBaseHelper123 getAllHeartRate " + selectQuery + " dataListList " + dataListList.size());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -230,7 +228,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
-            System.out.println("DataBaseHelper123 getAllSpoRate " + selectQuery + " dataListList " + dataListList.size());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -256,18 +253,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
-            System.out.println("DataBaseHelper123 getAllTemp " + selectQuery + " dataListList " + dataListList.size());
         } catch (Exception e){
             e.printStackTrace();
         }
         return dataListList;
     }
-
-
-    public List<Steps> getAllStepsWeekly(int where) {
+    public List<Steps> getAllStepsWeekly(int week,int month ) {
         List<Steps> dataListList = new ArrayList<Steps>();
 
-        String selectQuery = "SELECT * FROM StepsCount WHERE CAST(strftime('%w', date) AS integer) = "+ where+" ORDER BY CAST(total_count as INT) DESC";
+        String selectQuery = "SELECT rowid, stepsCount,distance,cal,date,time, total_count,total_dist,total_cal,Logs  FROM StepsCount" +
+                " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021 AND stepsCount != 0  AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -283,26 +279,48 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 steps.setDate(cursor.getString(4));
                 steps.setTime(cursor.getString(5));
                 steps.setTotal_count(cursor.getString(6));
-                System.out.println(" DataBaseHelper123 getAllStepsWeekly :"
-                        + steps.getStepCount()+" time "+steps.getTime()+
-                        " date "+steps.getDate()+" total "+steps.getTotal_count());
-
+                steps.setTotal_dist(cursor.getString(7));
+                steps.setTotal_cal(cursor.getString(8));
+                steps.setLogs(cursor.getString(9));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
-        for(Steps print:dataListList ) {
-            System.out.println(" DataBaseHelper123 getAllStepsMonthly steps :"
-                    + print.getStepCount()+" time "+print.getTime()+" total count "+print.getTotal_count() +" "+dataListList.get(0).getStepCount());
-
-        }
-        System.out.println("DataBaseHelper123 getAllStepsWeekly " + selectQuery +" dataListList "+dataListList.size());
 
         return dataListList;
     }
-    public List<Steps> getAllStepsMonthly(int where) {
+
+
+    public List<HeartRate> getAllHeartRatesWeekly(int week,int month ) {
+        List<HeartRate> dataListList = new ArrayList<HeartRate>();
+
+        String selectQuery = "SELECT *  FROM HeartRate" +
+                " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
+                "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') ORDER BY time DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                HeartRate steps = new HeartRate();
+                steps.setID(cursor.getString(0));
+                steps.setHeartRate(cursor.getInt(1));
+                steps.setDate(cursor.getString(2));
+                steps.setTime(cursor.getString(3));
+                dataListList.add(steps);
+            } while (cursor.moveToNext());
+        }
+
+        return dataListList;
+    }
+    public List<Steps> getAllStepsMonthly(int month) {
         List<Steps> dataListList = new ArrayList<Steps>();
 
-        String selectQuery = "SELECT * from (SELECT * FROM StepsCount ) AS sub  WHERE CAST(strftime('%m', date) AS integer) = "+ where+" GROUP BY date ";
+        String selectQuery = "SELECT rowid, stepsCount,distance,cal,date,time, total_count,total_dist,total_cal,Logs  FROM StepsCount" +
+                " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021 AND stepsCount != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -318,22 +336,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 steps.setDate(cursor.getString(4));
                 steps.setTime(cursor.getString(5));
                 steps.setTotal_count(cursor.getString(6));
+                steps.setTotal_dist(cursor.getString(7));
+                steps.setTotal_cal(cursor.getString(8));
+                steps.setLogs(cursor.getString(9));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
-        for(Steps print:dataListList ) {
-            System.out.println(" DataBaseHelper123 getAllStepsMonthly steps :"
-                    + print.getStepCount()+" time "+print.getTime()+" total count "+print.getTotal_count());
-
-        }
-        System.out.println("DataBaseHelper123 getAllStepsMonthly " + selectQuery +" dataListList "+dataListList.size());
 
         return dataListList;
     }
-    public List<Steps> getAllStepsYearly(int where) {
-        List<Steps> dataListList = new ArrayList<Steps>();
 
-        String selectQuery = "SELECT * from (SELECT * FROM StepsCount ) AS sub  WHERE CAST(strftime('%Y', date) AS integer) = "+ where+" GROUP BY date ";
+    public List<HeartRate> getAllHeartMonthly(int month) {
+        List<HeartRate> dataListList = new ArrayList<HeartRate>();
+
+        String selectQuery = "SELECT *  FROM HeartRate" +
+                " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021  ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -341,27 +359,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                Steps steps = new Steps();
+                HeartRate steps = new HeartRate();
                 steps.setID(cursor.getString(0));
-                steps.setStepCount(cursor.getString(1));
-                steps.setDistance(cursor.getString(2));
-                steps.setCal(cursor.getString(3));
-                steps.setDate(cursor.getString(4));
-                steps.setTime(cursor.getString(5));
-                steps.setTotal_count(cursor.getString(6));
-
+                steps.setHeartRate(cursor.getInt(1));
+                steps.setDate(cursor.getString(2));
+                steps.setTime(cursor.getString(3));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
-        for(Steps print:dataListList ) {
-            System.out.println(" DataBaseHelper123 getAllStepsYearly steps :"
-                    + print.getStepCount()+" time "+print.getTime()+" total count "+print.getTotal_count());
-
-        }
-        System.out.println("DataBaseHelper123 getAllStepsWeekly " + selectQuery +" dataListList "+dataListList.size());
-
         return dataListList;
     }
+
 
     public void deleteSteps (String ID) {
         SQLiteDatabase database = this.getWritableDatabase();

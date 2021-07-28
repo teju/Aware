@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants.DATE_JSON
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
@@ -42,6 +43,8 @@ import com.watch.aware.app.helper.Helper.isEmpty
 import com.watch.aware.app.models.BaseParams
 import com.watch.aware.app.models.Steps
 import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,7 +52,6 @@ import kotlin.collections.ArrayList
 
 
 open class BaseFragment : GenericFragment() {
-    lateinit var postSaveDeviceDataViewModel: PostSaveDeviceDataViewModel
 
     var permissionsThatNeedTobeCheck: List<String> =
         ArrayList()
@@ -99,14 +101,17 @@ open class BaseFragment : GenericFragment() {
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }
         checkBluetoothGps()
-
-        setSaveDeviceDataAPIObserver()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         if(!hidden) {
             checkBluetoothGps()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setSaveDeviceDataAPIObserver()
     }
 
     fun checkBluetoothGps() {
@@ -312,7 +317,7 @@ open class BaseFragment : GenericFragment() {
         val dataBaseHelper = DataBaseHelper(activity)
         for(heartrate in heartRates) {
             dataBaseHelper.heartInsert(dataBaseHelper,heartrate.mBpm,BaseHelper.parseDate(Date(),
-                Constants.DATE_JSON),epcoToDate(heartrate.mTime))
+                Constants.DATE_JSON),epcoToTime(heartrate.mTime))
         }
         if(heartRates.get(0).mBpm != 0) {
             if (dataBaseHelper.getAllTemp(
@@ -326,7 +331,7 @@ open class BaseFragment : GenericFragment() {
                     dataBaseHelper, 36.1, BaseHelper.parseDate(
                         Date(),
                         Constants.DATE_JSON
-                    ), epcoToDate(heartRates.get(0).mTime)
+                    ), epcoToTime(heartRates.get(0).mTime)
                 )
             }
         }
@@ -335,25 +340,25 @@ open class BaseFragment : GenericFragment() {
         val dataBaseHelper = DataBaseHelper(activity)
         for(bloodOxyge in bloodOxygen) {
             dataBaseHelper.SPoInsert(dataBaseHelper,bloodOxyge.mValue,BaseHelper.parseDate(Date(),
-                Constants.DATE_JSON),epcoToDate(bloodOxyge.mTime))
+                Constants.DATE_JSON),epcoToTime(bloodOxyge.mTime))
         }
     }
     fun TempInsert(temps: List<BleTemperature>) {
         val dataBaseHelper = DataBaseHelper(activity)
         for(temp in temps) {
             dataBaseHelper.TempInsert(dataBaseHelper,temp.mTemperature.toDouble(),BaseHelper.parseDate(Date(),
-                Constants.DATE_JSON),epcoToDate(temp.mTime))
+                Constants.DATE_JSON),epcoToTime(temp.mTime))
         }
     }
 
     fun insertStepData(activities: List<BleActivity>) {
         val dataBaseHelper = DataBaseHelper(activity)
         val a = activities.get(0)
-        if(epcoToDate(a.mTime).toDouble() > 23.57) {
+        if(epcoToTime(a.mTime).toDouble() > 23.57 && epcoToTime(a.mTime).toDouble() < 0.01) {
             return
         }
-        var lastHRSteps = lastHRSteps(epcoToDate(a.mTime))
-        if(lastHRSteps != null && lastHRSteps.size != 0) {
+        var lastHRSteps = lastHRSteps(epcoToTime(a.mTime))
+        if(lastHRSteps != null && lastHRSteps.size != 0 ) {
                 val mDistance = (activities.get(0).mDistance/10000).toDouble()
                 val mDist = (mDistance/1000).toDouble()
                 val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
@@ -369,8 +374,8 @@ open class BaseFragment : GenericFragment() {
                     BaseHelper.parseDate(Date(), Constants.DATE_JSON),
                     String.format("%.3f", dist),
                     (cal.toInt()).toString(),
-                    epcoToDate(a.mTime), activities[0].mStep, mDist,
-                    activities[0].mCalorie / 10000, " time : " + epcoToDate(a.mTime) +
+                    epcoToTime(a.mTime), activities[0].mStep, mDist,
+                    activities[0].mCalorie / 10000, " time : " + epcoToTime(a.mTime) +
                             "\ntotal_count: " + activities[0].mStep +
                             "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
                             "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt())))
@@ -386,9 +391,9 @@ open class BaseFragment : GenericFragment() {
                         BaseHelper.parseDate(Date(), Constants.DATE_JSON),
                         String.format("%.3f",mDist),
                         ((a.mCalorie / 10000)).toString(),
-                        epcoToDate(a.mTime), activities[0].mStep, mDist,
+                        epcoToTime(a.mTime), activities[0].mStep, mDist,
                         activities[0].mCalorie/10000,
-                        " time : "+epcoToDate(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : " +
+                        " time : "+epcoToTime(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : " +
                                 ""+a.mStep)
 
                 }
@@ -408,56 +413,32 @@ open class BaseFragment : GenericFragment() {
                 " AND stepsCount != 0 ORDER BY time DESC LIMIT 1")
         return dteps
     }
-    fun runTimer( ){
-        val handler = Handler()
-        val runnable: Runnable = object : Runnable {
-            override fun run() {
-                try {
-                    if(BleCache.mDeviceInfo?.mBleName != null){
-                        if(SPO2 != 0 && HR != 0 && Temp != 0.0) {
-                            postSaveDeviceDataViewModel.loadData(SPO2,HR, Temp, COUGH,
-                                BleCache.mDeviceInfo?.mBleAddress!!, _activity, Helper.getCurrentDate().toString())
-                        }
-                        Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-                    }
-                } catch (e: java.lang.Exception) {
-                    // TODO: handle exception
-                } finally {
-                    //also call the same runnable to call it at regular interval
-                    handler.postDelayed(this, 200000)
-                }
-            }
-        }
-        handler.postDelayed(runnable, 200000)
-    }
 
     fun setSaveDeviceDataAPIObserver() {
-        postSaveDeviceDataViewModel = ViewModelProviders.of(this).get(PostSaveDeviceDataViewModel::class.java).apply {
-            this@BaseFragment.let { thisFragReference ->
-                isLoading.observe(thisFragReference, Observer { aBoolean ->
+        try {
+            postSaveDeviceDataViewModel =
+                ViewModelProviders.of(this).get(PostSaveDeviceDataViewModel::class.java!!)
+        } catch (e :Exception){
 
-                })
-                errorMessage.observe(thisFragReference, Observer { s ->
-                    showNotifyDialog(
-                        s.title, s.message!!,
-                        getString(R.string.ok),"",object : NotifyListener {
-                            override fun onButtonClicked(which: Int) { }
-                        }
-                    )
-                })
-                isNetworkAvailable.observe(thisFragReference, obsNoInternet as Observer<in Boolean>)
-                getTrigger().observe(thisFragReference, Observer {
-                    //postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
-                })
-            }
         }
+    }
+    fun epcoToDate(date : Int) :String {
+        try {
+            val date = DateTime(date * 1000L, DateTimeZone.UTC)
+            val format: DateFormat = SimpleDateFormat(DATE_JSON)
+            var formatted: String = format.format(date)
+            // var formatted: String = format.format(date)
+            return formatted
+        }catch (e:Exception) {
+
+        }
+        return "2021-07-23"
     }
 
 
-    fun epcoToDate(date : Int) :String {
-        val date = Date(date * 1000L)
+    fun epcoToTime(date : Int) :String {
+        val date = Date()
         val format: DateFormat = SimpleDateFormat(TIME_JSON_HM)
-        format.setTimeZone(TimeZone.getTimeZone("Etc/UTC"))
         var formatted: String = format.format(date)
         if(formatted.contains(":")) {
             formatted = formatted.replace(":",".")
@@ -467,5 +448,6 @@ open class BaseFragment : GenericFragment() {
 
     companion object {
         var REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 911
+        var postSaveDeviceDataViewModel: PostSaveDeviceDataViewModel? = null
     }
 }

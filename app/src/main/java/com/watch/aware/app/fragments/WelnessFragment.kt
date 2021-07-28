@@ -1,20 +1,24 @@
 package com.watch.aware.app.fragments
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.bluetooth.BluetoothDevice
+import android.content.Context.ALARM_SERVICE
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.amitshekhar.utils.DatabaseHelper
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.libs.objects.LastSyncDate
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
-import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_hM
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
@@ -28,19 +32,17 @@ import com.watch.aware.app.helper.Constants.Companion.COUGH
 import com.watch.aware.app.helper.Constants.Companion.HR
 import com.watch.aware.app.helper.Constants.Companion.SPO2
 import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
-import com.watch.aware.app.helper.Constants.Companion.TWELVE_HOUR_FORMAT
 import com.watch.aware.app.helper.Constants.Companion.Temp
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.MyBroadcastReceiver
 import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.HeartRate
 import com.watch.aware.app.models.SpoRate
 import com.watch.aware.app.webservices.PostCovidStatusDataViewModel
 import com.watch.aware.app.webservices.PostRegisterViewModel
-import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
 import com.watch.aware.app.webservices.PostUpdateProfileModel
 import kotlinx.android.synthetic.main.fragment_welness.*
-import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -135,12 +137,9 @@ class WelnessFragment : BaseFragment() {
                 UserInfoManager.getInstance(activity!!).getEmail(),
                 UserInfoManager.getInstance(activity!!).getContactNumber(),
                 UserInfoManager.getInstance(activity!!).getGEnder(),
-                deviceAddress
-            )
-
+                UserInfoManager.getInstance(activity!!).getEmail())
         }
-
-        runTimer()
+        startAlert()
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
             onConnected()
@@ -169,10 +168,10 @@ class WelnessFragment : BaseFragment() {
                 onConnected()
             }
             if(!BleConnector.isAvailable()) {
+                info_txt.text = "Please wait ..."
                 connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
             }
         }
-
     }
 
     fun onConnected() {
@@ -181,11 +180,12 @@ class WelnessFragment : BaseFragment() {
                 swiperefresh_items.setRefreshing(false);
             }
             if(!BleConnector.isAvailable()) {
+                info_txt.text = "Please wait ..."
                 connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
             } else {
                 if (heartRates.size != 0 && spoRates.size != 0) {
-                    postGetCovidStatusDataViewModel.loadData(BleCache.mDeviceInfo?.mBleAddress!!)
-                } else{
+                    postGetCovidStatusDataViewModel.loadData(UserInfoManager.getInstance(activity!!).getEmail())
+                } else {
                     info_txt.text = "Please wait, data being transferred ..."
                     info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
                 }
@@ -265,16 +265,14 @@ class WelnessFragment : BaseFragment() {
                     BaseHelper.parseDate(spoRates.get(0).date,Constants.DATE_JSON))
                 if(diffHeartRate == null) {
                     if (diffDaysSpo?.days?.toInt() == 0) {
-                        last_synced.text =
-                            BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+                        last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
                     } else if (diffDaysSpo?.days?.toInt() == 1) {
                         last_synced.text = "Yesterday"
                     } else {
                         last_synced.text = spoRates.get(0).date
                     }
 
-                } else
-                if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
+                } else if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
                     if (diffDaysSpo?.days?.toInt() == 0) {
                         if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() <
                             BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
@@ -287,6 +285,8 @@ class WelnessFragment : BaseFragment() {
                     } else {
                         last_synced.text = spoRates.get(0).date
                     }
+                } else {
+                    last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
                 }
             }catch (e:Exception){
                 e.printStackTrace()
@@ -382,5 +382,12 @@ class WelnessFragment : BaseFragment() {
             }
         }
     }
+    fun startAlert() {
+        val intent = Intent(activity, MyBroadcastReceiver::class.java)
+        val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
+            activity?.getApplicationContext(), 234324243, intent, 0)
+        val alarmManager: AlarmManager? = activity?.getSystemService(ALARM_SERVICE) as AlarmManager?
+        alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),1*60*1000, pendingIntent);
 
+    }
 }
