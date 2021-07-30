@@ -56,12 +56,6 @@ data class BleNotification(
         const val OUT_LOOK2 = "park.outlook.sign.in.client"
         const val YAHOO_MAIL = "com.yahoo.mobile.client.android.mail"
         const val VIBER = "com.viber.voip"
-        const val BAND = "com.nhn.android.band"
-        const val TELEGRAM = "org.telegram.messenger"
-        const val BETWEEN = "kr.co.vcnc.android.couple"
-        const val NAVERCAFE = "com.nhn.android.navercafe"
-        const val YOUTUBE = "com.google.android.youtube"
-        const val NETFLIX = "com.netflix.mediaclient"
         //以上应用建议默认打开推送开关
 
         const val HUAWEI_SYSTEM_MANAGER = "com.huawei.systemmanager"
@@ -76,7 +70,6 @@ data class BleNotification(
 
         //短信应用
         const val ANDROID_MMS = "com.android.mms"
-        const val ANDROID_MMS_SERVICE = "com.android.mms.service"
         const val GOOGLE_MMS = "com.google.android.apps.messaging"
         const val SAMSUNG_MMS = "com.samsung.android.messaging"
 

@@ -158,9 +158,6 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 progressBar.setProgress(res.toFloat(),false)
             }
-            progressBar.setTextFormatter(ProgressTextFormatter { progress ->
-                ""+ String.format("%.2f",res) + "%\n"+appendText
-            })
 
             step_count.text = ""+ String.format("%.2f",res) + "%\n"+appendText
         } catch (e:java.lang.Exception){

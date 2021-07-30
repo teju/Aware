@@ -15,9 +15,7 @@ data class BleWorkout(
     var mDistance: Int = 0,     //米，以米为单位，例如接收到的数据为56045，则代表 56045 米 约等于 56.045 Km
     var mCalorie: Int = 0,      //卡，以卡为单位，例如接收到的数据为56045，则代表 56.045 Kcal 约等于 56 Kcal
     var mSpeed: Int = 0,        //速度，接收到的数据以 米/小时 为单位
-    var mPace: Int = 0,         //配速，接收到的数据以 秒/千米 为单位
-    var mAvgBpm: Int = 0,       //平均心率
-    var mMaxBpm: Int = 0        //最大心率
+    var mPace: Int = 0          //配速，接收道德数据以 秒/千米 为单位
 ) : BleReadable() {
 
     override fun decode() {
@@ -34,8 +32,6 @@ data class BleWorkout(
         mCalorie = readInt32()
         mSpeed = readInt32()
         mPace = readInt32()
-        mAvgBpm = readUInt8().toInt()
-        mMaxBpm = readUInt8().toInt()
     }
 
     companion object {

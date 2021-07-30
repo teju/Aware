@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
@@ -112,18 +113,6 @@ abstract class AbsBleConnector {
                         " state=" + getBluetoothAdapterState(state))
                     if (state == BluetoothAdapter.STATE_ON) {
                         connect(true)
-                    }else if(state == BluetoothAdapter.STATE_OFF){
-                        /**
-                         * 有部份手机关闭蓝牙不回调方法 [BluetoothGattCallback.onConnectionStateChange]
-                         * 这里处理一下断开的操作
-                         */
-                        mBleMessenger.reset()
-                        mBleParser.reset()
-                        if (mNotified) {
-                            mNotified = false
-                            mBleGattCallback?.onConnectionStateChange(false)
-                        }
-                        isConnecting = false
                     }
                 }
             }
@@ -199,7 +188,8 @@ abstract class AbsBleConnector {
                 period = mRetry * mReconnectBasePeriod
             }
 
-            if (!mConnectDirectly) {
+            // 华为手机只通过扫描连接，因为通过地址连接失败后，会导致再也连接不了了，测试机器荣耀9X。
+            if (Build.MANUFACTURER.equals("HUAWEI", true) || !mConnectDirectly) {
                 BleLog.d("$LOG_HEADER connect scan")
                 mScanner?.run {
                     // 扫描时间为重连间隔的3/4，但是也不能超过最大扫描时间
@@ -212,6 +202,14 @@ abstract class AbsBleConnector {
                 }
             } else {
                 BleLog.d("$LOG_HEADER connect directly")
+//                mBluetoothGatt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    mBluetoothAdapter.getRemoteDevice(mTargetAddress)
+//                        .connectGatt(mContext, false, mBluetoothGattCallback, BluetoothDevice.TRANSPORT_LE)
+//                } else {
+//                    mBluetoothAdapter.getRemoteDevice(mTargetAddress)
+//                        .connectGatt(mContext, false, mBluetoothGattCallback)
+//                }
+
                 mBluetoothGatt = mBluetoothAdapter.getRemoteDevice(mTargetAddress)
                     .connectGatt(mContext, false, mBluetoothGattCallback)
             }

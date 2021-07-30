@@ -71,20 +71,8 @@ object BleCache {
     val mAGpsFileUrl: String
         get() = mAGpsFileUrls[mAGpsType] ?: ""
 
-    val mShowAntiLostSwitch: Int
-        get() = mDeviceInfo?.mShowAntiLostSwitch ?: BleDeviceInfo.ANTI_LOST_HIDE
-
-    val mSleepAlgorithmType: Int
-        get() = mDeviceInfo?.mSleepAlgorithmType ?: BleDeviceInfo.SUPPORT_NEW_SLEEP_ALGORITHM_0
-
-    val mSupportDateFormatSet: Int
-        get() = mDeviceInfo?.mSupportDateFormatSet ?: BleDeviceInfo.SUPPORT_DATE_FORMAT_0
-
-    val mSupportReadDeviceInfo: Int
-        get() = mDeviceInfo?.mSupportReadDeviceInfo ?: BleDeviceInfo.SUPPORT_READ_DEVICE_INFO_0
-
-    val mSupportTemperatureUnitSet: Int
-        get() = mDeviceInfo?.mSupportTemperatureUnitSet ?: BleDeviceInfo.SUPPORT_TEMPERATURE_UNIT_0
+    val mHideAntiLost: Int
+        get() = mDeviceInfo?.mHideAntiLost ?: BleDeviceInfo.ANTI_LOST_HIDE
 
     /**
      * 设备进入OTA之后的mac地址，[BleDeviceInfo.PLATFORM_NORDIC]的设备，进入OTA之后，设备地址会+1。

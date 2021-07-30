@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.os.Build
 import com.abupdate.iot_libs.OtaAgentPolicy
-import com.abupdate.iot_libs.constant.BroadcastConsts
 import com.bestmafen.baseble.connector.AbsBleConnector
 import com.bestmafen.baseble.connector.BleGattCallback
 import com.bestmafen.baseble.data.*
@@ -97,19 +96,24 @@ object BleConnector : AbsBleConnector() {
 
     private var mDataKeys: MutableList<BleKey> = mutableListOf()
     private val mSyncTimeout = Runnable {
-        if (mDataKeys.isNotEmpty()) {
-            notifySyncState(SyncState.TIMEOUT, mDataKeys[0])
-            mDataKeys.clear()
-        } else {
-            notifySyncState(SyncState.TIMEOUT, BleKey.NONE)
-        }
+        mDataKeys.clear()
+        notifySyncState(SyncState.TIMEOUT, BleKey.NONE)
     }
 
     private val mMusicSubscriptions: MutableMap<MusicEntity, List<MusicAttr>> = EnumMap(MusicEntity::class.java)
 
-    private var mBleStream: BleStream? = null
+    /**
+     * 标记是否已开始发送[BleCommand.IO]
+     */
+    private var mIOStarted = false
+
     private var mStreamProgressTotal = -1
     private var mStreamProgressCompleted = -1
+
+    /**
+     * 标记是否结束当前指令的数据发送
+     */
+    private var mIsStopSendData = false
 
     /**
      * 标记是否过滤空数据，特定用户的需求，一般无需设置
@@ -139,16 +143,16 @@ object BleConnector : AbsBleConnector() {
                     mBleState = BleState.DISCONNECTED
                     notifyHandlers { it.onSessionStateChange(false) }
                     if (mDataKeys.isNotEmpty()) {
-                        notifySyncState(SyncState.DISCONNECTED, mDataKeys[0])
                         mDataKeys.clear()
                         removeSyncTimeout()
+                        notifySyncState(SyncState.DISCONNECTED, BleKey.NONE)
                     }
-                    if (mBleStream != null) {
+                    if (mIOStarted) {
                         notifyHandlers { it.onStreamProgress(false, -1, 0, 0) }
                     }
                     checkStreamProgress()
                 }
-                mBleStream = null
+                mIOStarted = false
             }
 
             override fun onCharacteristicRead(
@@ -210,7 +214,6 @@ object BleConnector : AbsBleConnector() {
             RtkDfu.initialize(context, BuildConfig.DEBUG)
         }
         if (supportMtkOta) {
-            BroadcastConsts.PACKAGE_FOTA_UPDATE = context.packageName
             OtaAgentPolicy.init(context)
         }
         return this
@@ -247,12 +250,15 @@ object BleConnector : AbsBleConnector() {
         mBleHandleCallbacks.remove(bleHandleCallback)
     }
 
-    fun sendData(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, bytes: ByteArray? = null,
-        reply: Boolean = false, nack: Boolean = false
-    ): Boolean {
+    fun sendData(bleKey: BleKey, bleKeyFlag: BleKeyFlag, bytes: ByteArray? = null,
+                 reply: Boolean = false, nack: Boolean = false): Boolean {
         BleLog.d("$TAG sendData -> $bleKey, $bleKeyFlag")
         if (!isAvailable()) return false
+
+        if (mIsStopSendData){
+            mIsStopSendData = false
+            return false
+        }
 
         if (bleKey == BleKey.DATA_ALL && bleKeyFlag == BleKeyFlag.READ) {
             return syncData()
@@ -275,10 +281,8 @@ object BleConnector : AbsBleConnector() {
         return true
     }
 
-    fun sendBoolean(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Boolean,
-        reply: Boolean = false, nack: Boolean = false
-    ): Boolean {
+    fun sendBoolean(bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Boolean,
+                    reply: Boolean = false, nack: Boolean = false): Boolean {
         val bytes = byteArrayOfBoolean(value)
         return sendData(bleKey, bleKeyFlag, bytes, reply, nack).also {
             if (it && BleCache.requireCache(bleKey, bleKeyFlag)) {
@@ -287,10 +291,8 @@ object BleConnector : AbsBleConnector() {
         }
     }
 
-    fun sendInt8(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, reply: Boolean = false,
-        nack: Boolean = false
-    ): Boolean {
+    fun sendInt8(bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, reply: Boolean = false,
+                 nack: Boolean = false): Boolean {
         val bytes = byteArrayOfInt8(value)
         return sendData(bleKey, bleKeyFlag, bytes, reply, nack).also {
             if (it && BleCache.requireCache(bleKey, bleKeyFlag)) {
@@ -312,10 +314,8 @@ object BleConnector : AbsBleConnector() {
         }
     }
 
-    fun sendInt16(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, order: ByteOrder = ByteOrder.BIG_ENDIAN,
-        reply: Boolean = false, nack: Boolean = false
-    ): Boolean {
+    fun sendInt16(bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, order: ByteOrder = ByteOrder.BIG_ENDIAN,
+                  reply: Boolean = false, nack: Boolean = false): Boolean {
         val bytes = byteArrayOfInt16(value, order)
         return sendData(bleKey, bleKeyFlag, bytes, reply, nack).also {
             if (it && BleCache.requireCache(bleKey, bleKeyFlag)) {
@@ -324,10 +324,8 @@ object BleConnector : AbsBleConnector() {
         }
     }
 
-    fun sendInt24(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, order: ByteOrder = ByteOrder.BIG_ENDIAN,
-        reply: Boolean = false, nack: Boolean = false
-    ): Boolean {
+    fun sendInt24(bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, order: ByteOrder = ByteOrder.BIG_ENDIAN,
+                  reply: Boolean = false, nack: Boolean = false): Boolean {
         val bytes = byteArrayOfInt24(value, order)
         return sendData(bleKey, bleKeyFlag, bytes, reply, nack).also {
             if (it && BleCache.requireCache(bleKey, bleKeyFlag)) {
@@ -336,10 +334,8 @@ object BleConnector : AbsBleConnector() {
         }
     }
 
-    fun sendInt32(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, order: ByteOrder = ByteOrder.BIG_ENDIAN,
-        reply: Boolean = false, nack: Boolean = false
-    ): Boolean {
+    fun sendInt32(bleKey: BleKey, bleKeyFlag: BleKeyFlag, value: Int, order: ByteOrder = ByteOrder.BIG_ENDIAN,
+                  reply: Boolean = false, nack: Boolean = false): Boolean {
         val bytes = byteArrayOfInt32(value, order)
         return sendData(bleKey, bleKeyFlag, bytes, reply, nack).also {
             if (it && BleCache.requireCache(bleKey, bleKeyFlag)) {
@@ -348,10 +344,8 @@ object BleConnector : AbsBleConnector() {
         }
     }
 
-    fun sendObject(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, buf: BleBuffer?, reply: Boolean = false,
-        nack: Boolean = false
-    ): Boolean {
+    fun sendObject(bleKey: BleKey, bleKeyFlag: BleKeyFlag, buf: BleBuffer?, reply: Boolean = false,
+                   nack: Boolean = false): Boolean {
         if (!isAvailable()) return false
 
         var idObjects: MutableList<BleIdObject> = mutableListOf() // 本地缓存的IdObject列表
@@ -360,10 +354,8 @@ object BleConnector : AbsBleConnector() {
             if (bleKeyFlag == BleKeyFlag.CREATE) {
                 val ids = idObjects.map { it.mId }.toMutableList() // 本地缓存的id
                 if (buf is BleCoaching) { // coaching除了本地有缓存，设备端也可能有缓存
-                    val coachingIds = BleCache.getObject(
-                        BleKey.COACHING, BleCoachingIds::class.java,
-                        BleKeyFlag.READ
-                    )
+                    val coachingIds = BleCache.getObject(BleKey.COACHING, BleCoachingIds::class.java,
+                        BleKeyFlag.READ)
                     if (coachingIds != null) {
                         ids.addAll(coachingIds.mIds)
                     }
@@ -392,10 +384,8 @@ object BleConnector : AbsBleConnector() {
     }
 
     // 非IdObject的情况逻辑不一定正确，但是现在还没有非IdObject的情况，如果有的话需要修改相关代码
-    fun sendList(
-        bleKey: BleKey, bleKeyFlag: BleKeyFlag, list: List<BleBuffer>?,
-        reply: Boolean = false, nack: Boolean = false
-    ): Boolean {
+    fun sendList(bleKey: BleKey, bleKeyFlag: BleKeyFlag, list: List<BleBuffer>?,
+                 reply: Boolean = false, nack: Boolean = false): Boolean {
         if (!isAvailable()) return false
 
         var bytes: ByteArray? = null // 待发送的数据
@@ -436,10 +426,8 @@ object BleConnector : AbsBleConnector() {
                 }
             }
         }
-        return sendData(
-            bleKey, if (bleKeyFlag == BleKeyFlag.RESET) BleKeyFlag.CREATE else bleKeyFlag,
-            bytes, reply, nack
-        ).also {
+        return sendData(bleKey, if (bleKeyFlag == BleKeyFlag.RESET) BleKeyFlag.CREATE else bleKeyFlag,
+            bytes, reply, nack).also {
 
             if (it && BleCache.requireCache(bleKey, bleKeyFlag)) {
                 if (bleKey.isIdObjectKey()) {
@@ -459,13 +447,27 @@ object BleConnector : AbsBleConnector() {
     fun sendStream(bleKey: BleKey, bytes: ByteArray, type: Int = 0): Boolean {
         if (bytes.isEmpty()) return false
 
-        mBleStream = BleStream(bleKey, type, bytes)
-        val streamPacket = mBleStream?.getPacket(0, BleCache.mIOBufferSize)
-        if (streamPacket != null) {
-            return sendObject(mBleStream!!.mBleKey, BleKeyFlag.UPDATE, streamPacket)
+        val bufferSize = BleCache.mIOBufferSize
+        val packetsCount = if (bytes.size % bufferSize == 0L) {
+            bytes.size / bufferSize
+        } else {
+            bytes.size / bufferSize + 1
         }
 
-        return false
+        for (i in 0 until packetsCount) {
+            val index = i * bufferSize
+            val packet = if (i == packetsCount - 1) {
+                bytes.copyOfRange(index.toInt(), bytes.size)
+            } else {
+                bytes.copyOfRange(index.toInt(), (index + bufferSize).toInt())
+            }
+            val bleStreamPacket = BleStreamPacket(type, bytes.size.toLong(), index, packet)
+            if (!sendObject(bleKey, BleKeyFlag.UPDATE, bleStreamPacket))
+                return false
+        }
+
+        mIOStarted = true
+        return true
     }
 
     fun sendStream(bleKey: BleKey, inputStream: InputStream, type: Int = 0): Boolean {
@@ -508,39 +510,19 @@ object BleConnector : AbsBleConnector() {
                 bytes.size / 180 + 1
         mStreamProgressCompleted = 0
 
-        mBleMessenger.enqueueWritePackets(
-            WriteMessage(
-                SERVICE_MTK_OTA, CH_MTK_OTA_SIZE,
-                byteArrayOfInt32(bytes.size, ByteOrder.LITTLE_ENDIAN)
-            )
-        )
-        mBleMessenger.enqueueWritePackets(
-            WriteMessage(
-                SERVICE_MTK_OTA, CH_MTK_OTA_FLAG,
-                byteArrayOf(0x01)
-            )
-        )
+        mBleMessenger.enqueueWritePackets(WriteMessage(SERVICE_MTK_OTA, CH_MTK_OTA_SIZE,
+            byteArrayOfInt32(bytes.size, ByteOrder.LITTLE_ENDIAN)))
+        mBleMessenger.enqueueWritePackets(WriteMessage(SERVICE_MTK_OTA, CH_MTK_OTA_FLAG,
+            byteArrayOf(0x01)))
         for (i in 0 until mStreamProgressTotal) {
             val end = min((i + 1) * MTK_OTA_PACKET_SIZE, bytes.size)
-            mBleMessenger.enqueueWritePackets(
-                WriteMessage(
-                    SERVICE_MTK_OTA, CH_MTK_OTA_DATA,
-                    bytes.sliceArray(i * MTK_OTA_PACKET_SIZE until end)
-                )
-            )
+            mBleMessenger.enqueueWritePackets(WriteMessage(SERVICE_MTK_OTA, CH_MTK_OTA_DATA,
+                bytes.sliceArray(i * MTK_OTA_PACKET_SIZE until end)))
         }
-        mBleMessenger.enqueueWritePackets(
-            WriteMessage(
-                SERVICE_MTK_OTA, CH_MTK_OTA_FLAG,
-                byteArrayOf(0x02)
-            )
-        )
-        mBleMessenger.enqueueWritePackets(
-            WriteMessage(
-                SERVICE_MTK_OTA, CH_MTK_OTA_MD5,
-                "b3b27696771768c6648f237a43c37a39".toByteArray()
-            )
-        )
+        mBleMessenger.enqueueWritePackets(WriteMessage(SERVICE_MTK_OTA, CH_MTK_OTA_FLAG,
+            byteArrayOf(0x02)))
+        mBleMessenger.enqueueWritePackets(WriteMessage(SERVICE_MTK_OTA, CH_MTK_OTA_MD5,
+            "b3b27696771768c6648f237a43c37a39".toByteArray()))
     }
 
     fun mtkOta(inputStream: InputStream) {
@@ -619,8 +601,7 @@ object BleConnector : AbsBleConnector() {
 
     fun updateMusic(bleMusicControl: BleMusicControl): Boolean {
         if (mMusicSubscriptions[bleMusicControl.mMusicEntity] != null
-            && mMusicSubscriptions[bleMusicControl.mMusicEntity]!!.contains(bleMusicControl.mMusicAttr)
-        ) {
+            && mMusicSubscriptions[bleMusicControl.mMusicEntity]!!.contains(bleMusicControl.mMusicAttr)) {
             return sendObject(BleKey.MUSIC_CONTROL, BleKeyFlag.UPDATE, bleMusicControl)
         }
 
@@ -652,6 +633,10 @@ object BleConnector : AbsBleConnector() {
 
     fun isAvailable(): Boolean {
         return mBleState >= BleState.READY
+    }
+
+    fun stopSendData(flag: Boolean) {
+        mIsStopSendData = flag
     }
 
     private fun handleData(data: ByteArray) {
@@ -698,21 +683,14 @@ object BleConnector : AbsBleConnector() {
                     if (isReply && bleKeyFlag == BleKeyFlag.READ) {
                         BleReadable.ofObject<BleVersion>(data, LENGTH_BEFORE_DATA).mVersion
                             .let { version ->
+                                BleCache.putString(bleKey, version)
                                 when (bleKey) {
                                     BleKey.FIRMWARE_VERSION -> {
                                         BleLog.v("$TAG handleData onReadFirmwareVersion -> $version")
-                                        val oldVersion = BleCache.getString(bleKey)
-                                        if (oldVersion.isNotEmpty() && oldVersion != version
-                                            && BleCache.mSupportReadDeviceInfo == BleDeviceInfo.SUPPORT_READ_DEVICE_INFO_1
-                                        ) {
-                                            sendData(BleKey.IDENTITY, BleKeyFlag.READ)
-                                        }
-                                        BleCache.putString(bleKey, version)
                                         notifyHandlers { it.onReadFirmwareVersion(version) }
                                     }
                                     BleKey.UI_PACK_VERSION -> {
                                         BleLog.v("$TAG handleData onReadUiPackVersion -> $version")
-                                        BleCache.putString(bleKey, version)
                                         notifyHandlers { it.onReadUiPackVersion(version) }
                                     }
                                     else -> {
@@ -723,12 +701,11 @@ object BleConnector : AbsBleConnector() {
                 }
                 BleKey.LANGUAGE_PACK_VERSION -> {
                     if (isReply && bleKeyFlag == BleKeyFlag.READ) {
-                        BleReadable.ofObject<BleLanguagePackVersion>(data, LENGTH_BEFORE_DATA)
-                            .let { version ->
-                                BleCache.putObject(bleKey, version)
-                                BleLog.v("$TAG handleData onReadLanguagePackVersion -> $version")
-                                notifyHandlers { it.onReadLanguagePackVersion(version) }
-                            }
+                        BleReadable.ofObject<BleLanguagePackVersion>(data, LENGTH_BEFORE_DATA).let { version ->
+                            BleCache.putObject(bleKey, version)
+                            BleLog.v("$TAG handleData onReadLanguagePackVersion -> $version")
+                            notifyHandlers { it.onReadLanguagePackVersion(version) }
+                        }
                     }
                 }
                 BleKey.BLE_ADDRESS -> {
@@ -848,36 +825,6 @@ object BleConnector : AbsBleConnector() {
                         notifyHandlers { it.onFindPhone(start) }
                     }
                 }
-                BleKey.SLEEP_QUALITY -> {
-                    if (isReply && bleKeyFlag == BleKeyFlag.READ) {
-                        if (data.size < LENGTH_BEFORE_DATA + BleSleepQuality.ITEM_LENGTH) return
-
-                        val sleepQuality = BleReadable.ofObject<BleSleepQuality>(data, LENGTH_BEFORE_DATA)
-                        BleLog.v("$TAG handleData onReadSleepQuality -> $sleepQuality")
-                        BleCache.putObject(bleKey, sleepQuality, bleKeyFlag)
-                        notifyHandlers { it.onReadSleepQuality(sleepQuality) }
-                    }
-                }
-                BleKey.REALTIME_LOG -> {
-                    if (!isReply && bleKeyFlag == BleKeyFlag.UPDATE) {
-                        sendData(bleKey, bleKeyFlag, null, true)
-                        BleReadable.ofObject<BleRealtimeLog>(data, LENGTH_BEFORE_DATA)
-                            .let { realtimeLog ->
-                                BleLog.v("$TAG handleData onReceiveRealtimeLog -> $realtimeLog")
-                                notifyHandlers { it.onReceiveRealtimeLog(realtimeLog) }
-                            }
-                    }
-                }
-                BleKey.LOCATION_GGA -> {
-                    if (!isReply && bleKeyFlag == BleKeyFlag.UPDATE) {
-                        sendData(bleKey, bleKeyFlag, null, true)
-                        BleReadable.ofObject<BleLocationGga>(data, LENGTH_BEFORE_DATA)
-                            .let { locationGga ->
-                                BleLog.v("$TAG handleData onReceiveLocationGga -> $locationGga")
-                                notifyHandlers { it.onReceiveLocationGga(locationGga) }
-                            }
-                    }
-                }
 
                 // BleCommand.CONNECT
                 BleKey.IDENTITY -> {
@@ -904,23 +851,10 @@ object BleConnector : AbsBleConnector() {
                         }
                     } else if (bleKeyFlag == BleKeyFlag.DELETE) {
                         BleLog.v("$TAG handleData onIdentityDelete -> $status")
-                        if (isReply) {
-                            if (status) {
-                                unbind()
-                            }
-                            notifyHandlers { it.onIdentityDelete(status) }
-                        } else {
-                            notifyHandlers { it.onIdentityDeleteByDevice(isReply) }
-                        }
-                    } else if (bleKeyFlag == BleKeyFlag.READ) {
-                        if (data.size < LENGTH_BEFORE_DATA + 17) return // 这里的17只是大概防呆一下
-
-                        val deviceInfo: BleDeviceInfo = BleReadable.ofObject(data, LENGTH_BEFORE_DATA + 1)
-                        BleLog.v("$TAG handleData onReadDeviceInfo -> $status, $deviceInfo")
                         if (status) {
-                            BleCache.mDeviceInfo = deviceInfo
-                            BleCache.putObject(bleKey, deviceInfo)
+                            unbind()
                         }
+                        notifyHandlers { it.onIdentityDelete(status) }
                     }
                 }
                 BleKey.SESSION -> {
@@ -965,142 +899,157 @@ object BleConnector : AbsBleConnector() {
                 // BleCommand.DATA
                 BleKey.ACTIVITY -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleActivity>(data, BleActivity.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { activities ->
-                                BleLog.v("$TAG handleData onReadActivity -> $activities")
-                                dataCount = activities.size
-                                if (!mSupportFilterEmpty || activities.isNotEmpty()) {
+                        BleReadable.ofList<BleActivity>(data, BleActivity.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { activities ->
+                            BleLog.v("$TAG handleData onReadActivity -> $activities")
+                            dataCount = activities.size
+
+                            if (mSupportFilterEmpty) {
+                                if (activities.isNotEmpty()) {
                                     notifyHandlers { it.onReadActivity(activities) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadActivity(activities) }
                             }
+                        }
                     }
                 }
                 BleKey.HEART_RATE -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleHeartRate>(data, BleHeartRate.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { heartRates ->
-                                BleLog.v("$TAG handleData onReadHeartRate -> $heartRates")
-                                dataCount = heartRates.size
-                                if (!mSupportFilterEmpty || heartRates.isNotEmpty()) {
+                        BleReadable.ofList<BleHeartRate>(data, BleHeartRate.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { heartRates ->
+                            BleLog.v("$TAG handleData onReadHeartRate -> $heartRates")
+                            dataCount = heartRates.size
+
+                            if (mSupportFilterEmpty) {
+                                if (heartRates.isNotEmpty()) {
                                     notifyHandlers { it.onReadHeartRate(heartRates) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadHeartRate(heartRates) }
                             }
+                        }
                     }
                 }
                 BleKey.BLOOD_PRESSURE -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleBloodPressure>(data, BleBloodPressure.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { bloodPressures ->
-                                BleLog.v("$TAG handleData onReadBloodPressure -> $bloodPressures")
-                                dataCount = bloodPressures.size
-                                if (!mSupportFilterEmpty || bloodPressures.isNotEmpty()) {
+                        BleReadable.ofList<BleBloodPressure>(data, BleBloodPressure.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { bloodPressures ->
+                            BleLog.v("$TAG handleData onReadBloodPressure -> $bloodPressures")
+                            dataCount = bloodPressures.size
+
+                            if (mSupportFilterEmpty) {
+                                if (bloodPressures.isNotEmpty()) {
                                     notifyHandlers { it.onReadBloodPressure(bloodPressures) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadBloodPressure(bloodPressures) }
                             }
+                        }
                     }
                 }
                 BleKey.SLEEP -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleSleep>(data, BleSleep.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { sleeps ->
-                                BleLog.v("$TAG handleData onReadSleep -> $sleeps")
-                                dataCount = sleeps.size
-                                if (!mSupportFilterEmpty || sleeps.isNotEmpty()) {
+                        BleReadable.ofList<BleSleep>(
+                            data, BleSleep.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA
+                        ).let { sleeps ->
+                            BleLog.v("$TAG handleData onReadSleep -> $sleeps")
+                            dataCount = sleeps.size
+
+                            if (mSupportFilterEmpty) {
+                                if (sleeps.isNotEmpty()) {
                                     notifyHandlers { it.onReadSleep(sleeps) }
                                 }
+                            } else {
+                                notifyHandlers { it.onReadSleep(sleeps) }
                             }
+                        }
                     }
                 }
                 BleKey.WORKOUT -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleWorkout>(data, BleWorkout.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { workouts ->
-                                BleLog.v("$TAG handleData onReadWorkout -> $workouts")
-                                dataCount = workouts.size
-                                if (!mSupportFilterEmpty || workouts.isNotEmpty()) {
+                        BleReadable.ofList<BleWorkout>(data, BleWorkout.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { workouts ->
+                            BleLog.v("$TAG handleData onReadWorkout -> $workouts")
+                            dataCount = workouts.size
+
+                            if (mSupportFilterEmpty) {
+                                if (workouts.isNotEmpty()) {
                                     notifyHandlers { it.onReadWorkout(workouts) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadWorkout(workouts) }
                             }
+                        }
                     }
                 }
                 BleKey.LOCATION -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleLocation>(data, BleLocation.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { locations ->
-                                BleLog.v("$TAG handleData onReadLocation -> $locations")
-                                dataCount = locations.size
-                                if (!mSupportFilterEmpty || locations.isNotEmpty()) {
+                        BleReadable.ofList<BleLocation>(data, BleLocation.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { locations ->
+                            BleLog.v("$TAG handleData onReadLocation -> $locations")
+                            dataCount = locations.size
+
+                            if (mSupportFilterEmpty) {
+                                if (locations.isNotEmpty()) {
                                     notifyHandlers { it.onReadLocation(locations) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadLocation(locations) }
                             }
+                        }
                     }
                 }
                 BleKey.TEMPERATURE -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleTemperature>(data, BleTemperature.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { temperatures ->
-                                BleLog.v("$TAG handleData onReadTemperature -> $temperatures")
-                                dataCount = temperatures.size
-                                if (!mSupportFilterEmpty || temperatures.isNotEmpty()) {
+                        BleReadable.ofList<BleTemperature>(data, BleTemperature.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { temperatures ->
+                            BleLog.v("$TAG handleData onReadTemperature -> $temperatures")
+                            dataCount = temperatures.size
+
+                            if (mSupportFilterEmpty) {
+                                if (temperatures.isNotEmpty()) {
                                     notifyHandlers { it.onReadTemperature(temperatures) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadTemperature(temperatures) }
                             }
+                        }
                     }
                 }
                 BleKey.BLOOD_OXYGEN -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleBloodOxygen>(data, BleBloodOxygen.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { bloodOxygen ->
-                                BleLog.v("$TAG handleData onReadBloodOxygen -> $bloodOxygen")
-                                dataCount = bloodOxygen.size
-                                if (!mSupportFilterEmpty || bloodOxygen.isNotEmpty()) {
+                        BleReadable.ofList<BleBloodOxygen>(data, BleBloodOxygen.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { bloodOxygen ->
+                            BleLog.v("$TAG handleData onReadBloodOxygen -> $bloodOxygen")
+                            dataCount = bloodOxygen.size
+
+                            if (mSupportFilterEmpty) {
+                                if (bloodOxygen.isNotEmpty()) {
                                     notifyHandlers { it.onReadBloodOxygen(bloodOxygen) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadBloodOxygen(bloodOxygen) }
                             }
+                        }
                     }
                 }
                 BleKey.HRV -> {
                     if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleHrv>(data, BleHrv.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { hrv ->
-                                BleLog.v("$TAG handleData onReadBleHrv -> $hrv")
-                                dataCount = hrv.size
-                                if (!mSupportFilterEmpty || hrv.isNotEmpty()) {
+                        BleReadable.ofList<BleHrv>(data, BleHrv.ITEM_LENGTH,
+                            LENGTH_BEFORE_DATA).let { hrv ->
+                            BleLog.v("$TAG handleData onReadBleHrv -> $hrv")
+                            dataCount = hrv.size
+
+                            if (mSupportFilterEmpty) {
+                                if (hrv.isNotEmpty()) {
                                     notifyHandlers { it.onReadBleHrv(hrv) }
                                 }
+                            }else{
+                                notifyHandlers { it.onReadBleHrv(hrv) }
                             }
-                    }
-                }
-                BleKey.LOG -> {
-                    if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BleLogText>(data, BleLogText.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { logs ->
-                                BleLog.v("$TAG handleData onReadBleLogText -> $logs")
-                                dataCount = logs.size
-                                if (logs.isNotEmpty()) {
-                                    notifyHandlers { it.onReadBleLogText(logs) }
-                                }
-                            }
-                    }
-                }
-                BleKey.SLEEP_RAW_DATA, BleKey.RAW_SLEEP -> {
-                    if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        if (data.size < LENGTH_BEFORE_DATA + 1) return
-
-                        val copyOfRange = data.copyOfRange(LENGTH_BEFORE_DATA, data.size)
-                        notifyHandlers { it.onReadSleepRaw(copyOfRange) }
-                    }
-                }
-                BleKey.PRESSURE -> {
-                    if (bleKeyFlag == BleKeyFlag.READ && isReply) {
-                        BleReadable.ofList<BlePressure>(data, BlePressure.ITEM_LENGTH, LENGTH_BEFORE_DATA)
-                            .let { pressures ->
-                                BleLog.v("$TAG handleData onReadPressure -> $pressures")
-                                dataCount = pressures.size
-                                if (!mSupportFilterEmpty || pressures.isNotEmpty()) {
-                                    notifyHandlers { it.onReadPressure(pressures) }
-                                }
-                            }
+                        }
                     }
                 }
 
@@ -1111,10 +1060,8 @@ object BleConnector : AbsBleConnector() {
 
                         val status = data[LENGTH_BEFORE_DATA] == BLE_OK
                         val cameraState = data[LENGTH_BEFORE_DATA + 1].toInt()
-                        BleLog.v(
-                            "$TAG handleData onCameraResponse -> status=$status" +
-                                ", cameraState=${CameraState.getState(cameraState)}"
-                        )
+                        BleLog.v("$TAG handleData onCameraResponse -> status=$status" +
+                            ", cameraState=${CameraState.getState(cameraState)}")
                         notifyHandlers { it.onCameraResponse(status, cameraState) }
                     } else {
                         if (data.size < LENGTH_BEFORE_DATA + 1) return
@@ -1149,68 +1096,29 @@ object BleConnector : AbsBleConnector() {
                 }
 
                 // BleCommand.IO
-                BleKey.WATCH_FACE, BleKey.AGPS_FILE, BleKey.FONT_FILE, BleKey.CONTACT, BleKey.UI_FILE,
-                BleKey.LANGUAGE_FILE -> {
+                BleKey.WATCH_FACE, BleKey.AGPS_FILE, BleKey.FONT_FILE, BleKey.CONTACT, BleKey.UI_FILE -> {
                     if (isReply) {
-                        if (bleKeyFlag == BleKeyFlag.UPDATE) {
-                            // 出错时可能只返回一个字节
-                            if (data.size < LENGTH_BEFORE_DATA + 1) return
+                        // 出错时可能只返回一个字节
+                        if (data.size < LENGTH_BEFORE_DATA + 1) return
 
-                            BleReadable.ofObject<BleStreamProgress>(data, LENGTH_BEFORE_DATA)
-                                .let { streamProgress ->
-                                    BleLog.v("$TAG onStreamProgress -> $streamProgress")
-                                    if (streamProgress.mStatus == BLE_OK.toInt()) {
-                                        if (streamProgress.mTotal == streamProgress.mCompleted) {
-                                            mBleStream = null
-                                        } else {
-                                            mBleStream?.getPacket(streamProgress.mCompleted, BleCache.mIOBufferSize)
-                                                ?.let { streamPacket ->
-                                                    sendObject(
-                                                        mBleStream!!.mBleKey,
-                                                        BleKeyFlag.UPDATE,
-                                                        streamPacket
-                                                    )
-                                                }
-                                        }
-                                    } else {
-                                        mBleStream = null
-                                    }
-                                    notifyHandlers {
-                                        it.onStreamProgress(
-                                            streamProgress.mStatus == BLE_OK.toInt(), streamProgress.mErrorCode,
-                                            streamProgress.mTotal, streamProgress.mCompleted
-                                        )
-                                    }
+                        BleReadable.ofObject<BleStreamProgress>(data, LENGTH_BEFORE_DATA)
+                            .let { streamProgress ->
+                                BleLog.v("$TAG onStreamProgress -> $streamProgress")
+                                if (streamProgress.mTotal == streamProgress.mCompleted) {
+                                    mIOStarted = false
                                 }
-                        } else if (bleKeyFlag == BleKeyFlag.DELETE) {
-                            val status = data[LENGTH_BEFORE_DATA] == BLE_OK
-                            notifyHandlers { it.onCommandReply(bleKey, bleKeyFlag, status) }
-                            BleLog.v("$TAG handleData onCommandReply $bleKey,$bleKeyFlag -> $status")
-                        }
+                                notifyHandlers {
+                                    it.onStreamProgress(
+                                        streamProgress.mStatus == BLE_OK.toInt(), streamProgress.mErrorCode,
+                                        streamProgress.mTotal, streamProgress.mCompleted)
+                                }
+                            }
                     } else {
                         if (bleKey == BleKey.AGPS_FILE && bleKeyFlag == BleKeyFlag.UPDATE) {
                             sendData(bleKey, bleKeyFlag, null, true)
                             BleLog.v("$TAG onDeviceRequestAGpsFile -> ${BleCache.mAGpsFileUrl}")
                             notifyHandlers { it.onDeviceRequestAGpsFile(BleCache.mAGpsFileUrl) }
                         }
-                    }
-                }
-                BleKey.DEVICE_FILE -> {
-                    if (isReply && (bleKeyFlag == BleKeyFlag.READ || bleKeyFlag == BleKeyFlag.READ_CONTINUE)) {
-                        BleReadable.ofObject<BleDeviceFile>(data, LENGTH_BEFORE_DATA)
-                            .let { deviceFile ->
-                                BleLog.v("$TAG handleData onReadDeviceFile -> $deviceFile")
-                                BleCache.putObject(bleKey, deviceFile)
-                                notifyHandlers { it.onReadDeviceFile(deviceFile) }
-                            }
-                    } else if (!isReply && bleKeyFlag == BleKeyFlag.UPDATE) {
-                        sendData(bleKey, bleKeyFlag, null, true)
-                        BleReadable.ofObject<BleDeviceFile>(data, LENGTH_BEFORE_DATA)
-                            .let { deviceFile ->
-                                BleLog.v("$TAG handleData onDeviceFileUpdate -> $deviceFile")
-                                BleCache.putObject(bleKey, deviceFile)
-                                notifyHandlers { it.onDeviceFileUpdate(deviceFile) }
-                            }
                     }
                 }
 
@@ -1231,7 +1139,7 @@ object BleConnector : AbsBleConnector() {
                     }
                     if (mDataKeys.isEmpty()) { // 整个数据同步完成
                         removeSyncTimeout()
-                        notifySyncState(SyncState.COMPLETED, bleKey)
+                        notifySyncState(SyncState.COMPLETED, BleKey.NONE)
                     } else { // 同步下个数据类型
                         sendData(mDataKeys[0], BleKeyFlag.READ)
                         postDelaySyncTimeout()
@@ -1240,7 +1148,7 @@ object BleConnector : AbsBleConnector() {
                     if (mDataKeys.isNotEmpty()) {
                         sendData(mDataKeys[0], BleKeyFlag.READ)
                         postDelaySyncTimeout()
-                    } else {
+                    }else{
                         sendData(bleKey, BleKeyFlag.READ)
                         postDelaySyncTimeout()
                     }
@@ -1291,13 +1199,9 @@ object BleConnector : AbsBleConnector() {
     private fun checkStreamProgress() {
         if (isAvailable()) {
             if (mStreamProgressTotal > 0 && mStreamProgressCompleted > 0) {
-                BleLog.v(
-                    "$TAG onStreamProgress -> mStreamProgressTotal=$mStreamProgressTotal, " +
-                        "mStreamProgressCompleted=$mStreamProgressCompleted"
-                )
-                notifyHandlersThen({
-                    it.onStreamProgress(true, 0, mStreamProgressTotal, mStreamProgressCompleted)
-                }) {
+                BleLog.v("$TAG onStreamProgress -> mStreamProgressTotal=$mStreamProgressTotal, " +
+                    "mStreamProgressCompleted=$mStreamProgressCompleted")
+                notifyHandlersThen({ it.onStreamProgress(true, 0, mStreamProgressTotal, mStreamProgressCompleted) }) {
                     if (mStreamProgressTotal == mStreamProgressCompleted) {
                         mStreamProgressTotal = -1
                         mStreamProgressCompleted = -1
@@ -1306,11 +1210,8 @@ object BleConnector : AbsBleConnector() {
             }
         } else {
             if (mStreamProgressTotal > 0 && mStreamProgressCompleted >= 0
-                && mStreamProgressCompleted < mStreamProgressTotal
-            ) {
-                notifyHandlersThen({
-                    it.onStreamProgress(false, -1, mStreamProgressTotal, mStreamProgressCompleted)
-                }) {
+                && mStreamProgressCompleted < mStreamProgressTotal) {
+                notifyHandlersThen({ it.onStreamProgress(false, -1, mStreamProgressTotal, mStreamProgressCompleted) }) {
                     if (mStreamProgressTotal == mStreamProgressCompleted) {
                         mStreamProgressTotal = -1
                         mStreamProgressCompleted = -1
@@ -1345,7 +1246,7 @@ object BleConnector : AbsBleConnector() {
         /**
          * 是否支持初始化后自动检测连接
          */
-        fun supportLauncher(supported: Boolean): Builder {
+        fun supportLauncher(supported: Boolean):Builder{
             supportLauncher = supported
             return this
         }
@@ -1353,7 +1254,7 @@ object BleConnector : AbsBleConnector() {
         /**
          * 是否过滤空数据的返回
          */
-        fun supportFilterEmpty(supported: Boolean): Builder {
+        fun supportFilterEmpty(supported: Boolean):Builder{
             supportFilterEmpty = supported
             return this
         }

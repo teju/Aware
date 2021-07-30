@@ -80,35 +80,15 @@ data class BleDeviceInfo(
     var mClassicAddress: String = "",
 
     /**
-     * 是否显示数字电量  [DIGITAL_POWER_VISIBLE] [DIGITAL_POWER_HIDE]
+     * 是否显示电量数字  [DIGITAL_POWER_VISIBLE] [DIGITAL_POWER_HIDE]
      */
     var mHideDigitalPower: Int = 0,
 
     /**
      * 是否显示防丢开关  [ANTI_LOST_VISIBLE] [ANTI_LOST_HIDE]
      */
-    var mShowAntiLostSwitch: Int = 0,
+    var mHideAntiLost: Int = 0
 
-    /**
-     * 支持的睡眠算法类型  [SUPPORT_NEW_SLEEP_ALGORITHM_0] [SUPPORT_NEW_SLEEP_ALGORITHM_1]
-     */
-    var mSleepAlgorithmType: Int = 0,
-
-    /**
-     * 是否支持日期格式设置 [SUPPORT_DATE_FORMAT_0] [SUPPORT_DATE_FORMAT_1]
-     */
-    var mSupportDateFormatSet: Int = 0,
-
-    /**
-     * 是否支持读取设备信息。在之前, APP只能在绑定设备时被动接收到设备信息, 导致如果固件升级时修改了设备信息，APP不重新绑定
-     * 就获取不了新的设备信息。加上该标记后, APP读取固件版本时, 如果发现与之前的版本不一致, 就主动更新下设备信息
-     */
-    var mSupportReadDeviceInfo: Int = 0,
-
-    /**
-     * 是否支持温度单位设置 [SUPPORT_TEMPERATURE_UNIT_0] [SUPPORT_TEMPERATURE_UNIT_1]
-     */
-    var mSupportTemperatureUnitSet: Int = 0
 ) : BleReadable() {
 
     override fun decode() {
@@ -126,23 +106,15 @@ data class BleDeviceInfo(
         mWatchFaceType = readInt8().toInt()
         mClassicAddress = readStringUtil(0).toUpperCase(Locale.getDefault())
         mHideDigitalPower = readInt8().toInt()
-        mShowAntiLostSwitch = readInt8().toInt()
-        mSleepAlgorithmType = readInt8().toInt()
-        mSupportDateFormatSet = readInt8().toInt()
-        mSupportReadDeviceInfo = readInt8().toInt()
-        mSupportTemperatureUnitSet = readInt8().toInt()
+        mHideAntiLost = readInt8().toInt()
     }
 
     override fun toString(): String {
         return "BleDeviceInfo(mId=${String.format("0x%08X", mId)}, mDataKeys=" +
-            "${mDataKeys.map { BleKey.of(it) }}, mBleName='$mBleName', " +
-            "mBleAddress='$mBleAddress', mPlatform='$mPlatform', mPrototype='$mPrototype', " +
-            "mFirmwareFlag='$mFirmwareFlag', mAGpsType=$mAGpsType, mIOBufferSize=$mIOBufferSize, " +
-            "mWatchFaceType=$mWatchFaceType, mClassicAddress='$mClassicAddress', mHideDigitalPower=$mHideDigitalPower, " +
-            "mShowAntiLostSwitch=$mShowAntiLostSwitch, mSleepAlgorithmType=$mSleepAlgorithmType, " +
-            "mSupportDateFormatSet=$mSupportDateFormatSet, mSupportReadDeviceInfo=$mSupportReadDeviceInfo, " +
-            "mSupportTemperatureUnitSet=$mSupportTemperatureUnitSet" +
-            ")"
+                "${mDataKeys.map { BleKey.of(it) }}, mBleName='$mBleName', " +
+                "mBleAddress='$mBleAddress', mPlatform='$mPlatform', mPrototype='$mPrototype', " +
+                "mFirmwareFlag='$mFirmwareFlag', mAGpsType=$mAGpsType, mIOBufferSize=$mIOBufferSize, " +
+                "mWatchFaceType=$mWatchFaceType, mClassicAddress='$mClassicAddress', mHideDigitalPower=$mHideDigitalPower, mHideAntiLost=$mHideAntiLost)"
     }
 
     companion object {
@@ -155,8 +127,7 @@ data class BleDeviceInfo(
         const val PROTOTYPE_10G = "SMA-10G"
         const val PROTOTYPE_GTM5 = "SMA-GTM5"
         const val PROTOTYPE_F1N = "SMA-F1N"
-        const val PROTOTYPE_ND09 = "SMA-ND09"
-        const val PROTOTYPE_ND08 = "SMA-ND08"
+        const val PROTOTYPE_H56 = "H56"
 
         // Realtek
         const val PROTOTYPE_R4 = "SMA-R4"
@@ -170,15 +141,7 @@ data class BleDeviceInfo(
         const val PROTOTYPE_F13 = "SMA-F13"
         const val PROTOTYPE_R10 = "R10"
         const val PROTOTYPE_F6 = "F6"
-        const val PROTOTYPE_R9 = "R9"
-        const val PROTOTYPE_F7 = "F7"
-        const val PROTOTYPE_SW01 = "SMA-SW01"
-        const val PROTOTYPE_REALTEK_GTM5 = "REALTEK_GTM5"
-        const val PROTOTYPE_F1 = "SMA-F1"
-        const val PROTOTYPE_F2D = "SMA-F2D"
-        const val PROTOTYPE_F2R = "SMA-F2R"
-        const val PROTOTYPE_T78 = "T78"
-        const val PROTOTYPE_F5 = "F5"
+
 
         // Goodix
         const val PROTOTYPE_R3H = "R3H"
@@ -212,36 +175,17 @@ data class BleDeviceInfo(
         const val WATCH_6 = 6           //MTK-表盘文件分辨率320x363
         const val WATCH_7 = 7           //Realtek bmp格式表盘 圆形
         const val WATCH_8 = 8           //汇顶平台表盘
-        const val WATCH_9 = 9          //瑞昱R6,R8球拍屏，240x240
-        const val WATCH_10 = 10        //瑞昱240*280方形表盘BMP格式（单蓝牙）（中间件项目，表盘需字节对齐）
-        const val WATCH_11 = 11        //瑞昱bmp格式表盘, 圆形表盘  240*240，双模蓝牙
-        const val WATCH_12 = 12        //瑞昱bmp格式表盘，方形表盘 240*240 双模蓝牙
-        const val WATCH_13 = 13        //MTK 240x240-新表盘
-        const val WATCH_14 = 14        //瑞昱80*160方形表盘BMP格式
-        const val WATCH_15 = 15        //360x360 BMP 圆形-目前应用于瑞昱平台
-        const val WATCH_16 = 16        //瑞昱240*280方形表盘BMP格式（双蓝牙）
-        const val WATCH_17 = 17        //瑞昱 454x454 圆形 双蓝牙 R9 （中间件项目，表盘需字节对齐）
-        const val WATCH_18 = 18        //瑞昱 240x240 圆形 单蓝牙 GTM5（中间件项目，表盘需字节对齐）
-        const val WATCH_19 = 19        //瑞昱240*280方形表盘BMP格式（单蓝牙）
-        const val WATCH_20 = 20        //瑞昱240*280方形表盘BMP格式（双蓝牙）
-        const val WATCH_21 = 21        //瑞昱240*295方形表盘BMP格式（单蓝牙）（中间件项目，表盘需字节对齐）
+        const val WATCH_9  = 9          //瑞昱R6,R8球拍屏，240x240
+        const val WATCH_10  = 10        //瑞昱240*280方形表盘BMP格式
+        const val WATCH_11  = 11        //瑞昱bmp格式表盘, 圆形表盘  240*240，双模蓝牙
+        const val WATCH_12  = 12        //瑞昱bmp格式表盘，方形表盘 240*240 双模蓝牙
+        const val WATCH_13  = 13        //MTK 240x240-新表盘
+
 
         const val DIGITAL_POWER_VISIBLE = 0 //显示
         const val DIGITAL_POWER_HIDE = 1
 
         const val ANTI_LOST_VISIBLE = 1 //防丢显示
         const val ANTI_LOST_HIDE = 0    //防丢默认隐藏
-
-        const val SUPPORT_NEW_SLEEP_ALGORITHM_0 = 0    //新版睡眠算法-不支持-默认
-        const val SUPPORT_NEW_SLEEP_ALGORITHM_1 = 1   //新版睡眠算法
-
-        const val SUPPORT_DATE_FORMAT_1 = 1   //支持
-        const val SUPPORT_DATE_FORMAT_0 = 0   //默认不支持
-
-        const val SUPPORT_READ_DEVICE_INFO_1 = 1   //支持
-        const val SUPPORT_READ_DEVICE_INFO_0 = 0   //默认不支持
-
-        const val SUPPORT_TEMPERATURE_UNIT_1 = 1   //支持
-        const val SUPPORT_TEMPERATURE_UNIT_0 = 0   //默认不支持
     }
 }

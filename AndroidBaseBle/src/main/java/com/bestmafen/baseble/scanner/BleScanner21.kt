@@ -65,7 +65,7 @@ internal class BleScanner21(
     @Synchronized
     override fun scan(scan: Boolean) {
         requireNotNull(mBleScanCallback) { "BleScanCallback cannot be null" }
-        BleLog.d("$LOG_HEADER scan $scan -> isScanning=$isScanning , scanMode=${mScanSettings.scanMode}")
+        BleLog.d("$LOG_HEADER scan $scan -> isScanning=$isScanning")
         if (isScanning == scan) return
 
         val scanner = mBluetoothAdapter.bluetoothLeScanner

@@ -26,12 +26,11 @@ class BleMessenger : AbsBleMessenger() {
             while (true) {
                 val packet = mWritePackets.take()
                 mAbsBleConnector.mBluetoothGatt?.let { gatt ->
-                    mAbsBleConnector.getCharacteristic(packet.mService, packet.mCharacteristic)
-                        ?.let { characteristic ->
-                            mPacketSemaphore.acquire()
-                            characteristic.value = packet.mData
-                            gatt.writeCharacteristic(characteristic)
-                        }
+                    mAbsBleConnector.getCharacteristic(packet.mService, packet.mCharacteristic)?.let { characteristic ->
+                        mPacketSemaphore.acquire()
+                        characteristic.value = packet.mData
+                        gatt.writeCharacteristic(characteristic)
+                    }
                 }
             }
         }
@@ -74,10 +73,8 @@ class BleMessenger : AbsBleMessenger() {
             mWritePackets.put(message)
         } else {
             for (i in 0 until count) { // 拆分
-                val data = (message.mData).copyOfRange(
-                    i * mPacketSize,
-                    if (i == count - 1) message.mData.size else (i + 1) * mPacketSize
-                )
+                val data = (message.mData).copyOfRange(i * mPacketSize,
+                    if (i == count - 1) message.mData.size else (i + 1) * mPacketSize)
                 WriteMessage(message.mService, message.mCharacteristic, data).let {
                     BleLog.v("$LOG_HEADER enqueueWritePackets -> $it")
                     mWritePackets.put(it)
@@ -116,15 +113,6 @@ class BleMessenger : AbsBleMessenger() {
         }
     }
 
-//    fun resetMessages(){
-//        BleLog.v("$LOG_HEADER -> resetMessages")
-//        mMessageTask?.let {
-//            mHandler.removeCallbacks(it)
-//        }
-//        mMessageTask = null
-//        mBleMessages.clear()
-//    }
-
     inner class MessageTask(private val message: BleMessage) : Runnable {
         private var mRetry = 0
 
@@ -140,10 +128,9 @@ class BleMessenger : AbsBleMessenger() {
             BleLog.v("MessageTask -> try($mRetry), $message")
             when (message) {
                 is ReadMessage -> {
-                    mAbsBleConnector.getCharacteristic(message.mService, message.mCharacteristic)
-                        ?.let { characteristic ->
-                            gatt.readCharacteristic(characteristic)
-                        }
+                    mAbsBleConnector.getCharacteristic(message.mService, message.mCharacteristic)?.let { characteristic ->
+                        gatt.readCharacteristic(characteristic)
+                    }
                 }
 
                 is WriteMessage -> {
@@ -155,19 +142,18 @@ class BleMessenger : AbsBleMessenger() {
                 }
 
                 is NotifyMessage -> {
-                    mAbsBleConnector.getCharacteristic(message.mService, message.mCharacteristic)
-                        ?.let { characteristic ->
-                            mAbsBleConnector.getNotifyDescriptor(characteristic)?.let { descriptor ->
-                                descriptor.value =
-                                    if (message.mEnabled) {
-                                        BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                                    } else {
-                                        BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
-                                    }
-                                gatt.setCharacteristicNotification(characteristic, message.mEnabled)
-                                gatt.writeDescriptor(descriptor)
-                            }
+                    mAbsBleConnector.getCharacteristic(message.mService, message.mCharacteristic)?.let { characteristic ->
+                        mAbsBleConnector.getNotifyDescriptor(characteristic)?.let { descriptor ->
+                            descriptor.value =
+                                if (message.mEnabled) {
+                                    BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                                } else {
+                                    BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
+                                }
+                            gatt.setCharacteristicNotification(characteristic, message.mEnabled)
+                            gatt.writeDescriptor(descriptor)
                         }
+                    }
                 }
 
                 is RequestMtuMessage -> {

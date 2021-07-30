@@ -10,7 +10,7 @@ data class BleWeather(
     var mWeatherCode: Int = 0,        // 天气类型，for both
     var mWindSpeed: Int = 0,          // m/s，for both
     var mHumidity: Int = 0,           // %，for both
-    var mVisibility: Int = 0,         // km，for both
+    var mVisibility: Int = 0,         // m，for both
     // https://en.wikipedia.org/wiki/Ultraviolet_index
     // https://zh.wikipedia.org/wiki/%E7%B4%AB%E5%A4%96%E7%BA%BF%E6%8C%87%E6%95%B0
     // [0, 2] -> low, [3, 5] -> moderate, [6, 7] -> high, [8, 10] -> very high, >10 -> extreme

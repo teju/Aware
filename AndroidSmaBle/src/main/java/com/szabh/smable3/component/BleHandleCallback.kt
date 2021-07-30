@@ -26,11 +26,6 @@ interface BleHandleCallback {
     fun onIdentityDelete(status: Boolean) {}
 
     /**
-     * 设备主动解绑时触发。例如设备恢复出厂设置
-     */
-    fun onIdentityDeleteByDevice(isDevice: Boolean) {}
-
-    /**
      * 连接状态变化时触发。
      */
     fun onSessionStateChange(status: Boolean) {}
@@ -124,15 +119,6 @@ interface BleHandleCallback {
      */
     fun onReadLanguagePackVersion(version: BleLanguagePackVersion) {}
 
-    fun onReadSleepQuality(sleepQuality: BleSleepQuality){}
-
-    fun onReceiveRealtimeLog(realtimeLog: BleRealtimeLog){}
-
-    /**
-     * 设备返回定位GGA数据时触发
-     */
-    fun onReceiveLocationGga(locationGga: BleLocationGga) {}
-
     /**
      * 设备点击音乐相关按键时触发。
      */
@@ -191,11 +177,6 @@ interface BleHandleCallback {
     fun onReadBleHrv(hrv: List<BleHrv>) {}
 
     /**
-     * 当设备返回[BleLogText]时触发。
-     */
-    fun onReadBleLogText(logs: List<BleLogText>) {}
-
-    /**
      * 设备主动执行拍照相关操作时触发。
      * @param cameraState [CameraState]
      */
@@ -231,24 +212,4 @@ interface BleHandleCallback {
      * @param url aGps文件的下载链接
      */
     fun onIncomingCallStatus(status: Int) {}
-
-    /**
-     * 当设备本地文件增加，或者变化，通知App可以获取新文件时触发
-     */
-    fun onDeviceFileUpdate(deviceFile: BleDeviceFile) {}
-
-    /**
-     * 读取设备本地存储的文件，App端需要循环读取
-     */
-    fun onReadDeviceFile(deviceFile: BleDeviceFile) {}
-
-    /**
-     * 当设备返回睡眠原始数据时触发,针对此原始数据，直接保存即可
-     */
-    fun onReadSleepRaw(sleepRawData: ByteArray) {}
-
-    /**
-     * 当设备返回[BlePressure]时触发。
-     */
-    fun onReadPressure(pressures: List<BlePressure>) {}
 }

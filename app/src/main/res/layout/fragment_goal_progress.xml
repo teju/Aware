@@ -111,8 +111,8 @@
 
                 <com.ramijemli.percentagechartview.PercentageChartView
                     android:id="@+id/progressBar"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="170dp"
+                    android:layout_height="170dp"
                     app:pcv_mode="ring"
                     app:pcv_backgroundBarThickness="30dp"
                     app:pcv_progressBarThickness="12dp"

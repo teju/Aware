@@ -36,17 +36,11 @@ enum class BleKey(val mKey: Int) {
     // SET
     TIME(0x0201), TIME_ZONE(0x0202), POWER(0x0203), FIRMWARE_VERSION(0x0204),
     BLE_ADDRESS(0x0205), USER_PROFILE(0x0206), STEP_GOAL(0x0207), BACK_LIGHT(0x0208),
-    SEDENTARINESS(0x0209), NO_DISTURB_RANGE(0x020A), VIBRATION(0x020B),
-    GESTURE_WAKE(0x020C), HR_ASSIST_SLEEP(0x020D), HOUR_SYSTEM(0x020E), LANGUAGE(0x020F),
-    ALARM(0x0210), COACHING(0x0212),
+    SEDENTARINESS(0x0209), NO_DISTURB_RANGE(0x020A), VIBRATION(0x020B), ALARM(0x0210), COACHING(0x0212),
     FIND_PHONE(0x0213), NOTIFICATION_REMINDER(0x0214), ANTI_LOST(0x0215), HR_MONITORING(0x0216),
     UI_PACK_VERSION(0x0217), LANGUAGE_PACK_VERSION(0x0218), SLEEP_QUALITY(0x0219), GIRL_CARE(0x021A),
-    TEMPERATURE_DETECTING(0x021B), AEROBIC_EXERCISE(0x021C), TEMPERATURE_UNIT(0x021D), DATE_FORMAT(0x021E),
-    REALTIME_LOG(0x021F),
-
-    LOCATION_GGA(0x02FD), // 设备定位GGA数据
-    RAW_SLEEP(0x02FE), // 洪涛写的睡眠算法的原始数据
-    NO_DISTURB_GLOBAL(0x02FF),
+    TEMPERATURE_DETECTING(0x021B), GESTURE_WAKE(0x020C), HR_ASSIST_SLEEP(0x020D), HOUR_SYSTEM(0x020E),
+    LANGUAGE(0x020F), NO_DISTURB_GLOBAL(0x02FF),
 
     // CONNECT
     IDENTITY(0x0301), // 身份，代表绑定的意思
@@ -64,7 +58,6 @@ enum class BleKey(val mKey: Int) {
     ACTIVITY_REALTIME(0x0501),
     ACTIVITY(0x0502), HEART_RATE(0x0503), BLOOD_PRESSURE(0x0504), SLEEP(0x0505),
     WORKOUT(0x0506), LOCATION(0x0507), TEMPERATURE(0x0508), BLOOD_OXYGEN(0x0509), HRV(0x050A),
-    LOG(0x050B), SLEEP_RAW_DATA(0x050C), PRESSURE(0x050D),
 
     // CONTROL
     CAMERA(0x0601),
@@ -77,8 +70,6 @@ enum class BleKey(val mKey: Int) {
     FONT_FILE(0x0703),
     CONTACT(0x0704),
     UI_FILE(0x0705),
-    DEVICE_FILE(0x0706),
-    LANGUAGE_FILE(0x0707),
 
     NONE(0xffff);
 
@@ -100,13 +91,13 @@ enum class BleKey(val mKey: Int) {
             OTA, XMODEM ->
                 listOf(BleKeyFlag.UPDATE)
             // SET
-            POWER, FIRMWARE_VERSION, BLE_ADDRESS, UI_PACK_VERSION, LANGUAGE_PACK_VERSION, DEVICE_FILE ->
+            POWER, FIRMWARE_VERSION, BLE_ADDRESS, UI_PACK_VERSION, LANGUAGE_PACK_VERSION ->
                 listOf(BleKeyFlag.READ)
             TIME, NOTIFICATION_REMINDER, SLEEP_QUALITY, GIRL_CARE, TEMPERATURE_DETECTING ->
                 listOf(BleKeyFlag.UPDATE)
             TIME_ZONE, USER_PROFILE, STEP_GOAL, BACK_LIGHT, SEDENTARINESS,
             NO_DISTURB_RANGE, NO_DISTURB_GLOBAL, VIBRATION, GESTURE_WAKE, HR_ASSIST_SLEEP,
-            HOUR_SYSTEM, LANGUAGE, ANTI_LOST, HR_MONITORING, AEROBIC_EXERCISE, TEMPERATURE_UNIT, DATE_FORMAT->
+            HOUR_SYSTEM, LANGUAGE, ANTI_LOST, HR_MONITORING ->
                 listOf(BleKeyFlag.UPDATE, BleKeyFlag.READ)
             ALARM ->
                 listOf(BleKeyFlag.CREATE, BleKeyFlag.DELETE, BleKeyFlag.UPDATE, BleKeyFlag.READ, BleKeyFlag.RESET)
@@ -114,16 +105,16 @@ enum class BleKey(val mKey: Int) {
                 listOf(BleKeyFlag.CREATE, BleKeyFlag.UPDATE, BleKeyFlag.READ)
             // CONNECT
             IDENTITY ->
-                listOf(BleKeyFlag.CREATE, BleKeyFlag.READ, BleKeyFlag.DELETE)
+                listOf(BleKeyFlag.CREATE, BleKeyFlag.DELETE)
             // PUSH
             NOTIFICATION, WEATHER_REALTIME, WEATHER_FORECAST ->
                 listOf(BleKeyFlag.UPDATE)
             SCHEDULE ->
                 listOf(BleKeyFlag.CREATE, BleKeyFlag.DELETE, BleKeyFlag.UPDATE)
             // DATA
-            DATA_ALL, ACTIVITY_REALTIME->
+            DATA_ALL, ACTIVITY_REALTIME ->
                 listOf(BleKeyFlag.READ)
-            ACTIVITY, HEART_RATE, BLOOD_PRESSURE, SLEEP, WORKOUT, LOCATION, TEMPERATURE, BLOOD_OXYGEN, HRV, LOG, SLEEP_RAW_DATA, PRESSURE->
+            ACTIVITY, HEART_RATE, BLOOD_PRESSURE, SLEEP, WORKOUT, LOCATION, TEMPERATURE, BLOOD_OXYGEN, HRV ->
                 listOf(BleKeyFlag.READ, BleKeyFlag.DELETE)
             // CONTROL
             CAMERA ->
@@ -133,8 +124,8 @@ enum class BleKey(val mKey: Int) {
             INCOMING_CALL ->
                 listOf(BleKeyFlag.UPDATE)
             // IO
-            WATCH_FACE, AGPS_FILE, FONT_FILE, CONTACT, UI_FILE, LANGUAGE_FILE ->
-                listOf(/*BleKeyFlag.DELETE, */BleKeyFlag.UPDATE)
+            WATCH_FACE, AGPS_FILE, FONT_FILE, CONTACT, UI_FILE ->
+                listOf(BleKeyFlag.DELETE, BleKeyFlag.UPDATE)
             else -> listOf()
         }
     }
@@ -158,7 +149,7 @@ enum class BleKey(val mKey: Int) {
 }
 
 enum class BleKeyFlag(val mBleKeyFlag: Int) {
-    UPDATE(0x00), READ(0x10), READ_CONTINUE(0x11), CREATE(0x20), DELETE(0x30),
+    UPDATE(0x00), READ(0x10), CREATE(0x20), DELETE(0x30),
 
     // BleIdObject专属，相当于Delete All和Create的组合，用于绑定时重置BleIdObject列表
     // 只能用BleConnector.sendList重置，sendObject无效
