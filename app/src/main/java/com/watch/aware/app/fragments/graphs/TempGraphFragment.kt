@@ -180,16 +180,8 @@ class TempGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSele
 
             val leftAxis: YAxis = mChart.getAxisLeft()
             leftAxis.removeAllLimitLines()
-            if(which == DAILY) {
-                leftAxis.axisMaximum = 200f
-                leftAxis.granularity = 40f
-            } else if(which == WEEKLY) {
-                leftAxis.axisMaximum = 200f
-                leftAxis.granularity = 40f
-            } else if(which == MONTHLY) {
-                leftAxis.axisMaximum = 200f
-                leftAxis.granularity = 40f
-            }
+            leftAxis.axisMaximum = 50f
+            leftAxis.granularity = 10f
 
             leftAxis.axisMinimum = 0f
             leftAxis.setLabelCount(50)

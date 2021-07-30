@@ -20,6 +20,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
+import com.ramijemli.percentagechartview.callback.ProgressTextFormatter
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
 import com.szabh.smable3.component.BleCache
@@ -28,9 +29,12 @@ import com.szabh.smable3.component.BleHandleCallback
 import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
-import com.watch.aware.app.helper.*
 import com.watch.aware.app.helper.Constants.Companion.CAL_GOAL
 import com.watch.aware.app.helper.Constants.Companion.STEPS_GOAL
+import com.watch.aware.app.helper.DataBaseHelper
+import com.watch.aware.app.helper.Helper
+import com.watch.aware.app.helper.MyMarkerView
+import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.DailyData
 import kotlinx.android.synthetic.main.fragment_goal_progress.*
 import java.util.*
@@ -152,8 +156,12 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
             val res = totalVal / UserInfoManager.getInstance(activity!!).getGoalValue() * 100
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                progressBar.progress = res.toFloat()
+                progressBar.setProgress(res.toFloat(),false)
             }
+            progressBar.setTextFormatter(ProgressTextFormatter { progress ->
+                ""+ String.format("%.2f",res) + "%\n"+appendText
+            })
+
             step_count.text = ""+ String.format("%.2f",res) + "%\n"+appendText
         } catch (e:java.lang.Exception){
             e.printStackTrace()

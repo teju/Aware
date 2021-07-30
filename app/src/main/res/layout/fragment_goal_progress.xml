@@ -109,27 +109,21 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_height="wrap_content">
 
-                <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                <com.ramijemli.percentagechartview.PercentageChartView
                     android:id="@+id/progressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="150dp"
-                    android:layout_centerInParent="true"
-                    android:layout_marginTop="20dp"
-                    app:background_progressbar_color="@color/WhiteSmoke"
-                    app:background_progressbar_width="15dp"
-                    app:progressbar_color="@color/colorAccent"
-                    app:progressbar_width="10dp" />
-
-                <ProgressBar
-                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_centerInParent="true"
+                    app:pcv_mode="ring"
+                    app:pcv_backgroundBarThickness="30dp"
+                    app:pcv_progressBarThickness="12dp"
+                    app:pcv_backgroundBarColor="@color/light_gray"
                     android:layout_marginTop="20dp"
-                    android:indeterminate="true"
-                    android:indeterminateDrawable="@drawable/step_progress"
-                    android:progress="10"
-                    android:visibility="gone" />
+                    app:pcv_orientation="counter_clockwise"
+                    app:pcv_animDuration="800"
+                    app:pcv_textColor="@color/white"
+                    app:pcv_animInterpolator="anticipate_overshoot"
+                    app:pcv_startAngle="90"/>
+
 
                 <TextView
                     android:id="@+id/step_count"
@@ -138,9 +132,10 @@
                     android:layout_centerInParent="true"
                     android:fontFamily="@font/opensansbold"
                     android:text="0%"
+                    android:visibility="visible"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/text_small">
+                    android:textSize="12dp">
 
                 </TextView>
 

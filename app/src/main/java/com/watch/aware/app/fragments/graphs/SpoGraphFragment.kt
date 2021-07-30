@@ -180,17 +180,8 @@ class SpoGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSelec
 
             val leftAxis: YAxis = mChart.getAxisLeft()
             leftAxis.removeAllLimitLines()
-            if(which == DAILY) {
-                leftAxis.axisMaximum = 200f
-                leftAxis.granularity = 40f
-            } else if(which == WEEKLY) {
-                leftAxis.axisMaximum = 200f
-                leftAxis.granularity = 40f
-            } else if(which == MONTHLY) {
-                leftAxis.axisMaximum = 200f
-                leftAxis.granularity = 40f
-            }
-
+            leftAxis.axisMaximum = 100f
+            leftAxis.granularity = 20f
             leftAxis.axisMinimum = 0f
             leftAxis.setLabelCount(50)
             leftAxis.textColor = Color.GRAY
