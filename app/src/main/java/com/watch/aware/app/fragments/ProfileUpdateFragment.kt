@@ -57,6 +57,8 @@ class ProfileUpdateFragment : BaseFragment() {
         email.setText(UserInfoManager.getInstance(activity!!).getEmail())
         contact_number.setText(UserInfoManager.getInstance(activity!!).getContactNumber())
         age.setText(UserInfoManager.getInstance(activity!!).getAge())
+        height.setText(UserInfoManager.getInstance(activity!!).getHeight())
+        weight.setText(UserInfoManager.getInstance(activity!!).getWeight())
         if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
             male.isChecked = false
             female.isChecked = true
@@ -121,6 +123,8 @@ class ProfileUpdateFragment : BaseFragment() {
                             UserInfoManager.getInstance(activity!!).saveEmail(email.text.toString())
                             UserInfoManager.getInstance(activity!!).saveAge(age.text.toString())
                             UserInfoManager.getInstance(activity!!).saveContactNumber(contact_number.text.toString())
+                            UserInfoManager.getInstance(activity!!).saveHeightValue(height.text.toString())
+                            UserInfoManager.getInstance(activity!!).saveWeightValue(weight.text.toString())
                             if(male.isChecked) {
                                 UserInfoManager.getInstance(activity!!).saveGender("M")
                             } else {

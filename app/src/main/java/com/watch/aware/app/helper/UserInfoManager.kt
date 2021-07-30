@@ -17,6 +17,8 @@ class UserInfoManager private constructor() {
     private val KEY_CONTACT_NUMBER = "key_contact_number"
     private val KEY_AGE = "key_age"
     private val KEY_GENDER = "key_gender"
+    private val KEY_HEIGHT = "key_height"
+    private val KEY_WEIGHT = "key_weight"
     private val KEY_LOGGED_IN = "key_logged_in"
     private val KEY_IS_FIRST_TIME = "key_is_first_time"
     private val KEY_TIME_FORMAT = "key_time_format"
@@ -30,6 +32,8 @@ class UserInfoManager private constructor() {
     private var contact_number: String? = ""
     private var age: String? = ""
     private var gender: String? = ""
+    private var height: String? = ""
+    private var weight: String? = ""
     private var isLoggedIn: Boolean = false
     private var isFirstTime: Boolean = false
     private var timeFormat: Int = 0
@@ -148,6 +152,26 @@ class UserInfoManager private constructor() {
         val editor = this.prefs!!.edit()
         editor.putInt(KEY_GOAL_VALUE, goalValue)
         editor.commit()
+    }
+    fun saveHeightValue(height: String) {
+        this.height = height
+        val editor = this.prefs!!.edit()
+        editor.putString(KEY_HEIGHT, height)
+        editor.commit()
+    }
+    fun saveWeightValue(weight: String) {
+        this.weight = weight
+        val editor = this.prefs!!.edit()
+        editor.putString(KEY_WEIGHT, weight)
+        editor.commit()
+    }
+    fun getHeight(): String {
+        this.height = this.prefs!!.getString(KEY_HEIGHT, "")
+        return height!!
+    }
+    fun getWeight(): String {
+        this.weight = this.prefs!!.getString(KEY_WEIGHT, "")
+        return weight!!
     }
     fun getGoalType(): Int {
         this.goalType = this.prefs!!.getInt(KEY_GOAL_TYPE, 0)

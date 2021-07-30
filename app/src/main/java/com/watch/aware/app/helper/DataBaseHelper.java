@@ -296,7 +296,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT *  FROM HeartRate" +
                 " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
                 " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
-                "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') ORDER BY time DESC";
+                "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') AND heartRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -315,12 +315,63 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return dataListList;
     }
+    public List<SpoRate> getAllSpoWeekly(int week,int month ) {
+        List<SpoRate> dataListList = new ArrayList<SpoRate>();
+
+        String selectQuery = "SELECT *  FROM SpoRate" +
+                " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
+                "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') AND SpoRate != 0 ORDER BY time DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                SpoRate steps = new SpoRate();
+                steps.setID(cursor.getString(0));
+                steps.setSpoRate(cursor.getInt(1));
+                steps.setDate(cursor.getString(2));
+                steps.setTime(cursor.getString(3));
+                dataListList.add(steps);
+            } while (cursor.moveToNext());
+        }
+
+        return dataListList;
+    }
+    public List<TempRate> getAllTempWeekly(int week,int month ) {
+        List<TempRate> dataListList = new ArrayList<TempRate>();
+
+        String selectQuery = "SELECT *  FROM TempRate" +
+                " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
+                "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') AND TempRate != 0 ORDER BY time DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                TempRate steps = new TempRate();
+                steps.setID(cursor.getString(0));
+                steps.setTempRate(cursor.getDouble(1));
+                steps.setDate(cursor.getString(2));
+                steps.setTime(cursor.getString(3));
+                dataListList.add(steps);
+            } while (cursor.moveToNext());
+        }
+
+        return dataListList;
+    }
+
     public List<Steps> getAllStepsMonthly(int month) {
         List<Steps> dataListList = new ArrayList<Steps>();
 
         String selectQuery = "SELECT rowid, stepsCount,distance,cal,date,time, total_count,total_dist,total_cal,Logs  FROM StepsCount" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021 AND stepsCount != 0 ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2021  ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -342,6 +393,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
+        System.out.println("DataBaseHelper123 getAllStepsMonthly " + selectQuery );
 
         return dataListList;
     }
@@ -351,7 +403,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM HeartRate" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021  ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND heartRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -370,6 +422,52 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return dataListList;
     }
 
+    public List<SpoRate> getAllSpoMonthly(int month) {
+        List<SpoRate> dataListList = new ArrayList<SpoRate>();
+
+        String selectQuery = "SELECT *  FROM SpoRate" +
+                " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND SpoRate ORDER BY time DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                SpoRate steps = new SpoRate();
+                steps.setID(cursor.getString(0));
+                steps.setSpoRate(cursor.getInt(1));
+                steps.setDate(cursor.getString(2));
+                steps.setTime(cursor.getString(3));
+                dataListList.add(steps);
+            } while (cursor.moveToNext());
+        }
+        return dataListList;
+    }
+    public List<TempRate> getAllTempMonthly(int month) {
+        List<TempRate> dataListList = new ArrayList<TempRate>();
+
+        String selectQuery = "SELECT *  FROM TempRate" +
+                " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND TempRate != 0 ORDER BY time DESC";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                TempRate steps = new TempRate();
+                steps.setID(cursor.getString(0));
+                steps.setTempRate(cursor.getDouble(1));
+                steps.setDate(cursor.getString(2));
+                steps.setTime(cursor.getString(3));
+                dataListList.add(steps);
+            } while (cursor.moveToNext());
+        }
+        return dataListList;
+    }
 
     public void deleteSteps (String ID) {
         SQLiteDatabase database = this.getWritableDatabase();

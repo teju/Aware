@@ -72,6 +72,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.0'
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.0'
     compile 'com.mikhaellopez:circularprogressbar:1.0.0'
+    implementation 'com.ramijemli.percentagechartview:percentagechartview:0.3.0'
 
 
 }

@@ -236,6 +236,7 @@
                                 android:layout_width="wrap_content"
                                 android:fontFamily="@font/opensansregular"
                                 android:textColor="@color/White"
+                                android:text="Current"
                                 android:layout_height="wrap_content">
                             </TextView>
                             <ImageView
@@ -252,6 +253,7 @@
                             android:layout_marginTop="15dp"
                             android:textColor="@color/colorAccent"
                             android:textSize="25dp"
+                            android:text="0 hrs"
                             android:layout_height="wrap_content">
 
                         </TextView>

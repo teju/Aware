@@ -227,6 +227,8 @@ class WelnessFragment : BaseFragment() {
                         if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
                             BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
                             last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
+                        } else {
+                            last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
                         }
                     } else if(diffHeartRate?.days?.toInt() == 1) {
                         last_synced.text = "Yesterday"
@@ -279,6 +281,8 @@ class WelnessFragment : BaseFragment() {
                         ) {
                             last_synced.text =
                                 BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+                        } else {
+                            last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
                         }
                     } else if (diffDaysSpo?.days?.toInt() == 1) {
                         last_synced.text = "Yesterday"

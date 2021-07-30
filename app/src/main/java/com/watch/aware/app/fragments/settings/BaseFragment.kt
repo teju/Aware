@@ -422,18 +422,6 @@ open class BaseFragment : GenericFragment() {
 
         }
     }
-    fun epcoToDate(date : Int) :String {
-        try {
-            val date = DateTime(date * 1000L, DateTimeZone.UTC)
-            val format: DateFormat = SimpleDateFormat(DATE_JSON)
-            var formatted: String = format.format(date)
-            // var formatted: String = format.format(date)
-            return formatted
-        }catch (e:Exception) {
-
-        }
-        return "2021-07-23"
-    }
 
 
     fun epcoToTime(date : Int) :String {
