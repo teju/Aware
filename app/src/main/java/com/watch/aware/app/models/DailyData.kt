@@ -174,7 +174,7 @@ class DailyData {
         try {
             val dteps = dataBaseHelper.getAllHeartRate("WHERE  date is DATE('"+ BaseHelper.parseDate(
                 Date(), Constants.DATE_JSON)+"') AND time >= CAST ('"+fromnumber+"' as decimal) AND  time < CAST ('"+toNumber+"' " +
-                    "as decimal) ORDER BY time DESC" )
+                    "as decimal) AND heartRate != 0 ORDER BY time DESC" )
             if (dteps.size > 0) {
                 for (step in dteps){
                     stepsCnt = stepsCnt + step.heartRate

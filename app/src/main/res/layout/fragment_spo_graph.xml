@@ -161,6 +161,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="50dp"
+                android:visibility="gone"
                 android:background="@drawable/theme_rounded_rectangle_black"
                 android:padding="10dp"
                 android:orientation="horizontal"

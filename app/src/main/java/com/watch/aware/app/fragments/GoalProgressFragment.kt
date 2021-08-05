@@ -304,7 +304,6 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                     average_steps.text =String.format("%.3f",avg_steps)
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
                 }
-
             }
         } catch (e:Exception) {
             e.toString()

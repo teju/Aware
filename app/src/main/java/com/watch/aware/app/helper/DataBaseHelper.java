@@ -427,7 +427,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM SpoRate" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND SpoRate ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND SpoRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
