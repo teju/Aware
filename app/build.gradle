@@ -73,6 +73,5 @@ dependencies {
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.0'
     compile 'com.mikhaellopez:circularprogressbar:1.0.0'
     implementation 'com.ramijemli.percentagechartview:percentagechartview:0.3.0'
-
-
+    implementation files('libs/ute_sdk_v3.0.3.aar')
 }

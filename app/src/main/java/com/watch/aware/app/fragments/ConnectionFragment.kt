@@ -1,10 +1,8 @@
 package com.watch.aware.app.fragments
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
+import android.os.Handler
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -14,23 +12,29 @@ import com.bestmafen.baseble.scanner.BleScanCallback
 import com.bestmafen.baseble.scanner.ScannerFactory
 import com.szabh.smable3.BleKey
 import com.szabh.smable3.BleKeyFlag
-import com.szabh.smable3.component.BleCache
 import com.szabh.smable3.component.BleConnector
 import com.szabh.smable3.component.BleHandleCallback
 import com.szabh.smable3.entity.BleActivity
 import com.szabh.smable3.entity.BleDeviceInfo
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.DeviceItemClickListener
-import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.dialog.DeviceListingDialogFragment
-import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
-import com.watch.aware.app.helper.UserInfoManager
+import com.yc.pedometer.sdk.BLEServiceOperate
 import kotlinx.android.synthetic.main.fragment_connection.*
 
 
 class ConnectionFragment : BaseFragment(),View.OnClickListener {
+    private val mScanning = false
+    private val mHandler: Handler? = null
+
+    private val REQUEST_ENABLE_BT = 1
+
+    // Stops scanning after 10 seconds.
+    private val SCAN_PERIOD: Long = 10000
+    private val mBLEServiceOperate: BLEServiceOperate? = null
+
     var arrayList = java.util.ArrayList<BleDevice>()
     var isFromSettings = false
     val mBleScanner by lazy {
