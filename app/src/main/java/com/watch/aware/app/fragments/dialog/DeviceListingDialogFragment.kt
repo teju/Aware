@@ -14,11 +14,12 @@ import com.watch.aware.app.R
 import com.watch.aware.app.callback.DeviceItemClickListener
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.DeviceListAdapter
+import com.watch.aware.app.models.BleDevices
 import kotlinx.android.synthetic.main.device_listing.*
 import java.util.*
 
 class DeviceListingDialogFragment : DialogFragment() {
-    var arrayList = ArrayList<BleDevice>()
+    var arrayList = ArrayList<BleDevices>()
 
     var listener: DeviceItemClickListener? = null
     private var v: View? = null
@@ -49,8 +50,9 @@ class DeviceListingDialogFragment : DialogFragment() {
                 position: Int,
                 id: Long
             ) {
-                listener?.onItemClick(position)
+
                 dismiss()
+                listener?.onItemClick(position)
             }
         })
     }

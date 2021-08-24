@@ -1,6 +1,5 @@
 package com.watch.aware.app
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +21,10 @@ import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
+import com.yc.pedometer.sdk.BLEServiceOperate
+import com.yc.pedometer.sdk.BluetoothLeService
+import com.yc.pedometer.utils.SPUtil
+import com.yc.server.yc_sdk.common.UpdateManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -29,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     var MAIN_FLOW_INDEX = 0
     var MAIN_FLOW_TAG = "MainFlowFragment"
     private var currentFragment: Fragment? = null
+    private var mBluetoothLeService: BluetoothLeService? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
@@ -45,10 +50,12 @@ class MainActivity : AppCompatActivity() {
 
     fun triggerMainProcess() {
         if(UserInfoManager.getInstance(this).getISLoggedIn()) {
-            if(BleCache.mDeviceInfo == null) {
+
+            val ble_connecte = SPUtil.getInstance(this).bleConnectStatus
+            if(!ble_connecte) {
                 setFragment(ConnectionFragment())
             } else{
-                setFragment(CoughSettingsFragment())
+               setFragment(CoughSettingsFragment())
             }
         } else {
             setFragment(LandingFragment())

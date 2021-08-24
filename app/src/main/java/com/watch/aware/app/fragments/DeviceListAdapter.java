@@ -12,13 +12,14 @@ import android.widget.TextView;
 
 import com.bestmafen.baseble.scanner.BleDevice;
 import com.watch.aware.app.R;
+import com.watch.aware.app.models.BleDevices;
 
 import java.util.ArrayList;
 
 public class DeviceListAdapter extends BaseAdapter {
-    ArrayList<BleDevice> arrayList = new ArrayList<>();
+    ArrayList<BleDevices> arrayList = new ArrayList<>();
     Context context;
-    public DeviceListAdapter(Context context, ArrayList<BleDevice> arrayList) {
+    public DeviceListAdapter(Context context, ArrayList<BleDevices> arrayList) {
         this.arrayList=arrayList;
         this.context=context;
     }
@@ -45,7 +46,7 @@ public class DeviceListAdapter extends BaseAdapter {
             LayoutInflater layoutInflater = LayoutInflater.from(context);
             convertView=layoutInflater.inflate(R.layout.device_list_adapter, null);
             TextView tittle=convertView.findViewById(R.id.deviceNAme);
-            tittle.setText(arrayList.get(position).getMBluetoothDevice().getName()+"\n"+arrayList.get(position).getMBluetoothDevice().getAddress());
+            tittle.setText(arrayList.get(position).getName()+"\n"+arrayList.get(position).getAddress());
         }
         return convertView;
     }

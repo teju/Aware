@@ -100,6 +100,7 @@ open class BaseFragment : GenericFragment() {
         if (BleCache.mDeviceInfo?.mBleName != null) {
             Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
         }
+
         checkBluetoothGps()
     }
 
