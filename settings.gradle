@@ -1,6 +1,3 @@
-include ':AndroidBaseBle'
-include ':AndroidDfuLib'
-include ':AndroidSmaBle'
 include ':slide_jsonviewer_lib'
 include ':library:common_lib'
 include ':app'

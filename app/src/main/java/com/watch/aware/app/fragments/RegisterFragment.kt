@@ -13,7 +13,6 @@ import com.watch.aware.app.webservices.PostRegisterViewModel
 import kotlinx.android.synthetic.main.fragment_register.*
 import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
-import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
 

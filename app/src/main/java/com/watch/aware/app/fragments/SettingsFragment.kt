@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.szabh.smable3.component.BleConnector
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.EditSlotsListener
 import com.watch.aware.app.callback.NotifyListener
@@ -61,10 +60,7 @@ class SettingsFragment : BaseFragment() ,View.OnClickListener{
                     chevron.setImageDrawable(activity?.resources?.getDrawable(R.drawable.chevron_down))
                 }
             }
-            R.id.unbind -> {
-                BleConnector.unbind()
-                BleConnector.closeConnection(true)
-            }
+
             R.id.goal -> {
                 val f = EditGoalDialogFragment()
                 f.isCancelable = true

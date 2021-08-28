@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import com.bestmafen.baseble.scanner.BleDevice;
 import com.watch.aware.app.R;
 import com.watch.aware.app.models.BleDevices;
 

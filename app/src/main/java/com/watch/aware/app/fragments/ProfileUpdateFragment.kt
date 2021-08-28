@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
-import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.settings.BaseFragment
@@ -39,10 +38,8 @@ class ProfileUpdateFragment : BaseFragment() {
         save.setOnClickListener {
             if(validate()) {
                 Helper.hideKeyboard(activity!!)
-                var deviceAddress = ""
-                if(BleCache.mDeviceInfo != null) {
-                    deviceAddress = BleCache.mDeviceInfo?.mBleAddress!!
-                }
+                var deviceAddress = UserInfoManager.getInstance(activity!!).getDeviceID()
+
                 postUpdateProfileModel.loadData(username.text.toString(),age.text.toString(),
                     email.text.toString(),contact_number.text.toString(),gender,UserInfoManager.getInstance(activity!!).getEmail() )
             }

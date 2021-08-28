@@ -15,9 +15,7 @@ import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Cartesian
 import com.anychart.core.cartesian.series.Column
 import com.anychart.core.ui.ChartCredits
-import com.bestmafen.baseble.scanner.BleDevice
-import com.bestmafen.baseble.scanner.BleScanCallback
-import com.bestmafen.baseble.scanner.ScannerFactory
+
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -26,12 +24,7 @@ import com.github.mikephil.charting.utils.ColorTemplate
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
-import com.szabh.smable3.BleKey
-import com.szabh.smable3.BleKeyFlag
-import com.szabh.smable3.component.BleCache
-import com.szabh.smable3.component.BleConnector
-import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.*
+
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.graphs.*
 import com.watch.aware.app.fragments.settings.BaseFragment
@@ -79,19 +72,18 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
 
         swiperefresh_items.setOnRefreshListener(OnRefreshListener {
 
-            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+
             connect()
 
         })
         refresh.setOnClickListener {
             swiperefresh_items.setRefreshing(true);
-            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
             connect()
         }
-        if(!BleConnector.isAvailable()) {
-            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
-
-        }
+//        if(!BleConnector.isAvailable()) {
+//            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+//
+//        }
         try {
             setHeartData()
             setSPoData()
@@ -143,9 +135,6 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         try {
             swiperefresh_items.setRefreshing(false);
 
-            if (BleCache.mDeviceInfo != null) {
-                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ, activity!!)
-            }
         }catch (e:Exception){
 
         }

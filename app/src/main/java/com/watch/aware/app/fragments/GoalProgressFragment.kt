@@ -20,13 +20,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
-import com.ramijemli.percentagechartview.callback.ProgressTextFormatter
-import com.szabh.smable3.BleKey
-import com.szabh.smable3.BleKeyFlag
-import com.szabh.smable3.component.BleCache
-import com.szabh.smable3.component.BleConnector
-import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.*
+
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Constants.Companion.CAL_GOAL
@@ -45,6 +39,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
     var xAxisValues: List<String> = ArrayList()
     var values: MutableList<Entry> = ArrayList()
+/*
     private val mBleHandleCallback by lazy {
         object : BleHandleCallback {
 
@@ -61,14 +56,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 } catch (e : Exception) {
                 }
             }
-            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
-                super.onReadHeartRate(heartRates)
-                try {
-                    heartRateInsert(heartRates)
-                } catch (e:java.lang.Exception){
 
-                }
-            }
 
             override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
                 super.onReadBloodOxygen(bloodOxygen)
@@ -79,14 +67,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 }
             }
 
-            override fun onReadTemperature(temperatures: List<BleTemperature>) {
-                super.onReadTemperature(temperatures)
-                try {
-                    TempInsert(temperatures)
-                } catch (e:java.lang.Exception){
 
-                }
-            }
 
 
             override fun onReadActivity(activities: List<BleActivity>) {
@@ -120,10 +101,11 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 } catch (e:java.lang.Exception){
                 }
                 renderData()
-                insertStepData(activities)
+               // insertStepData(stactivities)
             }
         }
     }
+*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -180,6 +162,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
             last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
         }
+        setAnylasisData()
 
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -237,9 +220,9 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                     "22",
                     "23"))
         }
-        BleConnector.addHandleCallback(mBleHandleCallback)
-        connect()
-        swiperefresh_items.run {
+
+
+        /*swiperefresh_items.run {
             swiperefresh_items.setOnRefreshListener(OnRefreshListener {
                 Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
                connect()
@@ -253,24 +236,19 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         if(!BleConnector.isAvailable()) {
             connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
 
-        }
+        }*/
 
         setData()
+
     }
 
 
     override fun onHiddenChanged(hidden: Boolean) {
         if(!hidden) {
-            connect()
             setData()
         }
     }
-    fun connect() {
-        if(BleCache.mDeviceInfo != null) {
-           renderData()
-            setAnylasisData()
-        }
-    }
+
     fun setAnylasisData() {
         val dataBaseHelper = DataBaseHelper(activity)
         if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
-import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.settings.BaseFragment

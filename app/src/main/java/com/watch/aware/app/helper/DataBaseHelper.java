@@ -107,7 +107,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     public boolean stepsInsert(DataBaseHelper dbh, String stepsCount, String date,String distance,
-                               String cal,String time,int total_count,Double total_dist,int total_cal, String Logs ){
+                               String cal,String time,int total_count,Double total_dist,Double total_cal, String Logs ){
         try {
             SQLiteDatabase sq = dbh.getWritableDatabase();
             ContentValues cv = new ContentValues();

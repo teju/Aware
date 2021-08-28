@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.amitshekhar.DebugDB
 import com.iapps.libs.helpers.BaseHelper
-import com.szabh.smable3.component.BleCache
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.ConnectionFragment
 import com.watch.aware.app.fragments.CoughSettingsFragment
@@ -51,8 +50,8 @@ class MainActivity : AppCompatActivity() {
     fun triggerMainProcess() {
         if(UserInfoManager.getInstance(this).getISLoggedIn()) {
 
-            val ble_connecte = SPUtil.getInstance(this).bleConnectStatus
-            if(!ble_connecte) {
+            val getDeviceID = UserInfoManager.getInstance(this).getDeviceID()
+            if(BaseHelper.isEmpty(getDeviceID)) {
                 setFragment(ConnectionFragment())
             } else{
                setFragment(CoughSettingsFragment())

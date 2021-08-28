@@ -10,14 +10,13 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.iapps.libs.helpers.BaseHelper
-import com.iapps.libs.objects.LastSyncDate
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
-import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.fragments.settings.BaseFragment
@@ -31,11 +30,15 @@ import com.watch.aware.app.helper.MyBroadcastReceiver
 import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.HeartRate
 import com.watch.aware.app.models.SpoRate
+import com.watch.aware.app.models.TempRate
 import com.watch.aware.app.webservices.PostCovidStatusDataViewModel
 import com.watch.aware.app.webservices.PostRegisterViewModel
 import com.watch.aware.app.webservices.PostUpdateProfileModel
 import com.yc.pedometer.info.*
-import com.yc.pedometer.listener.*
+import com.yc.pedometer.listener.OxygenRealListener
+import com.yc.pedometer.listener.RateCalibrationListener
+import com.yc.pedometer.listener.TemperatureListener
+import com.yc.pedometer.listener.TurnWristCalibrationListener
 import com.yc.pedometer.sdk.*
 import com.yc.pedometer.update.Updates
 import com.yc.pedometer.utils.*
@@ -45,50 +48,18 @@ import kotlin.collections.ArrayList
 
 
 class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
-    OnServerCallbackListener, TemperatureListener, OxygenRealListener,
-    BreatheRealListener, RateCalibrationListener, TurnWristCalibrationListener{
+    OnServerCallbackListener, TemperatureListener, OxygenRealListener, RateCalibrationListener, TurnWristCalibrationListener{
+
     private var ble_connecte = false
-    private val DISCONNECT_MSG = 18
-    private val CONNECTED_MSG = 19
-    private val CONNECTED = 1
-    private val CONNECTING = 2
-    private val DISCONNECTED = 3
-    private var CURRENT_STATUS: Int = DISCONNECTED
-    private val BIND_CONNECT_SEND_ACCOUNT_ID_MSG = 44
-    private val test_mag1 = 35
-    private val test_mag2 = 36
-    private val RATE_SYNC_FINISH_MSG = 21
-    private val RATE_OF_24_HOUR_SYNC_FINISH_MSG = 43
-    private val OFFLINE_STEP_SYNC_OK_MSG = 37
-    private val SERVER_CALL_BACK_OK_MSG = 31
-    private val OPEN_CHANNEL_OK_MSG = 22
-    private val CLOSE_CHANNEL_OK_MSG = 23
-    private val TEST_CHANNEL_OK_MSG = 24
-    private val UNIVERSAL_INTERFACE_SDK_TO_BLE_SUCCESS_MSG = 39 //sdk发送数据到ble完成，并且校验成功，返回状态
-
-    private val UNIVERSAL_INTERFACE_SDK_TO_BLE_FAIL_MSG = 40 //sdk发送数据到ble完成，但是校验失败，返回状态
-
-    private val UNIVERSAL_INTERFACE_BLE_TO_SDK_SUCCESS_MSG = 41 //ble发送数据到sdk完成，并且校验成功，返回数据
-
-    private val UNIVERSAL_INTERFACE_BLE_TO_SDK_FAIL_MSG = 42
-    
-    private var mBLEServiceOperate: BLEServiceOperate? = null
-    private var mySQLOperate: UTESQLOperate? = null
-    private var mWriteCommand: WriteCommandToBLE? = null
-    private var mUpdates: Updates? = null
-
-    private var mBluetoothLeService: BluetoothLeService? = null
-    protected val TAG = "WelnessFragment"
-
-    private var heartlastsynced: Date? = null
-    private var spolastsynced: Date? = null
     private var heartRates: List<HeartRate> = ArrayList()
     private var spoRates: List<SpoRate> = ArrayList()
+    private var tempRates: List<TempRate> = ArrayList()
+
+    protected val TAG = "WelnessFragment"
+
     lateinit var postGetCovidStatusDataViewModel: PostCovidStatusDataViewModel
     lateinit var postUpdateProfileModel: PostUpdateProfileModel
 
-    var diffDaysSpo: LastSyncDate? = null
-    var diffHeartRate : LastSyncDate? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,14 +76,6 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         setGetCovidStatusDataAPIObserver()
         setUpdateProfileAPIObserver()
         syncing.visibility = View.VISIBLE
-        mySQLOperate = UTESQLOperate.getInstance(activity) // 2.2.1版本修改
-
-        mBLEServiceOperate = BLEServiceOperate.getInstance(activity)
-        LogUtils.d(
-            TAG,
-            "setServiceStatusCallback前 mBLEServiceOperate =$mBLEServiceOperate"
-        )
-        mBLEServiceOperate?.setServiceStatusCallback(this)
         if( UserInfoManager.getInstance(activity!!).getISFirstTime()) {
             postUpdateProfileModel.loadData(
                 UserInfoManager.getInstance(activity!!).getAccountName(),
@@ -123,78 +86,100 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 UserInfoManager.getInstance(activity!!).getEmail())
         }
         startAlert()
-        swiperefresh_items.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
-            mUpdates = Updates.getInstance(activity)
-            mUpdates?.setHandler(mHandler)
-
-        })
         welcome.text = "Welcome back, "+UserInfoManager.getInstance(activity!!).getAccountName()
         if(UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
             human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_female))
         } else{
             human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
         }
+        swiperefresh_items.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+
+
+        })
+
 
         refresh.setOnClickListener {
-            swiperefresh_items.setRefreshing(true);
-            mUpdates = Updates.getInstance(activity)
-            mUpdates?.setHandler(mHandler)
+
         }
+
+        mySQLOperate = UTESQLOperate.getInstance(activity) // 2.2.1版本修改
+
+        mBLEServiceOperate = BLEServiceOperate.getInstance(activity)
+        LogUtils.d(
+            TAG,
+            "setServiceStatusCallback前 mBLEServiceOperate =$mBLEServiceOperate"
+        )
+
+        mBLEServiceOperate?.setServiceStatusCallback(this)
+       
+
+        // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
+        mContext = activity
+        LogUtils.setLogEnable(true) //是否开启log
+
+        mySQLOperate = UTESQLOperate.getInstance(mContext) // 2.2.1版本修改
+
+        mBLEServiceOperate = BLEServiceOperate.getInstance(mContext)
+        LogUtils.d(
+            TAG,
+            "setServiceStatusCallback前 mBLEServiceOperate =$mBLEServiceOperate"
+        )
+        mBLEServiceOperate?.setServiceStatusCallback(this)
+        LogUtils.d(
+            TAG,
+            "setServiceStatusCallback后 mBLEServiceOperate =$mBLEServiceOperate"
+        )
+        // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
         // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
         mBluetoothLeService = mBLEServiceOperate?.getBleService()
         if (mBluetoothLeService != null) {
-            mBluetoothLeService?.setICallback(this)
-            mBluetoothLeService?.setTemperatureListener(this) //设置体温测试，采样数据回调
-            mBluetoothLeService?.setOxygenListener(this) //Oxygen Listener
-            mBluetoothLeService?.setBreatheRealListener(this) //Breathe Listener
+            mBluetoothLeService!!.setICallback(this)
+            mBluetoothLeService!!.setRateCalibrationListener(this) //设置心率校准监听
+            mBluetoothLeService!!.setTurnWristCalibrationListener(this) //设置翻腕校准监听
+            mBluetoothLeService!!.setTemperatureListener(this) //设置体温测试，采样数据回调
+            mBluetoothLeService!!.setOxygenListener(this) //Oxygen Listener
         }
-        mWriteCommand = WriteCommandToBLE.getInstance(activity)
-        mUpdates = Updates.getInstance(activity)
+
+        mDataProcessing = DataProcessing.getInstance(mContext)
+        mDataProcessing?.setOnRateListener(mOnRateListener)
+        mDataProcessing?.setOnRateOf24HourListenerRate(mOnRateOf24HourListener)
+
+
+        mWriteCommand = WriteCommandToBLE.getInstance(mContext)
+        mUpdates = Updates.getInstance(mContext)
         mUpdates?.setHandler(mHandler) // 获取升级操作信息
 
         mUpdates?.registerBroadcastReceiver()
         mUpdates?.setOnServerCallbackListener(this)
-        LogUtils.d(TAG, "MainActivity_onCreate   mUpdates  =" + mUpdates)
-        ble_connecte = SPUtil.getInstance(activity).bleConnectStatus
-        if(!ble_connecte) {
-            info_txt.text = "Please wait ..."
-            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
-            connection_status.setText(getString(R.string.disconnect))
-        }
+        LogUtils.d(
+            TAG, "MainActivity_onCreate   mUpdates  ="
+                    + mUpdates)
+     
+        mBLEServiceOperate?.connect(UserInfoManager.getInstance(activity!!).getDeviceID())
 
+        CURRENT_STATUS = CONNECTING
+        onConnected()
+        info_txt.text = "Please wait ..."
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        if(!hidden) {
-            val ble_connecte = SPUtil.getInstance(activity).bleConnectStatus
-            if (ble_connecte) {
-                mUpdates = Updates.getInstance(activity)
-                mUpdates?.setHandler(mHandler)
-            } else {
-                info_txt.text = "Please wait ..."
-                connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
-            }
-        }
-    }
+
 
     fun onConnected() {
+
         try {
+
             setTempData()
             setSPoData()
             setHeartData()
             swiperefresh_items.setRefreshing(false);
 
-            if(!ble_connecte) {
-                info_txt.text = "Please wait ..."
-                connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+            if (heartRates.size != 0 && spoRates.size != 0 && tempRates.size != 0) {
+                postGetCovidStatusDataViewModel.loadData(UserInfoManager.getInstance(activity!!).getEmail())
             } else {
-                if (heartRates.size != 0 && spoRates.size != 0) {
-                    postGetCovidStatusDataViewModel.loadData(UserInfoManager.getInstance(activity!!).getEmail())
-                } else {
-                    info_txt.text = "Please wait, data being transferred ..."
-                    info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
-                }
+                info_txt.text = "Please wait, data being transferred ..."
+                info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
             }
+
             syncing.visibility = View.GONE
             if(COUGH == 1) {
                 tvcough.setText("Yes")
@@ -208,44 +193,22 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         }
     }
 
+  
     fun setHeartData() {
         val db = DataBaseHelper(activity!!)
         heartRates = db.getAllHeartRate("Where heartRate != 0  ORDER by Id DESC")
         if(heartRates.size != 0) {
-            try {
-                heartlastsynced = BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
-                val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
-                diffHeartRate = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
-                    BaseHelper.parseDate(heartRates.get(0).date,Constants.DATE_JSON))
-                if(diffDaysSpo == null) {
-                    if(diffHeartRate?.days?.toInt() == 0) {
-                        last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
-
-                    } else if(diffHeartRate?.days?.toInt() == 1) {
-                        last_synced.text = "Yesterday"
-                    }
-                    else {
-                        last_synced.text = heartRates.get(0).date
-                    }
-                } else if(diffHeartRate?.days?.toInt()!! <= diffDaysSpo?.days?.toInt()!!) {
-                    if(diffHeartRate?.days?.toInt() == 0) {
-                        if (BaseHelper.parseDate(heartlastsynced, TIME_JSON_HM).toDouble() >
-                            BaseHelper.parseDate(spolastsynced, TIME_JSON_HM).toDouble()) {
-                            last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
-                        } else {
-                            last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
-                        }
-                    } else if(diffHeartRate?.days?.toInt() == 1) {
-                        last_synced.text = "Yesterday"
-                    }
-                    else {
-                        last_synced.text = heartRates.get(0).date
-                    }
-                } else {
-                    last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
-                }
-            }catch (e:Exception) {
-                last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
+            val lastsynced = BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
+            val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
+                BaseHelper.parseDate(heartRates.get(0).date,Constants.DATE_JSON))
+            if(diffDays?.days?.toInt() == 0) {
+                last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
+            } else if(diffDays.days?.toInt() == 1) {
+                last_synced.text = "Yesterday"
+            }
+            else {
+                last_synced.text = heartRates.get(0).date
             }
             heart_rate.text = heartRates.get(0).heartRate.toString()
             HR = heartRates.get(0).heartRate.toInt()
@@ -254,8 +217,25 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
     fun setTempData() {
         val db = DataBaseHelper(activity!!)
-        val tempRates = db.getAllTemp("Where TempRate != 0 ORDER by Id DESC")
+        tempRates = db.getAllTemp("Where TempRate != 0 ORDER by Id DESC")
         if(tempRates.size != 0) {
+            try {
+                val lastsynced = BaseHelper.parseDate(tempRates.get(0).time, Constants.TIME_JSON_HM)
+                val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
+                val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
+                    BaseHelper.parseDate(tempRates.get(0).date,Constants.DATE_JSON))
+                if(diffDays?.days?.toInt() == 0) {
+                    last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
+                } else if(diffDays.days?.toInt() == 1) {
+                    last_synced.text = "Yesterday"
+                }
+                else {
+                    last_synced.text = tempRates.get(0).date
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
+
+            }
             temp.text = String.format("%.1f",tempRates.get(0).tempRate)
             Temp = tempRates.get(0).tempRate.toDouble()
         }
@@ -266,40 +246,21 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         spoRates = db.getAllSpoRate("Where SpoRate != 0 ORDER BY Id DESC")
         if(spoRates.size != 0) {
             try {
-                spolastsynced = BaseHelper.parseDate(spoRates.get(0).time, Constants.TIME_JSON_HM)
+                val lastsynced = BaseHelper.parseDate(spoRates.get(0).time, Constants.TIME_JSON_HM)
                 val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
-                diffDaysSpo = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
+                val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
                     BaseHelper.parseDate(spoRates.get(0).date,Constants.DATE_JSON))
-                if(diffHeartRate == null) {
-                    if (diffDaysSpo?.days?.toInt() == 0) {
-                        last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
-                    } else if (diffDaysSpo?.days?.toInt() == 1) {
-                        last_synced.text = "Yesterday"
-                    } else {
-                        last_synced.text = spoRates.get(0).date
-                    }
-
-                } else if(diffHeartRate?.days?.toInt()!! >= diffDaysSpo?.days?.toInt()!!) {
-                    if (diffDaysSpo?.days?.toInt() == 0) {
-                        if (BaseHelper.parseDate(heartlastsynced, Constants.TIME_JSON_HM).toDouble() <
-                            BaseHelper.parseDate(spolastsynced, Constants.TIME_JSON_HM).toDouble()
-                        ) {
-                            last_synced.text =
-                                BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
-                        } else {
-                            last_synced.text = BaseHelper.parseDate(heartlastsynced, TIMEFORMAT)
-                        }
-                    } else if (diffDaysSpo?.days?.toInt() == 1) {
-                        last_synced.text = "Yesterday"
-                    } else {
-                        last_synced.text = spoRates.get(0).date
-                    }
-                } else {
-                    last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+                if(diffDays?.days?.toInt() == 0) {
+                    last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
+                } else if(diffDays.days?.toInt() == 1) {
+                    last_synced.text = "Yesterday"
+                }
+                else {
+                    last_synced.text = spoRates.get(0).date
                 }
             }catch (e:Exception){
                 e.printStackTrace()
-                last_synced.text = BaseHelper.parseDate(spolastsynced, TIMEFORMAT)
+
             }
             oxygen_level.text = spoRates.get(0).spoRate.toString()
             SPO2 = spoRates.get(0).spoRate
@@ -390,45 +351,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         }
     }
 
-    private val mHandler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                DISCONNECT_MSG -> {
-                    connection_status.setText(getString(R.string.disconnect))
-                    CURRENT_STATUS = DISCONNECTED
-
-                    val lastConnectAddr0 =
-                        SPUtil.getInstance(activity).lastConnectDeviceAddress
-                    val connectResute0: Boolean = mBLEServiceOperate?.connect(lastConnectAddr0)!!
-                    LogUtils.i(
-                        TAG,
-                        "connectResute0=$connectResute0"
-                    )
-                    onConnected()
-                }
-                CONNECTED_MSG -> {
-                    connection_status.setText(getString(R.string.connected))
-                    mBluetoothLeService?.setRssiHandler(this)
-                    Thread(Runnable {
-                        while (!Thread.interrupted()) {
-                            try {
-                                Thread.sleep(1000)
-                            } catch (e: InterruptedException) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace()
-                            }
-                            if (mBluetoothLeService != null) {
-                                mBluetoothLeService?.readRssi()
-                            }
-                        }
-                    }).start()
-                    CURRENT_STATUS = CONNECTED
-                    onConnected()
-                }
-
-            }
-        }
-    }
+   
 
     fun startAlert() {
         val intent = Intent(activity, MyBroadcastReceiver::class.java)
@@ -439,192 +362,315 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
     }
 
-    override fun onIbeaconWriteCallback(
-        result: Boolean, ibeaconSetOrGet: Int,
-        ibeaconType: Int, data: String
-    ) {
-        // public static final int IBEACON_TYPE_UUID = 0;// Ibeacon
-        // 指令类型,设置UUID/获取UUID
-        // public static final int IBEACON_TYPE_MAJOR = 1;// Ibeacon
-        // 指令类型,设置major/获取major
-        // public static final int IBEACON_TYPE_MINOR = 2;// Ibeacon
-        // 指令类型,设置minor/获取minor
-        // public static final int IBEACON_TYPE_DEVICE_NAME = 3;// Ibeacon
-        // 指令类型,设置蓝牙device name/获取蓝牙device name
-        // public static final int IBEACON_SET = 0;// Ibeacon
-        // 设置(设置UUID/设置major,设置minor,设置蓝牙device name)
-        // public static final int IBEACON_GET = 1;// Ibeacon
-        // 获取(设置UUID/设置major,设置minor,设置蓝牙device name)
-        LogUtils.d(
-           TAG, "onIbeaconWriteCallback 设置或获取结果result =" + result
-                    + ",ibeaconSetOrGet =" + ibeaconSetOrGet + ",ibeaconType ="
-                    + ibeaconType + ",数据data =" + data
-        )
-        if (result) { // success
-            when (ibeaconSetOrGet) {
-                GlobalVariable.IBEACON_SET -> when (ibeaconType) {
-                    GlobalVariable.IBEACON_TYPE_UUID -> LogUtils.d(
-                       TAG,
-                        "设置UUID成功,data =$data"
+
+    private val mOnRateListener =
+        RateChangeListener { rate, status ->
+            tempRate = rate
+            tempStatus = status
+            LogUtils.i(TAG, "Rate_tempRate =$tempRate")
+            mHandler.sendEmptyMessage(UPDATA_REAL_RATE_MSG)
+            heartRateInsert(rate)
+            setHeartData()
+            heart_rate.text = ""+tempRate.toString()
+            HR = rate
+        }
+
+    private val mOnRateOf24HourListener =
+        RateOf24HourRealTimeListener { maxHeartRateValue, minHeartRateValue, averageHeartRateValue, isRealTimeValue -> //监听24小时心率手环的最大、最小、平均值。需要手环端进入到心率测试界面（或者调用同步方法后）才会出值
+            LogUtils.i(
+                TAG,
+                "监听24小时心率 maxHeartRateValue =$maxHeartRateValue,minHeartRateValue=$minHeartRateValue,averageHeartRateValue=$averageHeartRateValue"
+            )
+        }
+
+    private val mHandler: Handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                RATE_SYNC_FINISH_MSG -> {
+                    UpdateUpdataRateMainUI(CalendarUtils.getCalendar(0))
+                    Toast.makeText(
+                        mContext,
+                        "Rate sync finish",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                RATE_OF_24_HOUR_SYNC_FINISH_MSG -> {
+                    Toast.makeText(
+                        mContext,
+                        "24 Hour Rate sync finish",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    mySQLOperate!!.query24HourRateAllInfo()
+                }
+                UPDATA_REAL_RATE_MSG -> 
+                    if (tempStatus == GlobalVariable.RATE_TEST_FINISH) {
+                    UpdateUpdataRateMainUI(CalendarUtils.getCalendar(0))
+                }
+
+
+                UPDATE_SLEEP_UI_MSG -> LogUtils.d(
+                    TAG,
+                    "UPDATE_SLEEP_UI_MSG"
+                )
+                GlobalVariable.START_PROGRESS_MSG -> {
+                    LogUtils.i(
+                        TAG,
+                        "(Boolean) msg.obj=" + msg.obj as Boolean
                     )
-                    GlobalVariable.IBEACON_TYPE_MAJOR -> LogUtils.d(
-                       TAG,
-                        "设置major成功,data =$data"
+                    isUpdateSuccess = msg.obj as Boolean
+                    LogUtils.i(
+                        TAG,
+                        "BisUpdateSuccess=$isUpdateSuccess"
                     )
-                    GlobalVariable.IBEACON_TYPE_MINOR -> LogUtils.d(
-                       TAG,
-                        "设置minor成功,data =$data"
+                    this.postDelayed(mDialogRunnable!!, TIME_OUT)
+                }
+                GlobalVariable.DOWNLOAD_IMG_FAIL_MSG -> {
+                    Toast.makeText(
+                        activity,
+                        R.string.download_fail,
+                        Toast.LENGTH_LONG
                     )
-                    GlobalVariable.IBEACON_TYPE_DEVICE_NAME -> LogUtils.d(
-                       TAG,
-                        "设置device name成功,data =$data"
+                        .show()
+                    if (mDialogRunnable != null) this.removeCallbacks(mDialogRunnable)
+                }
+                GlobalVariable.DISMISS_UPDATE_BLE_DIALOG_MSG -> {
+                    LogUtils.i(
+                        TAG,
+                        "(Boolean) msg.obj=" + msg.obj as Boolean
                     )
-                    GlobalVariable.IBEACON_TYPE_TX_POWER -> LogUtils.d(
-                       TAG,
-                        "设置TX power成功,data =$data"
+                    isUpdateSuccess = msg.obj as Boolean
+                    LogUtils.i(
+                        TAG,
+                        "BisUpdateSuccess=$isUpdateSuccess"
                     )
-                    GlobalVariable.IBEACON_TYPE_ADVERTISING_INTERVAL -> LogUtils.d(
-                       TAG,
-                        "设置advertising interval成功,data =$data"
-                    )
-                    else -> {
+                    if (mDialogRunnable != null) {
+                        this.removeCallbacks(mDialogRunnable)
+                    }
+                    if (isUpdateSuccess) {
+                        Toast.makeText(
+                            mContext,
+                            resources.getString(
+                                R.string.ble_update_successful
+                            ), Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
-                GlobalVariable.IBEACON_GET -> when (ibeaconType) {
-                    GlobalVariable.IBEACON_TYPE_UUID -> LogUtils.d(
-                       TAG,
-                        "获取UUID成功,data =$data"
-                    )
-                    GlobalVariable.IBEACON_TYPE_MAJOR -> LogUtils.d(
-                       TAG,
-                        "获取major成功,data =$data"
-                    )
-                    GlobalVariable.IBEACON_TYPE_MINOR -> LogUtils.d(
-                       TAG,
-                        "获取minor成功,data =$data"
-                    )
-                    GlobalVariable.IBEACON_TYPE_DEVICE_NAME -> LogUtils.d(
-                       TAG,
-                        "获取device name成功,data =$data"
-                    )
-                    GlobalVariable.IBEACON_TYPE_TX_POWER -> LogUtils.d(
-                       TAG,
-                        "获取TX power成功,data =$data"
-                    )
-                    GlobalVariable.IBEACON_TYPE_ADVERTISING_INTERVAL -> LogUtils.d(
-                       TAG,
-                        "获取advertising interval,data =$data"
-                    )
-                    else -> {
+                GlobalVariable.SERVER_IS_BUSY_MSG -> Toast.makeText(
+                    mContext,
+                    resources.getString(R.string.server_is_busy),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                DISCONNECT_MSG -> {
+                    try {
+                        connection_status.setCompoundDrawablesWithIntrinsicBounds(
+                            0,
+                            0,
+                            R.drawable.close_circle,
+                            0
+                        );
+                        connection_status.setText(getString(R.string.disconnect))
+
+                        CURRENT_STATUS = DISCONNECTED
+                        Toast.makeText(
+                            mContext,
+                            "disconnect or connect falie",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        val lastConnectAddr0 =
+                            SPUtil.getInstance(mContext).lastConnectDeviceAddress
+                        val connectResute0 = mBLEServiceOperate?.connect(lastConnectAddr0)
+                        LogUtils.i(
+                            TAG,
+                            "connectResute0=$connectResute0"
+                        )
+                    }catch (e:Exception){
+
                     }
                 }
+                CONNECTED_MSG -> {
+                    connection_status.setText(getString(R.string.connected))
+                    connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.check_circle, 0);
+
+                    mBluetoothLeService!!.setRssiHandler(this)
+                    Thread(Runnable {
+                        while (!Thread.interrupted()) {
+                            try {
+                                Thread.sleep(1000)
+                            } catch (e: InterruptedException) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace()
+                            }
+                            if (mBluetoothLeService != null) {
+                                mBluetoothLeService!!.readRssi()
+                            }
+                        }
+                    }).start()
+                    CURRENT_STATUS = CONNECTED
+                    onConnected()
+                }
+                GlobalVariable.UPDATE_BLE_PROGRESS_MSG -> {
+                    val schedule = msg.arg1
+                    LogUtils.i("zznkey", "schedule =$schedule")
+                }
+                OPEN_CHANNEL_OK_MSG -> {
+                    resultBuilder.append(
+                        resources.getString(
+                            R.string.open_channel_ok
+                        ) + ","
+                    )
+                    mWriteCommand!!.sendAPDUToBLE(
+                        WriteCommandToBLE
+                            .hexString2Bytes(testKey1)
+                    )
+                }
+                CLOSE_CHANNEL_OK_MSG -> resultBuilder.append(
+                    resources.getString(
+                        R.string.close_channel_ok
+                    ) + ","
+                )
+                TEST_CHANNEL_OK_MSG -> {
+                    resultBuilder.append(
+                        resources.getString(
+                            R.string.test_channel_ok
+                        ) + ","
+                    )
+                    mWriteCommand!!.closeBLEchannel()
+                }
+                SERVER_CALL_BACK_OK_MSG -> {
+                    if (mDialogServerRunnable != null) {
+                        this.removeCallbacks(mDialogServerRunnable)
+                    }
+                    val localVersion =
+                        SPUtil.getInstance(mContext).imgLocalVersion
+                    val status = mUpdates!!.getBLEVersionStatus(localVersion)
+                    LogUtils.i(
+                        TAG,
+                        "固件升级 VersionStatus =$status"
+                    )
+                    if (status == GlobalVariable.OLD_VERSION_STATUS) {
+                    } else if (status == GlobalVariable.NEWEST_VERSION_STATUS) {
+                        Toast.makeText(
+                            mContext,
+                            resources.getString(R.string.ble_is_newest),
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    } /*
+					 * else if (status == GlobalVariable.FREQUENT_ACCESS_STATUS) {
+					 * Toast.makeText( mContext, getResources().getString(
+					 * R.string.frequent_access_server), 0) .show(); }
+					 */
+                }
+                OFFLINE_SKIP_SYNC_OK_MSG -> Toast.makeText(
+                    activity,
+                    resources.getString(R.string.sync_skip_finish),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                test_mag1 -> Toast.makeText(
+                    activity,
+                    "表示按键1短按下，用来做切换屏,表示切换了手环屏幕",
+                    Toast.LENGTH_SHORT
+                ) //
+                    .show()
+                test_mag2 -> Toast.makeText(
+                    activity,
+                    "表示按键3短按下，用来做一键SOS",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                OFFLINE_STEP_SYNC_OK_MSG -> Toast.makeText(
+                    activity,
+                    "计步数据同步成功",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                UPDATE_SPORTS_TIME_DETAILS_MSG -> {
+                }
+                UNIVERSAL_INTERFACE_SDK_TO_BLE_SUCCESS_MSG -> {
+                }
+                UNIVERSAL_INTERFACE_SDK_TO_BLE_FAIL_MSG -> {
+                }
+                UNIVERSAL_INTERFACE_BLE_TO_SDK_SUCCESS_MSG -> {
+                }
+                UNIVERSAL_INTERFACE_BLE_TO_SDK_FAIL_MSG -> {
+                }
+                BIND_CONNECT_SEND_ACCOUNT_ID_MSG -> mWriteCommand!!.sendAccountId(1234)
                 else -> {
                 }
             }
-        } else { // fail
-            when (ibeaconSetOrGet) {
-                GlobalVariable.IBEACON_SET -> when (ibeaconType) {
-                    GlobalVariable.IBEACON_TYPE_UUID -> LogUtils.d(
-                       TAG,
-                        "设置UUID失败"
-                    )
-                    GlobalVariable.IBEACON_TYPE_MAJOR -> LogUtils.d(
-                       TAG,
-                        "设置major失败"
-                    )
-                    GlobalVariable.IBEACON_TYPE_MINOR -> LogUtils.d(
-                       TAG,
-                        "设置minor失败"
-                    )
-                    GlobalVariable.IBEACON_TYPE_DEVICE_NAME -> LogUtils.d(
-                       TAG,
-                        "设置device name失败"
-                    )
-                    else -> {
-                    }
-                }
-                GlobalVariable.IBEACON_GET -> when (ibeaconType) {
-                    GlobalVariable.IBEACON_TYPE_UUID -> LogUtils.d(
-                       TAG,
-                        "获取UUID失败"
-                    )
-                    GlobalVariable.IBEACON_TYPE_MAJOR -> LogUtils.d(
-                       TAG,
-                        "获取major失败"
-                    )
-                    GlobalVariable.IBEACON_TYPE_MINOR -> LogUtils.d(
-                       TAG,
-                        "获取minor失败"
-                    )
-                    GlobalVariable.IBEACON_TYPE_DEVICE_NAME -> LogUtils.d(
-                       TAG,
-                        "获取device name失败"
-                    )
-                    else -> {
-                    }
-                }
-                else -> {
-                }
-            }
+        }
+    }
+
+    /*
+	 * 获取一天最新心率值、最高、最低、平均心率值
+	 */
+    private fun UpdateUpdataRateMainUI(calendar: String) {
+        // UTESQLOperate mySQLOperate = UTESQLOperate.getInstance(mContext);
+        val mRateOneDayInfo = mySQLOperate?.queryRateOneDayMainInfo(calendar)
+        if (mRateOneDayInfo != null) {
+            val currentRate = mRateOneDayInfo.currentRate
+            val lowestValue = mRateOneDayInfo.lowestRate
+            val averageValue = mRateOneDayInfo.verageRate
+            val highestValue = mRateOneDayInfo.highestRate
+            // current_rate.setText(currentRate + "");
         }
     }
 
 
-    override fun onCharacteristicWriteCallback(status: Int) { // add 20170221
-        // 写入操作的系统回调，status = 0为写入成功，其他或无回调表示失败
-        LogUtils.d(
-            TAG,
-            "Write System callback status = $status"
-        )
+    private val mDialogRunnable: Runnable? = object : Runnable {
+        override fun run() {
+
+            // mDownloadButton.setText(R.string.suota_update_succeed);
+            mHandler.removeCallbacks(this)
+            if (!isUpdateSuccess) {
+                Toast.makeText(
+                    activity,
+                    resources.getString(R.string.ble_fail_update),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                mUpdates!!.clearUpdateSetting()
+            } else {
+                isUpdateSuccess = false
+                Toast.makeText(
+                    activity,
+                    resources
+                        .getString(R.string.ble_update_successful),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+        }
+    }
+    private val mDialogServerRunnable: Runnable? = object : Runnable {
+        override fun run() {
+
+            // mDownloadButton.setText(R.string.suota_update_succeed);
+            mHandler.removeCallbacks(this)
+            Toast.makeText(
+                activity,
+                resources.getString(R.string.server_is_busy), Toast.LENGTH_SHORT
+            )
+                .show()
+        }
     }
 
-    override fun onControlDialCallback(
-        result: Boolean, leftRightHand: Int,
-        dialType: Int
-    ) { // 控制表盘切换和左右手切换回调
-        when (leftRightHand) {
-            GlobalVariable.LEFT_HAND_WEAR -> LogUtils.d(
-               TAG,
-                "设置左手佩戴成功"
-            )
-            GlobalVariable.RIGHT_HAND_WEAR -> LogUtils.d(
-               TAG,
-                "设置右手佩戴成功"
-            )
-            GlobalVariable.NOT_SET_UP -> LogUtils.d(
-               TAG,
-                "不设置，保持上次佩戴方式成功"
-            )
-            else -> {
-            }
-        }
-        when (dialType) {
-            GlobalVariable.SHOW_VERTICAL_ENGLISH_SCREEN -> LogUtils.d(
-               TAG,
-                "设置显示竖屏英文界面成功"
-            )
-            GlobalVariable.SHOW_VERTICAL_CHINESE_SCREEN -> LogUtils.d(
-               TAG,
-                "设置显示竖屏中文界面成功"
-            )
-            GlobalVariable.SHOW_HORIZONTAL_SCREEN -> LogUtils.d(
-               TAG,
-                "设置显示横屏成功"
-            )
-            GlobalVariable.NOT_SET_UP -> LogUtils.d(
-               TAG,
-                "不设置，默认上次显示的屏幕成功"
-            )
-            else -> {
-            }
-        }
-    }
+
+
+    /**
+     * 获取某一天睡眠详细，并更新睡眠UI CalendarUtils.getCalendar(0)代表今天，也可写成"20141101"
+     * CalendarUtils.getCalendar(-1)代表昨天，也可写成"20141031"
+     * CalendarUtils.getCalendar(-2)代表前天，也可写成"20141030" 以此类推
+     */
+
 
 
     override fun OnResult(result: Boolean, status: Int) {
-        // TODO Auto-generated method stub
         LogUtils.i(
-           TAG,
+            TAG,
             "result=$result,status=$status"
         )
         when (status) {
@@ -645,7 +691,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 }, 600) // 2.2.1版本修改
             }
             ICallbackStatus.DISCOVERY_DEVICE_SHAKE -> LogUtils.d(
-               TAG,
+                TAG,
                 "摇一摇拍照"
             )
             ICallbackStatus.OFFLINE_RATE_SYNC_OK -> mHandler.sendEmptyMessage(RATE_SYNC_FINISH_MSG)
@@ -668,41 +714,52 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             ICallbackStatus.SEND_QQ_WHAT_SMS_CONTENT_OK -> mWriteCommand!!.sendQQWeChatVibrationCommand(
                 1
             )
-
-
+            ICallbackStatus.PASSWORD_AUTHENTICATION_OK -> LogUtils.d(
+                TAG,
+                "验证成功或者设置密码成功"
+            )
             ICallbackStatus.OFFLINE_SWIM_SYNCING -> LogUtils.d(
-               TAG,
+                TAG,
                 "游泳数据同步中"
             )
-
+            ICallbackStatus.OFFLINE_SWIM_SYNC_OK -> {
+                LogUtils.d(TAG, "游泳数据同步完成")
+                mHandler.sendEmptyMessage(OFFLINE_SWIM_SYNC_OK_MSG)
+            }
             ICallbackStatus.OFFLINE_BLOOD_PRESSURE_SYNCING -> LogUtils.d(
-               TAG,
+                TAG,
                 "血压数据同步中"
             )
-
+            ICallbackStatus.OFFLINE_BLOOD_PRESSURE_SYNC_OK -> {
+                LogUtils.d(TAG, "血压数据同步完成")
+                mHandler.sendEmptyMessage(OFFLINE_BLOOD_PRESSURE_SYNC_OK_MSG)
+            }
             ICallbackStatus.OFFLINE_SKIP_SYNCING -> LogUtils.d(
-               TAG,
+                TAG,
                 "跳绳数据同步中"
             )
-
+            ICallbackStatus.OFFLINE_SKIP_SYNC_OK -> {
+                LogUtils.d(TAG, "跳绳数据同步完成")
+                mHandler.sendEmptyMessage(OFFLINE_SKIP_SYNC_OK_MSG)
+            }
             ICallbackStatus.MUSIC_PLAYER_START_OR_STOP -> LogUtils.d(
-               TAG,
+                TAG,
                 "音乐播放/暂停"
             )
             ICallbackStatus.MUSIC_PLAYER_NEXT_SONG -> LogUtils.d(
-               TAG,
+                TAG,
                 "音乐下一首"
             )
             ICallbackStatus.MUSIC_PLAYER_LAST_SONG -> LogUtils.d(
-               TAG,
+                TAG,
                 "音乐上一首"
             )
             ICallbackStatus.OPEN_CAMERA_OK -> LogUtils.d(
-               TAG,
+                TAG,
                 "打开相机ok"
             )
             ICallbackStatus.CLOSE_CAMERA_OK -> LogUtils.d(
-               TAG,
+                TAG,
                 "关闭相机ok"
             )
             ICallbackStatus.PRESS_SWITCH_SCREEN_BUTTON -> {
@@ -710,11 +767,11 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 mHandler.sendEmptyMessage(test_mag1)
             }
             ICallbackStatus.PRESS_END_CALL_BUTTON -> LogUtils.d(
-               TAG,
+                TAG,
                 "表示按键1长按下，一键拒接来电"
             )
             ICallbackStatus.PRESS_TAKE_PICTURE_BUTTON -> LogUtils.d(
-               TAG,
+                TAG,
                 "表示按键2短按下，用来做一键拍照"
             )
             ICallbackStatus.PRESS_SOS_BUTTON -> {
@@ -722,19 +779,19 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 mHandler.sendEmptyMessage(test_mag2)
             }
             ICallbackStatus.PRESS_FIND_PHONE_BUTTON -> LogUtils.d(
-               TAG,
+                TAG,
                 "表示按键按下，手环查找手机的功能。"
             )
             ICallbackStatus.READ_ONCE_AIR_PRESSURE_TEMPERATURE_SUCCESS -> LogUtils.d(
-               TAG,
+                TAG,
                 "读取当前气压传感器气压值和温度值成功，数据已保存到数据库，查询请调用查询数据库接口，返回的数据中，最新的一条为本次读取的数据"
             )
             ICallbackStatus.SYNC_HISORY_AIR_PRESSURE_TEMPERATURE_SUCCESS -> LogUtils.d(
-               TAG,
+                TAG,
                 "同步当天历史数据成功，包括气压传感器气压值和温度值，数据已保存到数据库，查询请调用查询数据库接口"
             )
             ICallbackStatus.SYNC_HISORY_AIR_PRESSURE_TEMPERATURE_FAIL -> LogUtils.d(
-               TAG,
+                TAG,
                 "同步当天历史数据失败，数据不保存"
             )
             ICallbackStatus.START_BREATHE_COMMAND_OK -> {
@@ -754,23 +811,23 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 mHandler.sendEmptyMessage(BIND_CONNECT_SEND_ACCOUNT_ID_MSG)
             }
             ICallbackStatus.BIND_CONNECT_COMPARE_SUCCESS -> LogUtils.d(
-               TAG,
+                TAG,
                 "绑定成功"
             )
             ICallbackStatus.BIND_CONNECT_BAND_CLICK_CONFIRM -> LogUtils.d(
-               TAG,
+                TAG,
                 "手环点击 确认 按钮"
             )
             ICallbackStatus.BIND_CONNECT_VALID_ID -> LogUtils.d(
-               TAG,
+                TAG,
                 "手环已经存在有效ID"
             )
             ICallbackStatus.BIND_CONNECT_IDVALID_ID -> LogUtils.d(
-               TAG,
+                TAG,
                 "手环不存在有效ID"
             )
             ICallbackStatus.BIND_CONNECT_BAND_CLICK_CANCEL -> LogUtils.d(
-               TAG,
+                TAG,
                 "手环点击 取消 按钮"
             )
             else -> {
@@ -778,11 +835,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         }
     }
 
-    override fun OnResultSportsModes(p0: Boolean, p1: Int, p2: Int, p3: Int, p4: SportsModesInfo?) {
-        
-    }
 
-    //	private final String universalKey = "1102";
     override fun OnDataResult(
         result: Boolean,
         status: Int,
@@ -795,7 +848,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 stringBuilder.append(String.format("%02X", byteChar))
             }
             LogUtils.i(
-               TAG,
+                TAG,
                 "BLE---->APK data =$stringBuilder"
             )
         }
@@ -817,8 +870,8 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             )
             ICallbackStatus.CUSTOMER_ID_OK -> if (result) {
                 LogUtils.d(
-                   TAG,
-                    "客户ID = " + GBUtils.getInstance(activity).customerIDAsciiByteToString(data)
+                    TAG,
+                    "客户ID = " + GBUtils.getInstance(mContext).customerIDAsciiByteToString(data)
                 )
             }
             ICallbackStatus.DO_NOT_DISTURB_CLOSE -> if (data != null && data.size >= 2) {
@@ -837,11 +890,11 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 //
             }
             ICallbackStatus.QUICK_SWITCH_SURPPORT_COMMAND_OK -> LogUtils.d(
-               TAG,
+                TAG,
                 "APP查询支持的快捷开关，返回所有的快捷开关"
             )
             ICallbackStatus.QUICK_SWITCH_STATUS_COMMAND_OK -> LogUtils.d(
-               TAG,
+                TAG,
                 "APP查询快捷开关的状态，返回所有的快捷开关状态，以及手环端快捷开关发生变化时主动上报快捷开关状态"
             )
             else -> {
@@ -849,9 +902,118 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         }
     }
 
+    override fun onCharacteristicWriteCallback(status: Int) { // add 20170221
+        // 写入操作的系统回调，status = 0为写入成功，其他或无回调表示失败
+        LogUtils.d(
+            TAG,
+            "Write System callback status = $status"
+        )
+    }
 
-    override fun onSportsTimeCallback(p0: Boolean, p1: String?, p2: Int, p3: Int) {
-        
+    override fun onIbeaconWriteCallback(
+        b: Boolean,
+        i: Int,
+        i1: Int,
+        s: String?
+    ) {
+    }
+
+    override fun onQueryDialModeCallback(b: Boolean, i: Int, i1: Int, i2: Int) {}
+
+    override fun onControlDialCallback(b: Boolean, i: Int, i1: Int) {}
+
+    override fun onSportsTimeCallback(
+        b: Boolean,
+        s: String?,
+        i: Int,
+        i1: Int
+    ) {
+    }
+
+    override fun OnResultSportsModes(
+        b: Boolean,
+        i: Int,
+        i1: Int,
+        i2: Int,
+        sportsModesInfo: SportsModesInfo?
+    ) {
+    }
+
+    override fun OnServerCallback(status: Int, description: String?) {
+        LogUtils.i(
+            TAG,
+            "服务器回调 OnServerCallback status =$status"
+        )
+        if (status == GlobalVariable.SERVER_CALL_BACK_SUCCESSFULL) { //访问服务器OK
+            mHandler.sendEmptyMessage(SERVER_CALL_BACK_OK_MSG)
+        } else { //访问不到服务器
+            mHandler.sendEmptyMessage(GlobalVariable.SERVER_IS_BUSY_MSG)
+        }
+    }
+
+    override fun OnServiceStatuslt(status: Int) {
+        if (status == ICallbackStatus.BLE_SERVICE_START_OK) {
+            LogUtils.d(
+                TAG,
+                "OnServiceStatuslt mBluetoothLeService11 =$mBluetoothLeService"
+            )
+            if (mBluetoothLeService == null) {
+                mBluetoothLeService = mBLEServiceOperate!!.bleService
+                mBluetoothLeService?.setICallback(this)
+                mBluetoothLeService?.setRateCalibrationListener(this) //设置心率校准监听
+                mBluetoothLeService?.setTurnWristCalibrationListener(this) //设置翻腕校准监听
+                mBluetoothLeService?.setTemperatureListener(this) //设置体温测试，采样数据回调
+                mBluetoothLeService?.setOxygenListener(this) //Oxygen Listener
+                LogUtils.d(
+                    TAG,
+                    "OnServiceStatuslt mBluetoothLeService22 =$mBluetoothLeService"
+                )
+            }
+        }
+    }
+
+
+    /*
+	 * 获取一天最新心率值、最高、最低、平均心率值
+	 */
+
+
+    //本次同步多运动模式的次数
+
+
+    /*
+	 * 获取一天最新心率值、最高、最低、平均心率值
+	 */
+    //本次同步多运动模式的次数
+    override fun OnResultHeartRateHeadset(
+        result: Boolean,
+        status: Int,
+        sportStatus: Int,
+        values: Int,
+        info: HeartRateHeadsetSportModeInfo?
+    ) {
+        HeartRateHeadsetUtils.LLogI(
+            "OnResultHeartRateHeadset  result =" + result + ",status =" + status + ",sportStatus =" + sportStatus
+                    + ",values =" + values + ",info =" + info
+        )
+        when (status) {
+            ICallbackStatus.HEART_RATE_HEADSET_SPORT_STATUS -> HeartRateHeadsetUtils.LLogI("心率耳机 运动状态 运动类型=$values,运动状态=$sportStatus")
+            ICallbackStatus.HEART_RATE_HEADSET_RATE_INTERVAL -> HeartRateHeadsetUtils.LLogI("心率耳机 时间间隔=$values")
+            ICallbackStatus.HEART_RATE_HEADSET_SPORT_DATA -> if (info != null) {
+                val sportMode = info.hrhSportsModes
+                val rateValue = info.hrhRateValue
+                val calories = info.hrhCalories
+                val pace = info.hrhPace
+                val stepCount = info.hrhSteps
+                val count = info.hrhCount
+                val distance = info.hrhDistance
+                val durationTime = info.hrhDuration
+                HeartRateHeadsetUtils.LLogI(
+                    "心率耳机 上报上来的实时数据 回调 sportMode=" + sportMode + ",rateValue=" + rateValue + ",calories=" + calories
+                            + ",pace=" + pace + ",stepCount=" + stepCount + ",count=" + count + ",distance=" + distance + ",durationTime=" + durationTime
+                )
+            }
+        }
     }
 
     override fun OnResultCustomTestStatus(
@@ -898,7 +1060,10 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 )
             } else if (functionType == CustomTestStatusInfo.TYPE_OXYGEN) {
                 val oxygenValue = info.oxygenValue
-                LogUtils.d(TAG, "  oxygenValue =$oxygenValue")
+                LogUtils.d(
+                    TAG,
+                    "  oxygenValue =$oxygenValue"
+                )
             } else if (functionType == CustomTestStatusInfo.TYPE_BODY_TEMPERATURE) {
                 val bodySurfaceTemperature = info.bodySurfaceTemperature
                 val bodyTemperature = info.bodyTemperature
@@ -918,79 +1083,27 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             )
         }
     }
-    override fun onQueryDialModeCallback(p0: Boolean, p1: Int, p2: Int, p3: Int) {
-        
+
+    override fun onRateCalibrationStatus(status: Int) {
+
+/*		status: 0----校准完成
+		        1----校准开始
+		        253---清除校准参数完成
+		        校准开始后，应用端自己做超时，10秒钟没收到校准完成0，则需主动调用停止校准stopRateCalibration()*/
+        LogUtils.d(TAG, "心率校准 status:$status")
     }
 
-    override fun OnResultHeartRateHeadset(
-        result: Boolean,
-        status: Int,
-        sportStatus: Int,
-        values: Int,
-        info: HeartRateHeadsetSportModeInfo?
-    ) {
-        HeartRateHeadsetUtils.LLogI(
-            "OnResultHeartRateHeadset  result =" + result + ",status =" + status + ",sportStatus =" + sportStatus
-                    + ",values =" + values + ",info =" + info
-        )
-        when (status) {
-            ICallbackStatus.HEART_RATE_HEADSET_SPORT_STATUS -> HeartRateHeadsetUtils.LLogI("心率耳机 运动状态 运动类型=$values,运动状态=$sportStatus")
-            ICallbackStatus.HEART_RATE_HEADSET_RATE_INTERVAL -> HeartRateHeadsetUtils.LLogI("心率耳机 时间间隔=$values")
-            ICallbackStatus.HEART_RATE_HEADSET_SPORT_DATA -> if (info != null) {
-                val sportMode = info.hrhSportsModes
-                val rateValue = info.hrhRateValue
-                val calories = info.hrhCalories
-                val pace = info.hrhPace
-                val stepCount = info.hrhSteps
-                val count = info.hrhCount
-                val distance = info.hrhDistance
-                val durationTime = info.hrhDuration
-                HeartRateHeadsetUtils.LLogI(
-                    "心率耳机 上报上来的实时数据 回调 sportMode=" + sportMode + ",rateValue=" + rateValue + ",calories=" + calories
-                            + ",pace=" + pace + ",stepCount=" + stepCount + ",count=" + count + ",distance=" + distance + ",durationTime=" + durationTime
-                )
-            }
-        }
-    }
-
-
-    override fun OnServiceStatuslt(status: Int) {
-        if (status == ICallbackStatus.BLE_SERVICE_START_OK) {
-            LogUtils.d(
-              TAG,
-                "OnServiceStatuslt mBluetoothLeService11 =$mBluetoothLeService"
-            )
-            if (mBluetoothLeService == null) {
-                mBluetoothLeService = mBLEServiceOperate!!.bleService
-                mBluetoothLeService?.setICallback(this)
-                mBluetoothLeService?.setRateCalibrationListener(this) //设置心率校准监听
-                mBluetoothLeService?.setTurnWristCalibrationListener(this) //设置翻腕校准监听
-                mBluetoothLeService?.setTemperatureListener(this) //设置体温测试，采样数据回调
-                mBluetoothLeService?.setOxygenListener(this) //Oxygen Listener
-                mBluetoothLeService?.setBreatheRealListener(this) //Breathe Listener
-                LogUtils.d(TAG,
-                    "OnServiceStatuslt mBluetoothLeService22 =$mBluetoothLeService"
-                )
-            }
-        }
-    }
-
-
-    override fun OnServerCallback(status: Int, description: String?) {
-        LogUtils.i(
-            TAG,
-            "服务器回调 OnServerCallback status =$status"
-        )
-        if (status == GlobalVariable.SERVER_CALL_BACK_SUCCESSFULL) { //访问服务器OK
-            mHandler.sendEmptyMessage(SERVER_CALL_BACK_OK_MSG)
-        } else { //访问不到服务器
-            mHandler.sendEmptyMessage(GlobalVariable.SERVER_IS_BUSY_MSG)
-        }
+    override fun onTurnWristCalibrationStatus(status: Int) {
+        LogUtils.d(TAG, "翻腕校准 status:$status")
+        /*status: 0----校准完成
+                  1----校准开始
+                  255----校准失败
+                  253---清除校准参数完成*/
     }
 
     override fun onTestResult(info: TemperatureInfo) { //单次测试结果
         LogUtils.d(
-         TAG,
+            TAG,
             "calendar =" + info.calendar + ",startDate =" + info.startDate + ",secondTime =" + info.secondTime
                     + ",bodyTemperature =" + info.bodyTemperature
         )
@@ -1007,6 +1120,10 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     + ",bodyTemperature =" + info.bodyTemperature + ",bodySurfaceTemperature =" + info.bodySurfaceTemperature
                     + ",ambientTemperature =" + info.ambientTemperature
         )
+        TempInsert(info)
+        temp.text = String.format("%.1f",info.bodyTemperature)
+        Temp = String.format("%.1f",info.bodyTemperature).toDouble()
+        setTempData()
     }
 
     override fun onTestResult(status: Int, info: OxygenInfo) {
@@ -1028,25 +1145,5 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         mHandler.sendMessage(message)
     }
 
-    override fun onBreatheResult(p0: Int, p1: BreatheInfo?) {
-        
-    }
-    override fun onRateCalibrationStatus(status: Int) {
-        // TODO Auto-generated method stub
-/*		status: 0----校准完成
-		        1----校准开始
-		        253---清除校准参数完成
-		        校准开始后，应用端自己做超时，10秒钟没收到校准完成0，则需主动调用停止校准stopRateCalibration()*/
-        LogUtils.d(TAG, "心率校准 status:$status")
-    }
-
-    override fun onTurnWristCalibrationStatus(status: Int) {
-        // TODO Auto-generated method stub
-        LogUtils.d(TAG, "翻腕校准 status:$status")
-        /*status: 0----校准完成
-                  1----校准开始
-                  255----校准失败
-                  253---清除校准参数完成*/
-    }
-
+  
 }

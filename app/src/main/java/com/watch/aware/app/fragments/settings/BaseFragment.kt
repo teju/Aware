@@ -2,12 +2,12 @@ package com.watch.aware.app.fragments.settings
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
 import android.provider.Settings
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -16,15 +16,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
-import com.iapps.logs.com.pascalabs.util.log.helper.Constants.DATE_JSON
-import com.iapps.logs.com.pascalabs.util.log.helper.Constants.TIME_JSON_HM
-import com.szabh.smable3.BleKey
-import com.szabh.smable3.BleKeyFlag
-import com.szabh.smable3.component.BleCache
-import com.szabh.smable3.entity.BleActivity
-import com.szabh.smable3.entity.BleBloodOxygen
-import com.szabh.smable3.entity.BleHeartRate
-import com.szabh.smable3.entity.BleTemperature
+import com.iapps.logs.com.pascalabs.util.log.helper.Constants.*
+
 import com.watch.aware.app.MainActivity
 import com.watch.aware.app.R
 import com.watch.aware.app.callback.EditSlotsListener
@@ -32,19 +25,16 @@ import com.watch.aware.app.callback.NotifyListener
 import com.watch.aware.app.callback.PermissionListener
 import com.watch.aware.app.fragments.dialog.EditSleepDialogFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
-import com.watch.aware.app.helper.Constants.Companion.COUGH
-import com.watch.aware.app.helper.Constants.Companion.HR
-import com.watch.aware.app.helper.Constants.Companion.SPO2
-import com.watch.aware.app.helper.Constants.Companion.Temp
-import com.watch.aware.app.helper.Constants.Companion._activity
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.Helper.isEmpty
 import com.watch.aware.app.models.BaseParams
 import com.watch.aware.app.models.Steps
 import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
+import com.yc.pedometer.info.StepOneDayAllInfo
+import com.yc.pedometer.info.TemperatureInfo
+import com.yc.pedometer.sdk.*
+import com.yc.pedometer.update.Updates
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -52,6 +42,71 @@ import kotlin.collections.ArrayList
 
 
 open class BaseFragment : GenericFragment() {
+
+     var mDataProcessing: DataProcessing? = null
+     var mySQLOperate: UTESQLOperate? = null
+     var mWriteCommand: WriteCommandToBLE? = null
+     var mContext: Context? = null
+
+     val UPDATE_STEP_UI_MSG = 0
+     val UPDATE_SLEEP_UI_MSG = 1
+     val DISCONNECT_MSG = 18
+     val CONNECTED_MSG = 19
+     val UPDATA_REAL_RATE_MSG = 20
+     val RATE_SYNC_FINISH_MSG = 21
+     val OPEN_CHANNEL_OK_MSG = 22
+     val CLOSE_CHANNEL_OK_MSG = 23
+     val TEST_CHANNEL_OK_MSG = 24
+     val OFFLINE_SWIM_SYNC_OK_MSG = 25
+     val OFFLINE_BLOOD_PRESSURE_SYNC_OK_MSG = 30
+     val SERVER_CALL_BACK_OK_MSG = 31
+     val OFFLINE_SKIP_SYNC_OK_MSG = 32
+     val test_mag1 = 35
+     val test_mag2 = 36
+     val OFFLINE_STEP_SYNC_OK_MSG = 37
+     val UPDATE_SPORTS_TIME_DETAILS_MSG = 38
+
+     val UNIVERSAL_INTERFACE_SDK_TO_BLE_SUCCESS_MSG = 39 //sdk发送数据到ble完成，并且校验成功，返回状态
+
+     val UNIVERSAL_INTERFACE_SDK_TO_BLE_FAIL_MSG = 40 //sdk发送数据到ble完成，但是校验失败，返回状态
+
+     val UNIVERSAL_INTERFACE_BLE_TO_SDK_SUCCESS_MSG = 41 //ble发送数据到sdk完成，并且校验成功，返回数据
+
+     val UNIVERSAL_INTERFACE_BLE_TO_SDK_FAIL_MSG = 42 //ble发送数据到sdk完成，但是校验失败，返回状态
+
+
+     val RATE_OF_24_HOUR_SYNC_FINISH_MSG = 43
+     val BIND_CONNECT_SEND_ACCOUNT_ID_MSG = 44
+
+
+     val TIME_OUT_SERVER: Long = 10000
+     val TIME_OUT: Long = 120000
+     var isUpdateSuccess = false
+
+     var mUpdates: Updates? = null
+     var mBLEServiceOperate: BLEServiceOperate? = null
+     var mBluetoothLeService: BluetoothLeService? = null
+
+    // caicai add for sdk
+    val EXTRAS_DEVICE_NAME = "device_name"
+    val EXTRAS_DEVICE_ADDRESS = "device_address"
+     val CONNECTED = 1
+     val CONNECTING = 2
+     val DISCONNECTED = 3
+     var CURRENT_STATUS = DISCONNECTED
+
+     var mDeviceName: String? = null
+     var mDeviceAddress: String? = null
+
+     var tempRate = 70
+     var tempStatus = 0
+
+     val resultBuilder = StringBuilder()
+    val testKey1 =
+        "00a4040008A000000333010101000003330101010000333010101000033301010100003330101010000033301010100333010101000033301010100003330101010000333010101000033301010100003330101010000333010101000033301010100003330101010000333010101000033301010100a4040008A0000003330101010000033301010100003330101010000333010101000033301010100000333010101003330101010000333010101000033301010100003330101010000333010101000033301010100003330101010000333010101000033301010100003330101010000333010101"
+    val universalKey =
+        "040008A0000040008A00000033301010100000333010101000033301010100003330101010000333010101000003330100333010101000033301010100003330101010000333010101000033301010100003330101010000333010101000033301010100003330101010000333010040008A000000333010101000003330101010000333010101000033301010100003330101010000033301003330101010000333010101000033301010100003330101010000333010101000033301010100003330101010000333010101000033301010100003330100033301010100000333010101000033301010100003330101010000333010101000003330100333010101000033301010100003330101010000333010101000033301010100003330101010000333010101000033301010100003330101010000333010"
+
 
     var permissionsThatNeedTobeCheck: List<String> =
         ArrayList()
@@ -97,9 +152,7 @@ open class BaseFragment : GenericFragment() {
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
         permissions.add(Manifest.permission.BLUETOOTH)
         checkPermissions(permissions, permissionListener)
-        if (BleCache.mDeviceInfo?.mBleName != null) {
-            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-        }
+
 
         checkBluetoothGps()
     }
@@ -314,91 +367,84 @@ open class BaseFragment : GenericFragment() {
         f.show(activity!!.supportFragmentManager, EditSleepDialogFragment.TAG)
     }
 
-    fun heartRateInsert(heartRates: List<BleHeartRate>) {
+    fun heartRateInsert(heartRates: Int) {
         val dataBaseHelper = DataBaseHelper(activity)
-        for(heartrate in heartRates) {
-            dataBaseHelper.heartInsert(dataBaseHelper,heartrate.mBpm,BaseHelper.parseDate(Date(),
-                Constants.DATE_JSON),epcoToTime(heartrate.mTime))
-        }
-        if(heartRates.get(0).mBpm != 0) {
-            if (dataBaseHelper.getAllTemp(
-                    "Where date is date is DATE('" + BaseHelper.parseDate(
-                        Date(),
-                        Constants.DATE_JSON
-                    ) + "')"
-                ).size == 0
-            ) {
-                dataBaseHelper.TempInsert(
-                    dataBaseHelper, 36.1, BaseHelper.parseDate(
-                        Date(),
-                        Constants.DATE_JSON
-                    ), epcoToTime(heartRates.get(0).mTime)
-                )
-            }
-        }
+        dataBaseHelper.heartInsert(dataBaseHelper,heartRates,BaseHelper.parseDate(Date(),
+            Constants.DATE_JSON),BaseHelper.parseDate(Date(),
+            Constants.TIME_JSON_HM))
+
     }
-    fun SpoRateInsert(bloodOxygen: List<BleBloodOxygen>) {
+    /*fun SpoRateInsert(bloodOxygen: List<BleBloodOxygen>) {
         val dataBaseHelper = DataBaseHelper(activity)
         for(bloodOxyge in bloodOxygen) {
             dataBaseHelper.SPoInsert(dataBaseHelper,bloodOxyge.mValue,BaseHelper.parseDate(Date(),
                 Constants.DATE_JSON),epcoToTime(bloodOxyge.mTime))
         }
-    }
-    fun TempInsert(temps: List<BleTemperature>) {
+    }*/
+
+    fun TempInsert(temp: TemperatureInfo) {
+        val startDate = BaseHelper.parseDate(temp.startDate,WATCHTIME)
         val dataBaseHelper = DataBaseHelper(activity)
-        for(temp in temps) {
-            dataBaseHelper.TempInsert(dataBaseHelper,temp.mTemperature.toDouble(),BaseHelper.parseDate(Date(),
-                Constants.DATE_JSON),epcoToTime(temp.mTime))
-        }
+        dataBaseHelper.TempInsert(dataBaseHelper,temp.bodyTemperature.toDouble(),BaseHelper.parseDate(startDate,
+                DATE_JSON),BaseHelper.parseDate(startDate, TIME_JSON_HM))
+
     }
 
-    fun insertStepData(activities: List<BleActivity>) {
-        val dataBaseHelper = DataBaseHelper(activity)
-        val a = activities.get(0)
-        if(epcoToTime(a.mTime).toDouble() > 23.57 && epcoToTime(a.mTime).toDouble() < 0.01) {
-            return
-        }
-        var lastHRSteps = lastHRSteps(epcoToTime(a.mTime))
-        if(lastHRSteps != null && lastHRSteps.size != 0 ) {
-                val mDistance = (activities.get(0).mDistance/10000).toDouble()
-                val mDist = (mDistance/1000).toDouble()
-                val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
-                val dist : Double = mDist  - lasthrdist
-                val cal : Int = (a.mCalorie / 10000).toInt()  - lastHRSteps.get(0).total_cal.toInt()
-                val steps = (a.mStep - lastHRSteps.get(0).total_count.toInt())
-                if(steps < 0) {
-                    return
-                }
-                dataBaseHelper.stepsInsert(
-                    dataBaseHelper,
-                    steps.toString(),
-                    BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                    String.format("%.3f", dist),
-                    (cal.toInt()).toString(),
-                    epcoToTime(a.mTime), activities[0].mStep, mDist,
-                    activities[0].mCalorie / 10000, " time : " + epcoToTime(a.mTime) +
-                            "\ntotal_count: " + activities[0].mStep +
-                            "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
-                            "\nSubtract : " + ((a.mStep - lastHRSteps.get(0).total_count.toInt())))
-
-
-            } else {
-                if(lastHRSteps != null) {
-                    val mDistance = (activities.get(0).mDistance/10000).toDouble()
-                    val mDist = (mDistance/1000).toDouble()
+    fun insertStepData(activities: MutableList<StepOneDayAllInfo>) {
+        try {
+            val dataBaseHelper = DataBaseHelper(activity)
+            for (activity in activities) {
+                val startDate = Date()
+                var lastHRSteps = lastHRSteps(BaseHelper.parseDate(startDate, TIME_JSON_HM))
+                if (lastHRSteps != null && lastHRSteps.size != 0) {
+                    val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
+                    val dist: Double = activity.distance - lasthrdist
+                    val cal: Float = activity.calories - lastHRSteps.get(0).total_cal.toFloat()
+                    val steps = (activity.step - lastHRSteps.get(0).total_count.toInt())
+                    if (steps < 0) {
+                        return
+                    }
                     dataBaseHelper.stepsInsert(
                         dataBaseHelper,
-                        a.mStep.toString(),
-                        BaseHelper.parseDate(Date(), Constants.DATE_JSON),
-                        String.format("%.3f",mDist),
-                        ((a.mCalorie / 10000)).toString(),
-                        epcoToTime(a.mTime), activities[0].mStep, mDist,
-                        activities[0].mCalorie/10000,
-                        " time : "+epcoToTime(a.mTime)+"\ntotal_count: "+activities[0].mStep+"\nmStep : " +
-                                ""+a.mStep)
+                        steps.toString(),
+                        BaseHelper.parseDate(startDate, Constants.DATE_JSON),
+                        String.format("%.3f", dist),
+                        (cal.toInt()).toString(),
+                        BaseHelper.parseDate(startDate, TIME_JSON_HM),
+                        activity.step,
+                        activity.distance.toDouble(),
+                        activity.calories.toDouble(),
+                        " time : " + startDate +
+                                "\ntotal_count: " + activity.step +
+                                "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
+                                "\nSubtract : " + ((activity.step - lastHRSteps.get(0).total_count.toInt()))
+                    )
 
+
+                } else {
+                    if (lastHRSteps != null) {
+                        val mDist = activity.distance
+                        dataBaseHelper.stepsInsert(
+                            dataBaseHelper,
+                            activity.step.toString(),
+                            BaseHelper.parseDate(startDate, Constants.DATE_JSON),
+                            String.format("%.3f", mDist),
+                            (activity.calories).toString(),
+                            BaseHelper.parseDate(startDate, TIME_JSON_HM),
+                            activity.step,
+                            mDist.toDouble(),
+                            activity.calories.toDouble(),
+                            " time : " + BaseHelper.parseDate(startDate, TIME_JSON_HM)
+                                    + "\ntotal_count: " + activity.step + "\nmStep : " +
+                                    "" + activity.distance
+                        )
+
+                    }
                 }
             }
+        } catch (e:Exception){
+
+        }
     }
 
     fun lastHRSteps(mTime: String): List<Steps>? {
@@ -411,7 +457,7 @@ open class BaseFragment : GenericFragment() {
     fun lastestHRSteps(): List<Steps>? {
         val dataBaseHelper = DataBaseHelper(activity)
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                " AND stepsCount != 0 ORDER BY time DESC LIMIT 1")
+                " AND stepsCount != 0 ORDER BY total_count DESC LIMIT 1")
         return dteps
     }
 

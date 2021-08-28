@@ -19,11 +19,10 @@ import com.watch.aware.app.R
 import com.watch.aware.app.callback.DeviceItemClickListener
 import com.watch.aware.app.fragments.dialog.DeviceListingDialogFragment
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.BleDevices
-import com.yc.pedometer.info.CustomTestStatusInfo
-import com.yc.pedometer.info.HeartRateHeadsetSportModeInfo
-import com.yc.pedometer.info.SportsModesInfo
-import com.yc.pedometer.sdk.*
+import com.yc.pedometer.sdk.BLEServiceOperate
+import com.yc.pedometer.sdk.DeviceScanInterfacer
 import com.yc.pedometer.utils.LogUtils
 import com.yc.pedometer.utils.SPUtil
 import kotlinx.android.synthetic.main.fragment_connection.*
@@ -42,8 +41,7 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener, DeviceScanInterf
 
     // Stops scanning after 10 seconds.
     private val SCAN_PERIOD: Long = 10000
-    private var mBLEServiceOperate: BLEServiceOperate? = null
-    private var mBluetoothLeService: BluetoothLeService? = null
+
 
     var arrayList = java.util.ArrayList<BleDevices>()
     var isFromSettings = false
@@ -124,13 +122,26 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener, DeviceScanInterf
                                 val device: BleDevices = arrayList.get(pos) ?: return
                                 SPUtil.getInstance(activity?.getApplicationContext()).lastConnectDeviceAddress =
                                     device.getAddress()
+                                UserInfoManager.getInstance(activity!!).saveDeviceId(device.address)
                                 if(mScanning) {
                                     mBLEServiceOperate!!.stopLeScan()
                                     mScanning = false
                                 }
-                                mBLEServiceOperate!!.connect(device.address)
-                                // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
                                 mBluetoothLeService = mBLEServiceOperate!!.bleService
+                               /* val intent = Intent(
+                                    activity,
+                                    TestMainActivity::class.java
+                                )
+                                intent.putExtra(EXTRAS_DEVICE_NAME, device.name)
+                                intent.putExtra(
+                                    EXTRAS_DEVICE_ADDRESS,
+                                    device.address
+                                )
+                                SPUtil.getInstance(activity).lastConnectDeviceAddress =
+                                    device.address
+
+                                startActivity(intent)
+                               */
                                 if (mBluetoothLeService != null) {
                                     if (isFromSettings) {
                                         home()?.proceedDoOnBackPressed()
@@ -197,7 +208,7 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener, DeviceScanInterf
                     device.getName(),
                     device.getAddress(), rssi
                 )
-                if(!arrayList.contains(mBleDevices)) {
+                if(!isDeviceExists(mBleDevices.address)) {
                     arrayList.add(mBleDevices)
                 }
 
@@ -206,7 +217,14 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener, DeviceScanInterf
 
     }
 
-
+    fun isDeviceExists(deviceAddresss:String) :Boolean {
+        for(array in arrayList) {
+            if(array.address.equals(deviceAddresss,ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
+    }
 
 
     override fun onConnected() {

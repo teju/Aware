@@ -1,6 +1,5 @@
 package com.watch.aware.app.fragments
 
-import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,26 +7,35 @@ import android.view.ViewGroup
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
-import com.szabh.smable3.BleKey
-import com.szabh.smable3.BleKeyFlag
-import com.szabh.smable3.component.BleConnector
-import com.szabh.smable3.component.BleHandleCallback
-import com.szabh.smable3.entity.*
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
 import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
-import com.watch.aware.app.helper.DataBaseHelper
-import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
+import com.yc.pedometer.sdk.*
+import com.yc.pedometer.update.Updates
+import com.yc.pedometer.utils.GlobalVariable
+import com.yc.pedometer.utils.LogUtils
+import com.yc.pedometer.utils.SPUtil
 import kotlinx.android.synthetic.main.fragment_fitness.*
-import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import java.util.*
 
 
-class FitnessFragment : BaseFragment() {
+class FitnessFragment : BaseFragment() , ServiceStatusCallback {
+    private var mSteps = 0
+    private var mDistance = 0f
+    private var mCalories = 0f
+    private var mRunCalories: kotlin.Float = 0f
+    private var mWalkCalories: kotlin.Float = 0f
+    private var mRunSteps =
+        0
+    private var mRunDurationTime: Int = 0
+    private var mWalkSteps: Int = 0
+    private var mWalkDurationTime: Int = 0
+    private var mRunDistance = 0f
+    private var mWalkDistance: kotlin.Float = 0f
+    protected val TAG = "FitnessFragment"
 
-
+/*
     private val mBleHandleCallback by lazy {
         object : BleHandleCallback {
 
@@ -44,14 +52,7 @@ class FitnessFragment : BaseFragment() {
 
             }
 
-            override fun onReadHeartRate(heartRates: List<BleHeartRate>) {
-                super.onReadHeartRate(heartRates)
-                try {
-                    heartRateInsert(heartRates)
-                } catch (e:java.lang.Exception){
 
-                }
-            }
 
             override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
                 super.onReadBloodOxygen(bloodOxygen)
@@ -62,14 +63,7 @@ class FitnessFragment : BaseFragment() {
                 }
             }
 
-            override fun onReadTemperature(temperatures: List<BleTemperature>) {
-                super.onReadTemperature(temperatures)
-                try {
-                    TempInsert(temperatures)
-                } catch (e:java.lang.Exception){
 
-                }
-            }
 
             override fun onReadActivity(activities: List<BleActivity>) {
                 super.onReadActivity(activities)
@@ -92,28 +86,29 @@ class FitnessFragment : BaseFragment() {
             }
         }
     }
+*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        v =  inflater.inflate(R.layout.fragment_fitness, container, false)
+        v = inflater.inflate(R.layout.fragment_fitness, container, false)
         return v;
     }
 
     fun setData() {
         val stepsArray = lastestHRSteps()
-        if(stepsArray!= null && stepsArray?.size != 0) {
-            val sync_date = BaseHelper.parseDate(stepsArray?.get(0)?.time,Constants.TIME_JSON_HM)
-            last_synced.text = BaseHelper.parseDate(sync_date,TIMEFORMAT)
-            calories.text = stepsArray?.get(0)?.total_cal.toString()
-            dist.text = String.format("%.2f",stepsArray?.get(0)?.total_dist?.toDouble())
+        if (stepsArray != null && stepsArray?.size != 0) {
+            val sync_date = BaseHelper.parseDate(stepsArray?.get(0)?.time, Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(sync_date, TIMEFORMAT)
+            calories.text = String.format("%.2f", stepsArray?.get(0)?.total_cal?.toDouble())
+            dist.text = String.format("%.2f", stepsArray?.get(0)?.total_dist?.toDouble())
             steps.text = stepsArray?.get(0)?.total_count.toString()
         } else {
-            val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
-            val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
-            last_synced.text = BaseHelper.parseDate(sync_date,TIMEFORMAT)
+            val today_date = BaseHelper.parseDate(Date(), Constants.TIME_JSON_HM)
+            val sync_date = BaseHelper.parseDate(today_date, Constants.TIME_JSON_HM)
+            last_synced.text = BaseHelper.parseDate(sync_date, TIMEFORMAT)
         }
     }
 
@@ -121,13 +116,13 @@ class FitnessFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         try {
-            BleConnector.addHandleCallback(mBleHandleCallback)
             syncing_fitness.visibility = View.VISIBLE
             swiperefresh_items.setOnRefreshListener(OnRefreshListener {
-                syncing_fitness.visibility = View.VISIBLE
-                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
+
+
             })
-            welcome.text = "Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
+            welcome.text =
+                "Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
             if (UserInfoManager.getInstance(activity!!).getGEnder().contentEquals("F")) {
                 fitness_human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_female))
             } else {
@@ -135,19 +130,100 @@ class FitnessFragment : BaseFragment() {
             }
             setData()
 
-        } catch (e:java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
         refresh.setOnClickListener {
-            syncing_fitness.visibility = View.VISIBLE
-            swiperefresh_items.setRefreshing(true);
-            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-        }
-        if(!BleConnector.isAvailable()) {
-            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
 
         }
+        mySQLOperate = UTESQLOperate.getInstance(activity) //
+        mDataProcessing = DataProcessing.getInstance(mContext)
+        mDataProcessing?.setOnStepChangeListener(mOnStepChangeListener)
+
+        mWriteCommand = WriteCommandToBLE.getInstance(mContext)
+        mUpdates = Updates.getInstance(mContext)
+
+//
+        val ble_connecte = SPUtil.getInstance(mContext).bleConnectStatus
+
+        if (ble_connecte) {
+            mWriteCommand?.sendStepLenAndWeightToBLE(
+                170, 65, 5,
+                10000, true, true, 150, true, 20, false, true, 50, GlobalVariable.TMP_UNIT_CELSIUS, true
+            )
+
+
+        }
+        activity?.runOnUiThread {
+            val list =
+                mySQLOperate!!.queryRunWalkAllDay()
+            if (list != null) {
+                for (i in list.indices) {
+                    val calendar = list[i].walkDurationTime
+                    val step = list[i].step
+                    val runSteps = list[i].runSteps
+                    val walkSteps = list[i].walkSteps
+                    LogUtils.d(
+                        TAG, "queryRunWalkAllDay calendar =" + calendar
+                                + ",step =" + step + ",runSteps =" + runSteps
+                                + ",walkSteps =" + walkSteps
+                    )
+                }
+                insertStepData(list)
+                setData()
+            }
+
+        }
+
+
     }
+
+    val mOnStepChangeListener =
+        StepChangeListener { info ->
+            if (info != null) {
+                mSteps = info.step
+                mDistance = info.distance
+                mCalories = info.calories
+                mRunSteps = info.runSteps
+                mRunCalories = info.runCalories
+                mRunDistance = info.runDistance
+                mRunDurationTime = info.runDurationTime
+                mWalkSteps = info.walkSteps
+                mWalkCalories = info.walkCalories
+                mWalkDistance = info.walkDistance
+                mWalkDurationTime = info.walkDurationTime
+            }
+            LogUtils.d(
+                TAG, "mSteps =" + mSteps + ",mDistance ="
+                        + mDistance + ",mCalories =" + mCalories + ",mRunSteps ="
+                        + mRunSteps + ",mRunCalories =" + mRunCalories
+                        + ",mRunDistance =" + mRunDistance + ",mRunDurationTime ="
+                        + mRunDurationTime + ",mWalkSteps =" + mWalkSteps
+                        + ",mWalkCalories =" + mWalkCalories + ",mWalkDistance ="
+                        + mWalkDistance + ",mWalkDurationTime ="
+                        + mWalkDurationTime
+            )
+            activity?.runOnUiThread {
+                val list =
+                    mySQLOperate!!.queryRunWalkAllDay()
+                if (list != null) {
+                    for (i in list.indices) {
+                        val calendar = list[i].calendar
+                        val step = list[i].step
+                        val runSteps = list[i].runSteps
+                        val walkSteps = list[i].walkSteps
+                        LogUtils.d(
+                            TAG, "queryRunWalkAllDay calendar =" + calendar
+                                    + ",step =" + step + ",runSteps =" + runSteps
+                                    + ",walkSteps =" + walkSteps
+                        )
+                    }
+                    insertStepData(list)
+                    setData()
+                }
+
+            }
+        }
 
     override fun onHiddenChanged(hidden: Boolean) {
         if(!hidden) {
@@ -163,6 +239,10 @@ class FitnessFragment : BaseFragment() {
         } catch (e:Exception){
 
         }
+    }
+
+    override fun OnServiceStatuslt(p0: Int) {
+
     }
 
 }

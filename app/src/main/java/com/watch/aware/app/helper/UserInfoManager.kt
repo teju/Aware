@@ -26,6 +26,7 @@ class UserInfoManager private constructor() {
     private val KEY_SLEEP_HOURS_END = "key_sleep_hours_end"
     private val KEY_GOAL_TYPE = "key_goal_type"
     private val KEY_GOAL_VALUE= "key_goal_value"
+    private val KEY_DEVICE_ID= "key_device_id"
     private var accessToken: String? = null
     private var accountName: String? = ""
     private var email: String? = ""
@@ -39,6 +40,7 @@ class UserInfoManager private constructor() {
     private var timeFormat: Int = 0
     private var sleepHoursStart = ""
     private var sleepHourEnd  = ""
+    private var deviceID  = ""
     private var goalType  = 0
     private var goalValue  = 10000
 
@@ -74,7 +76,12 @@ class UserInfoManager private constructor() {
         editor.putString(KEY_ACCESS_TOKEN, this.accessToken)
         editor.commit()
     }
-
+    fun saveDeviceId(deviceID: String) {
+        this.deviceID = deviceID
+        val editor = this.prefs!!.edit()
+        editor.putString(KEY_DEVICE_ID, this.deviceID)
+        editor.commit()
+    }
 
 
 
@@ -199,6 +206,10 @@ class UserInfoManager private constructor() {
     fun getEmail(): String {
         this.email = this.prefs!!.getString(KEY_EMAIL, "")
         return email!!
+    }
+    fun getDeviceID(): String {
+        this.deviceID = this.prefs!!.getString(KEY_DEVICE_ID, "").toString()
+        return deviceID!!
     }
     fun getSleepHoursStart(): String {
         this.sleepHoursStart = this.prefs!!.getString(KEY_SLEEP_HOURS_START, "")!!
