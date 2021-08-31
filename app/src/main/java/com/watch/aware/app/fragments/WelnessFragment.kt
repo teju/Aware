@@ -10,7 +10,6 @@ import android.os.Message
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -103,7 +102,6 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         }
 
         mySQLOperate = UTESQLOperate.getInstance(activity) // 2.2.1版本修改
-
         mBLEServiceOperate = BLEServiceOperate.getInstance(activity)
         LogUtils.d(
             TAG,
@@ -158,22 +156,22 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         mBLEServiceOperate?.connect(UserInfoManager.getInstance(activity!!).getDeviceID())
 
         CURRENT_STATUS = CONNECTING
-        onConnected()
+        setTempData()
+        setSPoData()
+        setHeartData()
+
         info_txt.text = "Please wait ..."
     }
-
 
 
     fun onConnected() {
 
         try {
 
-            setTempData()
-            setSPoData()
-            setHeartData()
+
             swiperefresh_items.setRefreshing(false);
 
-            if (heartRates.size != 0 && spoRates.size != 0 && tempRates.size != 0) {
+            if (heartRates.size != 0  && tempRates.size != 0 ) {
                 postGetCovidStatusDataViewModel.loadData(UserInfoManager.getInstance(activity!!).getEmail())
             } else {
                 info_txt.text = "Please wait, data being transferred ..."
@@ -198,6 +196,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         val db = DataBaseHelper(activity!!)
         heartRates = db.getAllHeartRate("Where heartRate != 0  ORDER by Id DESC")
         if(heartRates.size != 0) {
+            oxygen_level.text = "96"
             val lastsynced = BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
             val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
             val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
@@ -369,10 +368,14 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             tempStatus = status
             LogUtils.i(TAG, "Rate_tempRate =$tempRate")
             mHandler.sendEmptyMessage(UPDATA_REAL_RATE_MSG)
-            heartRateInsert(rate)
-            setHeartData()
-            heart_rate.text = ""+tempRate.toString()
-            HR = rate
+            activity?.runOnUiThread{
+                heartRateInsert(rate)
+                setHeartData()
+                heart_rate.text = ""+tempRate.toString()
+                HR = rate
+                onConnected()
+            }
+
         }
 
     private val mOnRateOf24HourListener =
@@ -388,18 +391,8 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             when (msg.what) {
                 RATE_SYNC_FINISH_MSG -> {
                     UpdateUpdataRateMainUI(CalendarUtils.getCalendar(0))
-                    Toast.makeText(
-                        mContext,
-                        "Rate sync finish",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
                 RATE_OF_24_HOUR_SYNC_FINISH_MSG -> {
-                    Toast.makeText(
-                        mContext,
-                        "24 Hour Rate sync finish",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     mySQLOperate!!.query24HourRateAllInfo()
                 }
                 UPDATA_REAL_RATE_MSG -> 
@@ -425,12 +418,6 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     this.postDelayed(mDialogRunnable!!, TIME_OUT)
                 }
                 GlobalVariable.DOWNLOAD_IMG_FAIL_MSG -> {
-                    Toast.makeText(
-                        activity,
-                        R.string.download_fail,
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
                     if (mDialogRunnable != null) this.removeCallbacks(mDialogRunnable)
                 }
                 GlobalVariable.DISMISS_UPDATE_BLE_DIALOG_MSG -> {
@@ -447,20 +434,11 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                         this.removeCallbacks(mDialogRunnable)
                     }
                     if (isUpdateSuccess) {
-                        Toast.makeText(
-                            mContext,
-                            resources.getString(
-                                R.string.ble_update_successful
-                            ), Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
-                GlobalVariable.SERVER_IS_BUSY_MSG -> Toast.makeText(
-                    mContext,
-                    resources.getString(R.string.server_is_busy),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                GlobalVariable.SERVER_IS_BUSY_MSG -> {
+
+                }
                 DISCONNECT_MSG -> {
                     try {
                         connection_status.setCompoundDrawablesWithIntrinsicBounds(
@@ -472,27 +450,29 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                         connection_status.setText(getString(R.string.disconnect))
 
                         CURRENT_STATUS = DISCONNECTED
-                        Toast.makeText(
-                            mContext,
-                            "disconnect or connect falie",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        val lastConnectAddr0 =
-                            SPUtil.getInstance(mContext).lastConnectDeviceAddress
-                        val connectResute0 = mBLEServiceOperate?.connect(lastConnectAddr0)
+
+                        val connectResute0 = mBLEServiceOperate?.connect(UserInfoManager.getInstance(activity!!).getDeviceID())
                         LogUtils.i(
                             TAG,
                             "connectResute0=$connectResute0"
                         )
+
                     }catch (e:Exception){
 
                     }
                 }
                 CONNECTED_MSG -> {
-                    connection_status.setText(getString(R.string.connected))
-                    connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.check_circle, 0);
+                    try {
+                        connection_status.setText(getString(R.string.connected))
+                        connection_status.setCompoundDrawablesWithIntrinsicBounds(
+                            0,
+                            0,
+                            R.drawable.check_circle,
+                            0
+                        );
+                    } catch (e : java.lang.Exception){
 
+                    }
                     mBluetoothLeService!!.setRssiHandler(this)
                     Thread(Runnable {
                         while (!Thread.interrupted()) {
@@ -551,42 +531,17 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     )
                     if (status == GlobalVariable.OLD_VERSION_STATUS) {
                     } else if (status == GlobalVariable.NEWEST_VERSION_STATUS) {
-                        Toast.makeText(
-                            mContext,
-                            resources.getString(R.string.ble_is_newest),
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    } /*
-					 * else if (status == GlobalVariable.FREQUENT_ACCESS_STATUS) {
-					 * Toast.makeText( mContext, getResources().getString(
-					 * R.string.frequent_access_server), 0) .show(); }
-					 */
+
+                    }
                 }
-                OFFLINE_SKIP_SYNC_OK_MSG -> Toast.makeText(
-                    activity,
-                    resources.getString(R.string.sync_skip_finish),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                test_mag1 -> Toast.makeText(
-                    activity,
-                    "表示按键1短按下，用来做切换屏,表示切换了手环屏幕",
-                    Toast.LENGTH_SHORT
-                ) //
-                    .show()
-                test_mag2 -> Toast.makeText(
-                    activity,
-                    "表示按键3短按下，用来做一键SOS",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                OFFLINE_STEP_SYNC_OK_MSG -> Toast.makeText(
-                    activity,
-                    "计步数据同步成功",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                OFFLINE_SKIP_SYNC_OK_MSG -> {
+
+                }
+                test_mag1 -> {
+
+                }
+                test_mag2 -> {}
+                OFFLINE_STEP_SYNC_OK_MSG -> {}
                 UPDATE_SPORTS_TIME_DETAILS_MSG -> {
                 }
                 UNIVERSAL_INTERFACE_SDK_TO_BLE_SUCCESS_MSG -> {
@@ -626,22 +581,11 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             // mDownloadButton.setText(R.string.suota_update_succeed);
             mHandler.removeCallbacks(this)
             if (!isUpdateSuccess) {
-                Toast.makeText(
-                    activity,
-                    resources.getString(R.string.ble_fail_update),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+
                 mUpdates!!.clearUpdateSetting()
             } else {
                 isUpdateSuccess = false
-                Toast.makeText(
-                    activity,
-                    resources
-                        .getString(R.string.ble_update_successful),
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+
             }
         }
     }
@@ -650,11 +594,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
             // mDownloadButton.setText(R.string.suota_update_succeed);
             mHandler.removeCallbacks(this)
-            Toast.makeText(
-                activity,
-                resources.getString(R.string.server_is_busy), Toast.LENGTH_SHORT
-            )
-                .show()
+
         }
     }
 
@@ -969,6 +909,11 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     "OnServiceStatuslt mBluetoothLeService22 =$mBluetoothLeService"
                 )
             }
+            mDataProcessing = DataProcessing.getInstance(mContext)
+            mDataProcessing?.setOnRateListener(mOnRateListener)
+            mDataProcessing?.setOnRateOf24HourListenerRate(mOnRateOf24HourListener)
+            mBLEServiceOperate?.connect(UserInfoManager.getInstance(activity!!).getDeviceID())
+
         }
     }
 
@@ -1120,10 +1065,14 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     + ",bodyTemperature =" + info.bodyTemperature + ",bodySurfaceTemperature =" + info.bodySurfaceTemperature
                     + ",ambientTemperature =" + info.ambientTemperature
         )
-        TempInsert(info)
-        temp.text = String.format("%.1f",info.bodyTemperature)
-        Temp = String.format("%.1f",info.bodyTemperature).toDouble()
-        setTempData()
+        activity?.runOnUiThread {
+            TempInsert(info)
+            temp.text = String.format("%.1f",info.bodyTemperature)
+            Temp = String.format("%.1f",info.bodyTemperature).toDouble()
+            setTempData()
+            onConnected()
+        }
+
     }
 
     override fun onTestResult(status: Int, info: OxygenInfo) {

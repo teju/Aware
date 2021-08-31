@@ -1,11 +1,15 @@
 package com.watch.aware.app
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -42,9 +46,10 @@ class MainActivity : AppCompatActivity() {
             triggerMainProcess()
         }, 2 * 2000.toLong())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            BaseHelper.triggerNotifLog(this)
+          //  BaseHelper.triggerNotifLog(this)
         };
         DebugDB.getAddressLog();
+
     }
 
     fun triggerMainProcess() {

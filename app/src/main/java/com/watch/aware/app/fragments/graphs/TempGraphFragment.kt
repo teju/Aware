@@ -58,7 +58,7 @@ class TempGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSele
         val db = DataBaseHelper(activity!!)
         val stepsArray = db.getAllTemp("Where TempRate != 0  ORDER by Id DESC")
         if(stepsArray!= null && stepsArray?.size != 0) {
-            stepsCount.text = stepsArray.get(0).tempRate.toString()
+            stepsCount.text =  String.format("%.2f", stepsArray.get(0).tempRate.toDouble())
         }
         setXaxisData(DAILY)
     }

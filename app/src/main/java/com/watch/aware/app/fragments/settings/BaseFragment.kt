@@ -157,11 +157,7 @@ open class BaseFragment : GenericFragment() {
         checkBluetoothGps()
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        if(!hidden) {
-            checkBluetoothGps()
-        }
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -394,12 +390,13 @@ open class BaseFragment : GenericFragment() {
         try {
             val dataBaseHelper = DataBaseHelper(activity)
             for (activity in activities) {
-                val startDate = Date()
-                var lastHRSteps = lastHRSteps(BaseHelper.parseDate(startDate, TIME_JSON_HM))
+                val startDate = BaseHelper.parseDate(activity.calendar, WATCHDate)
+                val startTime = Date()
+                var lastHRSteps = lastHRSteps(BaseHelper.parseDate(startTime, TIME_JSON_HM))
                 if (lastHRSteps != null && lastHRSteps.size != 0) {
                     val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
                     val dist: Double = activity.distance - lasthrdist
-                    val cal: Float = activity.calories - lastHRSteps.get(0).total_cal.toFloat()
+                    val cal: Double = activity.calories.toDouble() - lastHRSteps.get(0).total_cal.toDouble()
                     val steps = (activity.step - lastHRSteps.get(0).total_count.toInt())
                     if (steps < 0) {
                         return
@@ -407,14 +404,14 @@ open class BaseFragment : GenericFragment() {
                     dataBaseHelper.stepsInsert(
                         dataBaseHelper,
                         steps.toString(),
-                        BaseHelper.parseDate(startDate, Constants.DATE_JSON),
+                        BaseHelper.parseDate(startDate, DATE_JSON),
                         String.format("%.3f", dist),
-                        (cal.toInt()).toString(),
-                        BaseHelper.parseDate(startDate, TIME_JSON_HM),
+                        String.format("%.2f", cal.toInt()),
+                        BaseHelper.parseDate(startTime, TIME_JSON_HM),
                         activity.step,
-                        activity.distance.toDouble(),
-                        activity.calories.toDouble(),
-                        " time : " + startDate +
+                        String.format("%.3f", activity.distance).toDouble(),
+                        String.format("%.2f", activity.calories).toDouble(),
+                        " time : " + startTime +
                                 "\ntotal_count: " + activity.step +
                                 "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
                                 "\nSubtract : " + ((activity.step - lastHRSteps.get(0).total_count.toInt()))
@@ -429,12 +426,12 @@ open class BaseFragment : GenericFragment() {
                             activity.step.toString(),
                             BaseHelper.parseDate(startDate, Constants.DATE_JSON),
                             String.format("%.3f", mDist),
-                            (activity.calories).toString(),
-                            BaseHelper.parseDate(startDate, TIME_JSON_HM),
+                            String.format("%.2f", activity.calories).toString(),
+                            BaseHelper.parseDate(startTime, TIME_JSON_HM),
                             activity.step,
-                            mDist.toDouble(),
-                            activity.calories.toDouble(),
-                            " time : " + BaseHelper.parseDate(startDate, TIME_JSON_HM)
+                            String.format("%.3f", mDist).toDouble(),
+                            String.format("%.2f", activity.calories).toDouble(),
+                            " time : " + BaseHelper.parseDate(startTime, TIME_JSON_HM)
                                     + "\ntotal_count: " + activity.step + "\nmStep : " +
                                     "" + activity.distance
                         )

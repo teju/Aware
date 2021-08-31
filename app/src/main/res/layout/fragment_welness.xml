@@ -33,7 +33,7 @@
                         android:layout_height="wrap_content">
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="DisConnected"
+                            android:text="@string/disconnect"
                             android:drawableRight="@drawable/close_circle"
                             android:drawablePadding="10dp"
                             android:textSize="@dimen/text_small"
@@ -46,7 +46,7 @@
                         </TextView>
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="Welcome back, Peter"
+
                             android:layout_marginTop="5dp"
                             android:textSize="@dimen/text_med"
                             android:gravity="center_vertical"
@@ -100,14 +100,14 @@
 
                 </RelativeLayout>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_marginLeft="15dp"
                     android:textSize="22dp"
                     android:id="@+id/info_txt"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/DarkSlateGray"
                     android:fontFamily="@font/opensansextrabold"
-                    android:layout_height="wrap_content">
+                    android:layout_height="60dp">
 
                 </TextView>
                 <RelativeLayout
@@ -140,7 +140,8 @@
                                 android:layout_height="30dp">
                             </ImageView>
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
+                                android:textAlignment="textStart"
                                 android:id="@+id/heart_rate"
                                 android:textSize="30dp"
                                 android:fontFamily="@font/opensansbold"
@@ -184,8 +185,9 @@
                                     android:layout_height="30dp">
                                 </ImageView>
                                 <TextView
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:textSize="30dp"
+                                    android:textAlignment="textEnd"
                                     android:id="@+id/oxygen_level"
                                     android:fontFamily="@font/opensansbold"
                                     android:layout_gravity="end"

@@ -22,6 +22,7 @@ public class Constants {
 	public static final String TIME_JSON_SHORTEN = "EEE, d MMM yyyy HH:mm:ss";
 	public static final String DATE_TIME = "yyyy-MM-dd HH:mm";
 	public static final String WATCHTIME = "yyyyMMddHHmmss";
+	public static final String WATCHDate = "yyyyMMdd";
 
 
 }

@@ -4,7 +4,7 @@ import com.iapps.libs.helpers.BaseKeys
 
 class APIs : BaseKeys() {
     companion object {
-        val BASE_URL = "https://asia-east2-cband2.cloudfunctions.net/"
+        val BASE_URL = "https://asia-east2-cband21.cloudfunctions.net/"
 
         val postRegister : String
             get() = BASE_URL!!  + "Register_Profile"

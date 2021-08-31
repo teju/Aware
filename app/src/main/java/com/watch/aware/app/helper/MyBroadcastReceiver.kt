@@ -11,20 +11,16 @@ class MyBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(
         context: Context,
         intent: Intent) {
-       /* if(BleConnector.isAvailable()) {
-            if (BleCache.mDeviceInfo?.mBleName != null) {
-                if (Constants.SPO2 != 0 && Constants.HR != 0 && Constants.Temp != 0.0) {
-                    BaseFragment.postSaveDeviceDataViewModel?.loadData(
-                        Constants.SPO2,
-                        Constants.HR,
-                        Constants.Temp,
-                        Constants.COUGH,
-                        UserInfoManager.getInstance(context).getEmail(),
-                        Constants._activity, Helper.getCurrentDate().toString()
-                    )
-                }
-                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ, context!!)
-            }
-        }*/
+
+        if (Constants.SPO2 != 0 && Constants.HR != 0 && Constants.Temp != 0.0) {
+            BaseFragment.postSaveDeviceDataViewModel?.loadData(
+                Constants.SPO2,
+                Constants.HR,
+                Constants.Temp,
+                Constants.COUGH,
+                UserInfoManager.getInstance(context).getEmail(),
+                Constants._activity, Helper.getCurrentDate().toString()
+            )
+        }
     }
 }
