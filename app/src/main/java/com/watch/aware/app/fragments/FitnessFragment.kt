@@ -14,9 +14,7 @@ import com.yc.pedometer.info.StepOneDayAllInfo
 import com.yc.pedometer.sdk.*
 import com.yc.pedometer.update.Updates
 import com.yc.pedometer.utils.CalendarUtils
-import com.yc.pedometer.utils.GlobalVariable
 import com.yc.pedometer.utils.LogUtils
-import com.yc.pedometer.utils.SPUtil
 import kotlinx.android.synthetic.main.fragment_fitness.*
 import java.util.*
 
@@ -36,58 +34,7 @@ class FitnessFragment : BaseFragment()  {
     private var mWalkDistance: kotlin.Float = 0f
     protected val TAG = "FitnessFragment"
 
-/*
-    private val mBleHandleCallback by lazy {
-        object : BleHandleCallback {
 
-            override fun onDeviceConnected(_device: BluetoothDevice) {
-                onConnected()
-            }
-
-            override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-               onConnected()
-            }
-
-            override fun onReadSleep(sleeps: List<BleSleep>) {
-                super.onReadSleep(sleeps)
-
-            }
-
-
-
-            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
-                super.onReadBloodOxygen(bloodOxygen)
-                try {
-                    SpoRateInsert(bloodOxygen)
-                } catch (e:java.lang.Exception){
-
-                }
-            }
-
-
-
-            override fun onReadActivity(activities: List<BleActivity>) {
-                super.onReadActivity(activities)
-                try {
-                    syncing_fitness.visibility = View.GONE
-                    calories.text = (activities.get(0).mCalorie/10000).toString()
-                    val mDistance = (activities.get(0).mDistance/10000).toDouble()
-                    val mDist = (mDistance/1000).toDouble()
-                    dist.text = String.format("%.2f",mDist)
-                    steps.text = (activities.get(0).mStep).toString()
-                    if(swiperefresh_items.isRefreshing) {
-                        swiperefresh_items.setRefreshing(false);
-                    }
-                }catch (e:Exception) {
-                    e.printStackTrace()
-                }
-                onConnected()
-                insertStepData(activities)
-
-            }
-        }
-    }
-*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -138,62 +85,14 @@ class FitnessFragment : BaseFragment()  {
 
         mWriteCommand = WriteCommandToBLE.getInstance(mContext)
         mUpdates = Updates.getInstance(mContext)
-
-//
-        val ble_connecte = SPUtil.getInstance(mContext).bleConnectStatus
         mWriteCommand?.syncAllStepData()
-        mWriteCommand?.syncAllSleepData()
-        if (ble_connecte) {
-            mWriteCommand?.sendStepLenAndWeightToBLE(
-                170, 65, 5,
-                10000, true, true, 150, true, 20, false, true, 50, GlobalVariable.TMP_UNIT_CELSIUS, true
-            )
-
-
-        }
-        //			List<RateOneDayInfo> mRateOneDayInfoList = new ArrayList<RateOneDayInfo>();
-//			mRateOneDayInfoList =mySQLOperate.queryRateOneDayDetailInfo(CalendarUtils.getCalendar(0));
-//			LogUtils.d(TAG, "mRateOneDayInfoList ="+mRateOneDayInfoList);
-//			if (mRateOneDayInfoList!=null) {
-//				for (int i = 0; i < mRateOneDayInfoList.size(); i++) {
-//					int time = mRateOneDayInfoList.get(i).getTime();
-//					int rate = mRateOneDayInfoList.get(i).getRate();
-//					LogUtils.d(TAG, "mRateOneDayInfoList time ="+time+",rate ="+rate);
-//				}
-//			}else {
-//
-//			}
-//			RateOneDayInfo mRateOneDayInfo = null;
-//			mRateOneDayInfo =mySQLOperate.queryRateOneDayMainInfo(CalendarUtils.getCalendar(0));
-//			if (mRateOneDayInfo!=null) {
-//				 int lowestRate;
-//				 int verageRate;
-//				 int highestRate;
-//				 int currentRate;
-//			}
-
-
-        /* activity?.runOnUiThread {
-            val list =
-                mySQLOperate!!.queryRunWalkAllDay()
-            if (list != null) {
-                for (i in list.indices) {
-                    val calendar = list[i].calendar
-                    val step = list[i].step
-                    val runSteps = list[i].runSteps
-                    val walkSteps = list[i].walkSteps
-                    LogUtils.d(
-                        TAG, "queryRunWalkAllDay calendar =" + calendar
-                                + ",step =" + step + ",runSteps =" + runSteps
-                                + ",walkSteps =" + walkSteps
-                    )
-                }
-                insertStepData(list)
+         activity?.runOnUiThread {
+             val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
+                 .querySleepInfo(CalendarUtils.getCalendar(0))
+             if (sleepTimeInfo != null) {
+                 sleep.text =  ""+sleepTimeInfo.sleepTotalTime/60
             }
-
-        }*/
-
-
+        }
     }
 
     val mOnStepChangeListener =
@@ -233,13 +132,9 @@ class FitnessFragment : BaseFragment()  {
 
     private val mOnSleepChangeListener =
         SleepChangeListener {
-            val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
-                .querySleepInfo(CalendarUtils.getCalendar(0))
-            if(sleepTimeInfo != null) {
-                val sleepTotalTime = sleepTimeInfo.sleepTotalTime
-                sleep.text = sleepTimeInfo.toString()+""
-            }
+
         }
+
 
 
 

@@ -91,25 +91,17 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         } else{
             human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
         }
-        swiperefresh_items.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
-
-
-        })
+        swiperefresh_items.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {})
 
 
         refresh.setOnClickListener {
-
+            mWriteCommand?.syncAllSleepData()
         }
-
+       // cyyonkm2kip25hvyvq34p7775d6yxxwwjbrsazad2ubvzaldkxaq
         mySQLOperate = UTESQLOperate.getInstance(activity) // 2.2.1版本修改
         mBLEServiceOperate = BLEServiceOperate.getInstance(activity)
-        LogUtils.d(
-            TAG,
-            "setServiceStatusCallback前 mBLEServiceOperate =$mBLEServiceOperate"
-        )
 
         mBLEServiceOperate?.setServiceStatusCallback(this)
-       
 
         // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
         mContext = activity
@@ -118,15 +110,8 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         mySQLOperate = UTESQLOperate.getInstance(mContext) // 2.2.1版本修改
 
         mBLEServiceOperate = BLEServiceOperate.getInstance(mContext)
-        LogUtils.d(
-            TAG,
-            "setServiceStatusCallback前 mBLEServiceOperate =$mBLEServiceOperate"
-        )
         mBLEServiceOperate?.setServiceStatusCallback(this)
-        LogUtils.d(
-            TAG,
-            "setServiceStatusCallback后 mBLEServiceOperate =$mBLEServiceOperate"
-        )
+        LogUtils.d(TAG, "setServiceStatusCallback后 mBLEServiceOperate =$mBLEServiceOperate")
         // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
         // 如果没在搜索界面提前实例BLEServiceOperate的话，下面这4行需要放到OnServiceStatuslt
         mBluetoothLeService = mBLEServiceOperate?.getBleService()
@@ -168,6 +153,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
         try {
 
+            refresh.performClick();
 
             swiperefresh_items.setRefreshing(false);
 
