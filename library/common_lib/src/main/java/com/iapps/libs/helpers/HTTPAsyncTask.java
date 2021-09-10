@@ -851,7 +851,9 @@ public abstract class HTTPAsyncTask
 //					printResponse(responseString, String.valueOf(http_status));
 //				else{
 //
-					Log.v("Log ",  this.getUrl().toString()+"\nhttp status : " + http_status + "\nheader : " + mHeaderParams.toString() + "\nparams : " + params.toString() + "\n" +responseString);
+					Log.v("Log ",  this.getUrl().toString()+"\nhttp status : " + http_status
+							+ "\nheader : " + mHeaderParams.toString() + "\nparams : "
+							+ params.toString()+" params size "+connHttps.getContentLength() + "\n" +responseString);
 				logThisApi(responseString,String.valueOf(http_status),mHeaderParams.toString());
 
 //				}
