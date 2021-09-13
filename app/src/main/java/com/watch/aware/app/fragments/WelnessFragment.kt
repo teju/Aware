@@ -257,7 +257,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             this@WelnessFragment.let { thisFragReference ->
                 isLoading.observe(thisFragReference, Observer { aBoolean ->
                     if(aBoolean!!) {
-                        syncing.visibility = View.VISIBLE
+                     //   syncing.visibility = View.VISIBLE
                     } else {
                         syncing.visibility = View.GONE
                     }

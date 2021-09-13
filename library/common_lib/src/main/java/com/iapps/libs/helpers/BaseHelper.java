@@ -1518,7 +1518,20 @@ public class BaseHelper {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 				notification = builder.build();
 			}
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				// Create the NotificationChannel
+				String name = act.getResources().getString(R.string.app_name);
+				String descriptionText = act.getResources().getString(R.string.app_name);
+				int importance = NotificationManager.IMPORTANCE_HIGH;
+				NotificationChannel mChannel = new NotificationChannel("my_channel_01", name, importance);
+				mChannel.setDescription(descriptionText);
+				// Register the channel with the system; you can't change the importance
+				// or other notification behaviors after this
+				NotificationManager notificationManager = act.getSystemService(NotificationManager.class);
+				notificationManager.createNotificationChannel(mChannel);
+				builder.setChannelId("my_channel_01");
 
+			}
 			NotificationManager notificationManger =
 					(NotificationManager) act.getSystemService(Context.NOTIFICATION_SERVICE);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)

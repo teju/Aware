@@ -86,7 +86,6 @@ class FitnessFragment : BaseFragment()  {
         mWriteCommand = WriteCommandToBLE.getInstance(mContext)
         mUpdates = Updates.getInstance(mContext)
         mWriteCommand?.syncAllStepData()
-        mWriteCommand?.
          activity?.runOnUiThread {
              val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
                  .querySleepInfo(CalendarUtils.getCalendar(0))
