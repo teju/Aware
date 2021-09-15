@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder
 
 import com.iapps.libs.helpers.BaseConstants
 import com.iapps.libs.objects.Response
-import com.watch.aware.app.helper.APIs
-import com.watch.aware.app.helper.Helper
-import com.watch.aware.app.helper.Keys
-import com.watch.aware.app.helper.SingleLiveEvent
+import com.watch.aware.app.helper.*
 import com.watch.aware.app.models.GenericResponse
 
 class PostUpdateProfileModel(application: Application) : BaseViewModel(application) {
@@ -92,7 +89,7 @@ class PostUpdateProfileModel(application: Application) : BaseViewModel(applicati
         if(!Helper.isEmpty(gender)) {
             genericHttpAsyncTask.setPostParams(Keys.gender,gender)
         }
-        genericHttpAsyncTask.setPostParams(Keys.deviceId,mBleAddress)
+        genericHttpAsyncTask.setPostParams(Keys.deviceId, UserInfoManager.getInstance(apl).getDeviceID())
 
         genericHttpAsyncTask.context = apl.applicationContext
         genericHttpAsyncTask.setCache(false)

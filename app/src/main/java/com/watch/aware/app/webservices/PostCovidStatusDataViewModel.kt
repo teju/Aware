@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder
 
 import com.iapps.libs.helpers.BaseConstants
 import com.iapps.libs.objects.Response
-import com.watch.aware.app.helper.APIs
-import com.watch.aware.app.helper.Helper
-import com.watch.aware.app.helper.Keys
-import com.watch.aware.app.helper.SingleLiveEvent
+import com.watch.aware.app.helper.*
 import com.watch.aware.app.models.GenericResponse
 import com.watch.aware.app.models.covid_status.CovidStatus
 import java.lang.Exception
@@ -71,7 +68,7 @@ class PostCovidStatusDataViewModel(application: Application) : BaseViewModel(app
         genericHttpAsyncTask.method = BaseConstants.POST
         genericHttpAsyncTask.setUrl(APIs.postGetCovidStatus)
         try {
-            genericHttpAsyncTask.setPostParams(Keys.deviceId, deviceId)
+            genericHttpAsyncTask.setPostParams(Keys.deviceId, UserInfoManager.getInstance(apl).getDeviceID())
         }catch (e:Exception){
 
         }

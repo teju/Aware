@@ -18,7 +18,7 @@ class MyBroadcastReceiver : BroadcastReceiver() {
                 Constants.HR,
                 Constants.Temp,
                 Constants.COUGH,
-                UserInfoManager.getInstance(context).getEmail(),
+                UserInfoManager.getInstance(context).getDeviceID(),
                 Constants._activity, Helper.getCurrentDate().toString()
             )
         }
