@@ -16,6 +16,7 @@ import com.yc.pedometer.update.Updates
 import com.yc.pedometer.utils.CalendarUtils
 import com.yc.pedometer.utils.LogUtils
 import kotlinx.android.synthetic.main.fragment_fitness.*
+import java.lang.Exception
 import java.util.*
 
 
@@ -74,24 +75,23 @@ class FitnessFragment : BaseFragment()  {
             }
            // setData(info)
 
+            mySQLOperate = UTESQLOperate.getInstance(activity) //
+            mDataProcessing = DataProcessing.getInstance(mContext)
+            mDataProcessing?.setOnStepChangeListener(mOnStepChangeListener)
+            mDataProcessing?.setOnSleepChangeListener(mOnSleepChangeListener)
+
+            mWriteCommand = WriteCommandToBLE.getInstance(mContext)
+            mUpdates = Updates.getInstance(mContext)
+            mWriteCommand?.syncAllStepData()
+             activity?.runOnUiThread {
+                 val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
+                     .querySleepInfo(CalendarUtils.getCalendar(0))
+                 if (sleepTimeInfo != null) {
+                     sleep.text =  ""+sleepTimeInfo.sleepTotalTime/60
+                }
+            }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-        }
-
-        mySQLOperate = UTESQLOperate.getInstance(activity) //
-        mDataProcessing = DataProcessing.getInstance(mContext)
-        mDataProcessing?.setOnStepChangeListener(mOnStepChangeListener)
-        mDataProcessing?.setOnSleepChangeListener(mOnSleepChangeListener)
-
-        mWriteCommand = WriteCommandToBLE.getInstance(mContext)
-        mUpdates = Updates.getInstance(mContext)
-        mWriteCommand?.syncAllStepData()
-         activity?.runOnUiThread {
-             val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
-                 .querySleepInfo(CalendarUtils.getCalendar(0))
-             if (sleepTimeInfo != null) {
-                 sleep.text =  ""+sleepTimeInfo.sleepTotalTime/60
-            }
         }
     }
 
@@ -121,11 +121,20 @@ class FitnessFragment : BaseFragment()  {
                         + mWalkDurationTime
             )
             activity?.runOnUiThread {
-                syncing_fitness.visibility = View.GONE
+                try {
+                    syncing_fitness.visibility = View.GONE
 
-                connection_status.setText(getString(R.string.connected))
-                connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.check_circle, 0);
-                setData(info)
+                    connection_status.setText(getString(R.string.connected))
+                    connection_status.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        0,
+                        R.drawable.check_circle,
+                        0
+                    );
+                    setData(info)
+                } catch (e:Exception){
+
+                }
             }
 
         }

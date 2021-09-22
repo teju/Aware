@@ -157,72 +157,81 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
                 last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
             }
+
+            setAnylasisData()
         } catch (e:Exception){
             val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
             val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
             last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
         }
-        setAnylasisData()
-
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(UserInfoManager.getInstance(activity!!).getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT) {
-            xAxisValues = ArrayList(
-                Arrays.asList("12am",
-                    "1am",
-                    "2am",
-                    "3am",
-                    "4am",
-                    "5am",
-                    "6am",
-                    "7am",
-                    "8am",
-                    "9am",
-                    "10am",
-                    "11am",
-                    "12pm",
-                    "1pm",
-                    "2pm",
-                    "3pm",
-                    "4pm",
-                    "5pm",
-                    "6pm",
-                    "7pm",
-                    "8pm",
-                    "9pm" ,
-                    "10pm" ,
-                    "11pm" ))
-        } else {
-            xAxisValues = ArrayList(
-                Arrays.asList("12",
-                    "1",
-                    "2",
-                    "3",
-                    "4",
-                    "5",
-                    "6",
-                    "7",
-                    "8",
-                    "9",
-                    "10",
-                    "11",
-                    "12",
-                    "13",
-                    "14",
-                    "15",
-                    "16",
-                    "17",
-                    "18",
-                    "19",
-                    "20",
-                    "21",
-                    "22",
-                    "23"))
-        }
+        try {
+            if (UserInfoManager.getInstance(activity!!)
+                    .getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT
+            ) {
+                xAxisValues = ArrayList(
+                    Arrays.asList(
+                        "12am",
+                        "1am",
+                        "2am",
+                        "3am",
+                        "4am",
+                        "5am",
+                        "6am",
+                        "7am",
+                        "8am",
+                        "9am",
+                        "10am",
+                        "11am",
+                        "12pm",
+                        "1pm",
+                        "2pm",
+                        "3pm",
+                        "4pm",
+                        "5pm",
+                        "6pm",
+                        "7pm",
+                        "8pm",
+                        "9pm",
+                        "10pm",
+                        "11pm"
+                    )
+                )
+            } else {
+                xAxisValues = ArrayList(
+                    Arrays.asList(
+                        "12",
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "11",
+                        "12",
+                        "13",
+                        "14",
+                        "15",
+                        "16",
+                        "17",
+                        "18",
+                        "19",
+                        "20",
+                        "21",
+                        "22",
+                        "23"
+                    )
+                )
+            }
 
 
-        /*swiperefresh_items.run {
+            /*swiperefresh_items.run {
             swiperefresh_items.setOnRefreshListener(OnRefreshListener {
                 Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
                connect()
@@ -238,7 +247,10 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
         }*/
 
-        setData()
+            setData()
+        }catch (e:java.lang.Exception){
+
+        }
 
     }
 

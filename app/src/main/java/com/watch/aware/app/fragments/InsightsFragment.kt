@@ -62,53 +62,28 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        try {
+            lltemp.setOnClickListener(this)
+            llsteps.setOnClickListener(this)
+            llcal.setOnClickListener(this)
+            lldistance.setOnClickListener(this)
+            llheartrate.setOnClickListener(this)
+            llspo.setOnClickListener(this)
 
-        lltemp.setOnClickListener(this)
-        llsteps.setOnClickListener(this)
-        llcal.setOnClickListener(this)
-        lldistance.setOnClickListener(this)
-        llheartrate.setOnClickListener(this)
-        llspo.setOnClickListener(this)
-
-        swiperefresh_items.setOnRefreshListener(OnRefreshListener {
+            swiperefresh_items.setOnRefreshListener(OnRefreshListener {
 
 
-            connect()
+                connect()
 
-        })
-        refresh.setOnClickListener {
-            swiperefresh_items.setRefreshing(true);
-            connect()
-        }
+            })
+            refresh.setOnClickListener {
+                swiperefresh_items.setRefreshing(true);
+                connect()
+            }
 //        if(!BleConnector.isAvailable()) {
 //            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
 //
 //        }
-        try {
-            setHeartData()
-            setSPoData()
-            setDistanceData()
-            setStepsData()
-            setCaloriesData()
-            setTempData()
-        }catch (e : Exception){
-
-        }
-        if(COUGH == 1) {
-            cough.text = "Yes"
-            cough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
-        } else {
-            cough.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
-            cough.text = "NO"
-
-        }
-
-        connect()
-        welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
-    }
-
-    override fun onHiddenChanged(hidden: Boolean) {
-        if(!hidden) {
             try {
                 setHeartData()
                 setSPoData()
@@ -116,10 +91,10 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
                 setStepsData()
                 setCaloriesData()
                 setTempData()
-            }catch (e : Exception){
+            } catch (e: Exception) {
 
             }
-            if(COUGH == 1) {
+            if (COUGH == 1) {
                 cough.text = "Yes"
                 cough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
             } else {
@@ -127,6 +102,39 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
                 cough.text = "NO"
 
             }
+
+            connect()
+            welcome.text =
+                "Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
+        } catch (e:java.lang.Exception){
+
+        }
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        try {
+            if (!hidden) {
+                try {
+                    setHeartData()
+                    setSPoData()
+                    setDistanceData()
+                    setStepsData()
+                    setCaloriesData()
+                    setTempData()
+                } catch (e: Exception) {
+
+                }
+                if (COUGH == 1) {
+                    cough.text = "Yes"
+                    cough.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
+                } else {
+                    cough.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
+                    cough.text = "NO"
+
+                }
+
+            }
+        }catch (e:java.lang.Exception){
 
         }
     }
