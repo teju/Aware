@@ -150,6 +150,7 @@ open class BaseFragment : GenericFragment() {
             ArrayList()
         permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
         permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        permissions.add(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
         permissions.add(Manifest.permission.BLUETOOTH)
         checkPermissions(permissions, permissionListener)
 

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:Android="http://schemas.android.com/apk/distribution"
     package="com.watch.aware.app">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONSE" />
     <application
         android:name=".MyApplication"
         android:icon="@drawable/logo"
@@ -30,7 +32,12 @@
         </activity>
         <service android:name="com.yc.pedometer.update.DfuService"
             tools:ignore="Instantiatable" />
-
+        <service android:name="com.yc.pedometer.sdk.BluetoothLeService" android:enabled="true" android:theme="@style/AppTheme" />
+        <meta-data
+            android:name="YCAPPKEY"
+            tools:replace="android:value"
+            android:value="changed to your KEY,contact sdk developer to request the offer"/>
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
         <activity
             android:name="com.iapps.logs.com.pascalabs.util.log.activity.ActivityPascaLog"
             android:exported="true"

@@ -209,7 +209,9 @@ class ConnectionFragment : BaseFragment(),View.OnClickListener, DeviceScanInterf
                     device.getAddress(), rssi
                 )
                 if(!isDeviceExists(mBleDevices.address)) {
-                    arrayList.add(mBleDevices)
+                    if(mBleDevices.address.startsWith("78:02:B7")) {
+                        arrayList.add(mBleDevices)
+                    }
                 }
 
             }

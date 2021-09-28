@@ -1092,11 +1092,15 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                         + ",ambientTemperature =" + info.ambientTemperature
             )
             activity?.runOnUiThread {
-                TempInsert(info)
-                temp.text = String.format("%.1f", info.bodyTemperature)
-                Temp = String.format("%.1f", info.bodyTemperature).toDouble()
-                setTempData()
-                onConnected()
+                try {
+                    TempInsert(info)
+                    temp.text = String.format("%.1f", info.bodyTemperature)
+                    Temp = String.format("%.1f", info.bodyTemperature).toDouble()
+                    setTempData()
+                    onConnected()
+                }catch (e:Exception) {
+
+                }
             }
         }catch (e:Exception){
 

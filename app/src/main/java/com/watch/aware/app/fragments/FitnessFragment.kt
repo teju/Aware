@@ -84,11 +84,15 @@ class FitnessFragment : BaseFragment()  {
             mUpdates = Updates.getInstance(mContext)
             mWriteCommand?.syncAllStepData()
              activity?.runOnUiThread {
-                 val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
-                     .querySleepInfo(CalendarUtils.getCalendar(0))
-                 if (sleepTimeInfo != null) {
-                     sleep.text =  ""+sleepTimeInfo.sleepTotalTime/60
-                }
+                 try {
+                     val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
+                         .querySleepInfo(CalendarUtils.getCalendar(0))
+                     if (sleepTimeInfo != null) {
+                         sleep.text = "" + sleepTimeInfo.sleepTotalTime / 60
+                     }
+                 } catch (e:Exception){
+
+                 }
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
