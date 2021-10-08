@@ -26,7 +26,6 @@ import com.watch.aware.app.callback.PermissionListener
 import com.watch.aware.app.fragments.dialog.EditSleepDialogFragment
 import com.watch.aware.app.fragments.dialog.NotifyDialogFragment
 import com.watch.aware.app.helper.DataBaseHelper
-import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.Helper.isEmpty
 import com.watch.aware.app.models.BaseParams
 import com.watch.aware.app.models.Steps

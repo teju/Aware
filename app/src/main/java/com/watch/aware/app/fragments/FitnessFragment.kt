@@ -16,7 +16,6 @@ import com.yc.pedometer.update.Updates
 import com.yc.pedometer.utils.CalendarUtils
 import com.yc.pedometer.utils.LogUtils
 import kotlinx.android.synthetic.main.fragment_fitness.*
-import java.lang.Exception
 import java.util.*
 
 
@@ -90,7 +89,7 @@ class FitnessFragment : BaseFragment()  {
                      if (sleepTimeInfo != null) {
                          sleep.text = "" + sleepTimeInfo.sleepTotalTime / 60
                      }
-                 } catch (e:Exception){
+                 } catch (e: Exception){
 
                  }
             }
@@ -136,7 +135,15 @@ class FitnessFragment : BaseFragment()  {
                         0
                     );
                     setData(info)
-                } catch (e:Exception){
+
+                    val lmist = mySQLOperate!!.queryRunWalkAllDay()
+                    for(activity in lmist) {
+                        activity?.stepOneHourArrayInfo?.let {
+                            insertStepData(lmist)
+                        }
+                    }
+
+                } catch (e: Exception){
 
                 }
             }
