@@ -33,6 +33,7 @@ import com.watch.aware.app.helper.Constants.Companion.TIMEFORMAT
 import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.UserInfoManager
+import com.yc.pedometer.utils.SPUtil
 import kotlinx.android.synthetic.main.fragment_insight.*
 
 
@@ -81,9 +82,19 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
                 connect()
             }
 //        if(!BleConnector.isAvailable()) {
-//            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
+//
 //
 //        }
+            val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
+            if(connected) {
+                connection_status.setText(getString(R.string.connected))
+                connection_status.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.check_circle,
+                    0
+                );
+            }
             try {
                 setHeartData()
                 setSPoData()
@@ -149,9 +160,15 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     }
     fun setCaloriesData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("Where cal > 0 ORDER by rowid DESC LIMIT 1")
+        val tdate = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
+
+        val diatnceArray = db.getAllSteps("Where date is '"+tdate+"'")
         if(diatnceArray != null && diatnceArray.size != 0) {
-            calories.text = diatnceArray.get(0).total_cal.toString()
+            var total = 0.0
+            for(a in diatnceArray) {
+                total = total.toDouble() + a.cal.toDouble()
+            }
+            calories.text = String.format("%.3f", total)
 
             val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
             val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
@@ -177,9 +194,15 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
 
     fun setDistanceData() {
         val db = DataBaseHelper(activity!!)
-        val diatnceArray = db.getAllSteps("Where distance > 0.01 ORDER by rowid DESC LIMIT 1")
+        val tdate = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
+
+        val diatnceArray = db.getAllSteps("Where date is '"+tdate+"'")
         if(diatnceArray != null && diatnceArray.size != 0) {
-            distance.text = diatnceArray.get(0).total_dist.toString() +" km"
+            var avgsteps = 0.0
+            for(a in diatnceArray) {
+                avgsteps = avgsteps.toDouble() + a.distance.toDouble()
+            }
+            distance.text = String.format("%.3f", avgsteps)+" km"
 
             val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
             val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
@@ -204,10 +227,15 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     }
     fun setStepsData() {
         val db = DataBaseHelper(activity!!)
+        val tdate = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
         try {
-            val stepsArray = db.getAllSteps("Where stepsCount > 0 ORDER by rowid DESC LIMIT 1")
+            val stepsArray = db.getAllSteps("Where date is '"+tdate+"'")
             if (stepsArray != null && stepsArray.size != 0) {
-                stepsCount.text = stepsArray.get(0).total_count.toString()
+                var avgsteps = 0
+                for(a in stepsArray) {
+                    avgsteps = avgsteps.toInt() + a.stepCount.toInt()
+                }
+                stepsCount.text = avgsteps.toString()
 
                 val parsetime = BaseHelper.parseDate(stepsArray.get(0).time, Constants.TIME_JSON_HM)
                 val today_date = BaseHelper.parseDate(Date(), Constants.DATE_TIME)
@@ -310,6 +338,8 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     }
 
     fun setSPoData() {
+        spo_last_sync.text = "Current"
+        oxygen_level.text = "96 %"
         val db = DataBaseHelper(activity!!)
         val spoRates = db.getAllSpoRate("Where SpoRate != 0 ORDER BY Id DESC LIMIT 1")
         if(spoRates.size != 0) {
@@ -337,47 +367,6 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         }
     }
 
-
-    private fun getMonthlyEntries() {
-        data.clear()
-
-        data.add(ValueDataEntry("Jan", isValideDataWeekMonthly(1)))
-        data.add(ValueDataEntry("Feb",  isValideDataWeekMonthly(2)))
-        data.add(ValueDataEntry("Mar",  isValideDataWeekMonthly(3)))
-        data.add(ValueDataEntry("Apr",  isValideDataWeekMonthly(4)))
-        data.add(ValueDataEntry("May",  isValideDataWeekMonthly(5)))
-        data.add(ValueDataEntry("June",  isValideDataWeekMonthly(6)))
-        data.add(ValueDataEntry("July", isValideDataWeekMonthly(7)))
-        data.add(ValueDataEntry("Aug",  isValideDataWeekMonthly(8)))
-        data.add(ValueDataEntry("Sept", isValideDataWeekMonthly(9)))
-        data.add(ValueDataEntry("Oct",  isValideDataWeekMonthly(10)))
-        data.add(ValueDataEntry("Nov",  isValideDataWeekMonthly(11)))
-        data.add(ValueDataEntry("Dex",  isValideDataWeekMonthly(12)))
-
-
-    }
-
-    fun isValideDataWeekMonthly(day : Int) :Int {
-
-        val dataBaseHelper = DataBaseHelper(activity!!)
-        var stepsCnt = 0
-        val dteps = dataBaseHelper.getAllStepsMonthly(day)
-        for (steps in dteps ) {
-            when(type) {
-                "dist" -> {
-                    stepsCnt = stepsCnt + steps.distance.toInt()
-                }
-                "steps" -> {
-                    stepsCnt = stepsCnt + steps.total_count.toInt()
-
-                }
-                "cal" -> {
-                    stepsCnt = stepsCnt + steps.cal.toInt()
-                }
-            }
-        }
-        return  stepsCnt
-    }
 
     override fun onClick(v: View?) {
         when(v?.id){

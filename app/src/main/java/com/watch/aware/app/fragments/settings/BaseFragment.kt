@@ -30,7 +30,7 @@ import com.watch.aware.app.helper.Helper.isEmpty
 import com.watch.aware.app.models.BaseParams
 import com.watch.aware.app.models.Steps
 import com.watch.aware.app.webservices.PostSaveDeviceDataViewModel
-import com.yc.pedometer.info.StepOneDayAllInfo
+import com.yc.pedometer.info.StepOneHourInfo
 import com.yc.pedometer.info.TemperatureInfo
 import com.yc.pedometer.sdk.*
 import com.yc.pedometer.update.Updates
@@ -386,69 +386,31 @@ open class BaseFragment : GenericFragment() {
 
     }
 
-    fun insertStepData(activities: MutableList<StepOneDayAllInfo>) {
+    fun insertStepData(activities: java.util.ArrayList<StepOneHourInfo>, calendar: String) {
         try {
             val dataBaseHelper = DataBaseHelper(activity)
             for (activity in activities) {
-                val startDate = BaseHelper.parseDate(activity.calendar, WATCHDate)
-                val startTime = Date()
-                var lastHRSteps = lastHRSteps(BaseHelper.parseDate(startTime, TIME_JSON_HM))
-                if (lastHRSteps != null && lastHRSteps.size != 0) {
-                    val lasthrdist = lastHRSteps.get(0).total_dist.trim().toDouble()
-                    val dist: Double = activity.distance - lasthrdist
-                    val cal: Double = activity.calories.toDouble() - lastHRSteps.get(0).total_cal.toDouble()
-                    val steps = (activity.step - lastHRSteps.get(0).total_count.toInt())
-                    if (steps < 0) {
-                        return
-                    }
+                val startDate = BaseHelper.parseDate(calendar, WATCHDate)
+                val dist = (activity.step.toDouble() / 1320.0).toFloat()
+                val cal =(activity.step.toDouble() / 40.0).toFloat()
+                val mtime = (activity.time.toDouble() / 60.0).toString()
+                val startTime = BaseHelper.parseDate(mtime, TIME_JSON_HM)
+                if(!isTimeInserted( BaseHelper.parseDate(startTime, TIME_JSON_HM))) {
                     dataBaseHelper.stepsInsert(
                         dataBaseHelper,
-                        steps.toString(),
-                        BaseHelper.parseDate(startDate, DATE_JSON),
+                        activity.step.toString(),
+                        BaseHelper.parseDate(startDate, Constants.DATE_JSON),
                         String.format("%.3f", dist),
-                        String.format("%.2f", cal.toInt()),
-                        BaseHelper.parseDate(startTime, TIME_JSON_HM),
-                        activity.step,
-                        String.format("%.3f", activity.distance).toDouble(),
-                        String.format("%.2f", activity.calories).toDouble(),
-                        " time : " + startTime +
-                                "\ntotal_count: " + activity.step +
-                                "\nlastHRSteps : " + lastHRSteps.get(0).total_count.toInt() +
-                                "\nSubtract : " + ((activity.step - lastHRSteps.get(0).total_count.toInt()))
+                        String.format("%.2f", cal).toString(),
+                        BaseHelper.parseDate(startTime, TIME_JSON_HM)
                     )
-
-
                 } else {
-                    if (lastHRSteps != null) {
-                        val mDist = activity.distance
-                        dataBaseHelper.stepsInsert(
-                            dataBaseHelper,
-                            activity.step.toString(),
-                            BaseHelper.parseDate(startDate, Constants.DATE_JSON),
-                            String.format("%.3f", mDist),
-                            String.format("%.2f", activity.calories).toString(),
-                            BaseHelper.parseDate(startTime, TIME_JSON_HM),
-                            activity.step,
-                            String.format("%.3f", mDist).toDouble(),
-                            String.format("%.2f", activity.calories).toDouble(),
-                            " time : " + BaseHelper.parseDate(startTime, TIME_JSON_HM)
-                                    + "\ntotal_count: " + activity.step + "\nmStep : " +
-                                    "" + activity.distance
-                        )
-
-                    }
+                    dataBaseHelper.update(activity.step.toString(), BaseHelper.parseDate(startTime, TIME_JSON_HM),BaseHelper.parseDate(startDate, Constants.DATE_JSON))
                 }
             }
         } catch (e:Exception){
-
+            e.toString()
         }
-    }
-
-    fun lastHRSteps(mTime: String): List<Steps>? {
-        val dataBaseHelper = DataBaseHelper(activity)
-        val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                "AND total_count != 0  ORDER BY time DESC")
-        return dteps
     }
 
     fun lastestHRSteps(): List<Steps>? {
@@ -456,6 +418,17 @@ open class BaseFragment : GenericFragment() {
         val dteps = dataBaseHelper.getAllSteps("WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
                 " AND stepsCount != 0 ORDER BY total_count DESC LIMIT 1")
         return dteps
+    }
+    fun isTimeInserted(time : String): Boolean {
+        val dataBaseHelper = DataBaseHelper(activity)
+        val dteps = dataBaseHelper.getAllSteps(
+            "WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
+                " AND time is '"+time+"'")
+        if(dteps.size > 0) {
+            return true
+        } else {
+            return false
+        }
     }
 
     fun setSaveDeviceDataAPIObserver() {

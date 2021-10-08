@@ -108,19 +108,24 @@ class WeeklyData {
 
         val dataBaseHelper =
             DataBaseHelper(activity!!)
-        var stepsCnt = 0
+        var stepsCnt = 0f
         val dteps = dataBaseHelper.getAllStepsWeekly(day,BaseHelper.parseDate(Date(),Constants.DATE_MM).toInt())
         if(dteps!= null && dteps.size > 0) {
-
             when (type) {
                 "dist" -> {
-                    return dteps.get(0).total_dist.toFloat()
+                    for(steps in dteps){
+                        stepsCnt = stepsCnt + steps.distance.toFloat()
+                    }
                 }
                 "Steps" -> {
-                    stepsCnt = stepsCnt + dteps.get(0).total_count.toInt()
+                    for(steps in dteps){
+                        stepsCnt = stepsCnt + steps.stepCount.toInt()
+                    }
                 }
                 "cal" -> {
-                    stepsCnt = stepsCnt + dteps.get(0).total_cal.toInt()
+                    for(steps in dteps){
+                        stepsCnt = stepsCnt + steps.cal.toFloat()
+                    }
                 }
             }
         }

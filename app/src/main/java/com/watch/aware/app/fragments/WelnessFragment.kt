@@ -149,6 +149,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             setTempData()
             setSPoData()
             setHeartData()
+            val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
 
             info_txt.text = "Please wait ..."
         } catch (e:Exception){
@@ -486,6 +487,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                             }
                         }).start()
                         CURRENT_STATUS = CONNECTED
+
                         onConnected()
                     }
                     GlobalVariable.UPDATE_BLE_PROGRESS_MSG -> {

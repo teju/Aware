@@ -15,6 +15,7 @@ import com.yc.pedometer.sdk.*
 import com.yc.pedometer.update.Updates
 import com.yc.pedometer.utils.CalendarUtils
 import com.yc.pedometer.utils.LogUtils
+import com.yc.pedometer.utils.SPUtil
 import kotlinx.android.synthetic.main.fragment_fitness.*
 import java.util.*
 
@@ -73,7 +74,16 @@ class FitnessFragment : BaseFragment()  {
                 fitness_human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
             }
            // setData(info)
-
+            val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
+            if(connected) {
+                connection_status.setText(getString(R.string.connected))
+                connection_status.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.check_circle,
+                    0
+                );
+            }
             mySQLOperate = UTESQLOperate.getInstance(activity) //
             mDataProcessing = DataProcessing.getInstance(mContext)
             mDataProcessing?.setOnStepChangeListener(mOnStepChangeListener)
@@ -139,7 +149,7 @@ class FitnessFragment : BaseFragment()  {
                     val lmist = mySQLOperate!!.queryRunWalkAllDay()
                     for(activity in lmist) {
                         activity?.stepOneHourArrayInfo?.let {
-                            insertStepData(lmist)
+                            insertStepData(activity.stepOneHourArrayInfo,activity.calendar)
                         }
                     }
 

@@ -151,7 +151,7 @@ class DailyData {
                     }
                     "cal" -> {
                         for (step in dteps){
-                            stepsCnt = stepsCnt + step.cal.toInt()
+                            stepsCnt = stepsCnt + step.cal.toDouble()
                         }
                     }
                     "dist" -> {
@@ -225,5 +225,4 @@ class DailyData {
         }
         return  stepsCnt.toFloat()
     }
-
 }

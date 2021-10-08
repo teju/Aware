@@ -79,32 +79,5 @@ public class Steps {
 
     String time;
 
-    public String getTotal_count() {
-        return total_count;
-    }
 
-    public void setTotal_count(String total_count) {
-        this.total_count = total_count;
-    }
-
-    String total_count;
-    String total_cal;
-
-    public String getTotal_cal() {
-        return total_cal;
-    }
-
-    public void setTotal_cal(String total_cal) {
-        this.total_cal = total_cal;
-    }
-
-    public String getTotal_dist() {
-        return total_dist;
-    }
-
-    public void setTotal_dist(String total_dist) {
-        this.total_dist = total_dist;
-    }
-
-    String total_dist;
 }

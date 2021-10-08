@@ -30,6 +30,8 @@ import com.watch.aware.app.helper.Helper
 import com.watch.aware.app.helper.MyMarkerView
 import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.DailyData
+import com.yc.pedometer.sdk.UTESQLOperate
+import com.yc.pedometer.utils.SPUtil
 import kotlinx.android.synthetic.main.fragment_goal_progress.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -39,73 +41,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
     var xAxisValues: List<String> = ArrayList()
     var values: MutableList<Entry> = ArrayList()
-/*
-    private val mBleHandleCallback by lazy {
-        object : BleHandleCallback {
 
-            override fun onDeviceConnected(_device: BluetoothDevice) {
-                try {
-                    renderData()
-                } catch (e : Exception) {
-
-                }
-            }
-            override fun onIdentityCreate(status: Boolean, deviceInfo: BleDeviceInfo?) {
-                try {
-                    renderData()
-                } catch (e : Exception) {
-                }
-            }
-
-
-            override fun onReadBloodOxygen(bloodOxygen: List<BleBloodOxygen>) {
-                super.onReadBloodOxygen(bloodOxygen)
-                try {
-                    SpoRateInsert(bloodOxygen)
-                } catch (e:java.lang.Exception){
-
-                }
-            }
-
-
-
-
-            override fun onReadActivity(activities: List<BleActivity>) {
-                super.onReadActivity(activities)
-                try {
-//                    last_synced.text  = BaseHelper.parseDate(Date(),
-//                        com.watch.aware.app.helper.Constants.TIMEFORMAT
-//                    )
-//                    var totalVal :Double = 0.0
-//                    var appendText = ""
-//                    if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
-//                        totalVal = (activities.get(0).mStep).toDouble()
-//                        appendText = "of steps taken"
-//                    } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
-//                        totalVal = (activities.get(0).mCalorie/10000).toDouble()
-//                        appendText = "of calories burnt"
-//                    } else {
-//                        val mDistance = (activities.get(0).mDistance/10000).toDouble()
-//                        totalVal = (mDistance/1000).toDouble()
-//                        appendText = "of distance travelled"
-//                    }
-//
-//                    val res = totalVal / UserInfoManager.getInstance(activity!!).getGoalValue() * 100
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                        progressBar.progress = res.toFloat()
-//                    }
-//                    step_count.text = ""+ String.format("%.2f",res) + "%\n"+appendText
-//                    average_steps.text = (activities.get(0).mStep/(BaseHelper.parseDate(Date(),Constants.TIME_hA).toInt())).toString()
-//
-                    setData()
-                } catch (e:java.lang.Exception){
-                }
-                renderData()
-               // insertStepData(stactivities)
-            }
-        }
-    }
-*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,18 +57,23 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
 
         try {
             val activities = dataBaseHelper.getAllSteps("WHERE  " +
-                    "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER BY time DESC")
+                    "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"')")
             var totalVal :Double = 0.0
             var appendText = ""
             if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
-                totalVal = (activities.get(0).total_count).toDouble()
+                for(a in activities ) {
+                    totalVal = totalVal + (a.stepCount).toDouble()
+                }
                 appendText = "of steps taken"
             } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
-                totalVal = (activities.get(0).total_cal.toDouble()).toDouble()
+                for(a in activities ) {
+                    totalVal = totalVal + (a.cal).toDouble()
+                }
                 appendText = "of calories burnt"
             } else {
-                val mDistance = (activities.get(0).total_dist.toDouble()).toDouble()
-                totalVal = (mDistance).toDouble()
+                for(a in activities ) {
+                    totalVal = totalVal + (a.distance).toDouble()
+                }
                 appendText = "of distance travelled"
             }
 
@@ -147,7 +88,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         }
         try {
             val activities = dataBaseHelper.getAllSteps("WHERE  " +
-                    "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') AND stepsCount != 0 ORDER BY time DESC")
+                    "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER by time DESC")
             if(activities !=null && activities.size != 0) {
                 val lastSync = BaseHelper.parseDate(activities.get(0).time, Constants.TIME_JSON_HM)
                 last_synced.text =
@@ -164,9 +105,11 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
             last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
         }
+        renderData()
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         try {
             if (UserInfoManager.getInstance(activity!!)
                     .getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT
@@ -246,10 +189,26 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
 
         }*/
-
+            val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
+            if(connected) {
+                connection_status.setText(getString(R.string.connected))
+                connection_status.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.check_circle,
+                    0
+                );
+            }
+            mySQLOperate = UTESQLOperate.getInstance(activity) //
+            val lmist = mySQLOperate!!.queryRunWalkAllDay()
+            for(activity in lmist) {
+                activity?.stepOneHourArrayInfo?.let {
+                    insertStepData(activity.stepOneHourArrayInfo,activity.calendar)
+                }
+            }
             setData()
         }catch (e:java.lang.Exception){
-
+            e.toString()
         }
 
     }
@@ -276,21 +235,32 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
         try {
 
             val dteps = dataBaseHelper.getAllSteps(
-                "WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') " +
-                        "AND total_count != 0 ORDER by total_count DESC LIMIT 1")
+                "WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') ORDER by time DESC" )
             if (dteps != null && dteps.size > 0) {
                 val lasthr = Helper.convertStringToDate(TIME_JSON_HM, dteps.get(0).time)
                 last_active_hr.text = BaseHelper.parseDate(lasthr, com.watch.aware.app.helper.Constants.TIMEFORMAT)
                 if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
-                    val avg_steps = (dteps.get(0).total_count.toInt() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toInt()))
+                    var avgsteps = 0
+                    for(a in dteps) {
+                        avgsteps = avgsteps.toInt() + a.stepCount.toInt()
+                    }
+                    val avg_steps = (avgsteps.toInt() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toInt()))
                     average_steps.text = avg_steps.toString()
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"stepsCount").toString()
                 } else if(UserInfoManager.getInstance(activity!!).getGoalType() == CAL_GOAL) {
-                    val avg_steps = (dteps.get(0).total_cal.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
+                    var avgsteps = 0.0
+                    for(a in dteps) {
+                        avgsteps = avgsteps.toDouble() + a.cal.toDouble()
+                    }
+                    val avg_steps = (avgsteps.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
                     average_steps.text =String.format("%.2f",avg_steps)
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"cal").toString()
                 } else {
-                    val avg_steps = (dteps.get(0).total_dist.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
+                    var avgsteps = 0.0
+                    for(a in dteps) {
+                        avgsteps = avgsteps.toDouble() + a.distance.toDouble()
+                    }
+                    val avg_steps = (avgsteps.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
                     average_steps.text =String.format("%.3f",avg_steps)
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
                 }

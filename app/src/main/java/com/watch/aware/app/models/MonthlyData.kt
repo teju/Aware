@@ -144,7 +144,7 @@ class MonthlyData {
                 }
                 "cal" -> {
                     for(steps in dteps) {
-                        stepsCnt = stepsCnt + steps.cal.toInt()
+                        stepsCnt = stepsCnt + steps.cal.toFloat()
                     }
                 }
             }
