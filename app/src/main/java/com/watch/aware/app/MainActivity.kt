@@ -131,29 +131,18 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    fun backToMainScreen() {
-        try {
-            clearFragment()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        try {
-            setFragment(MainTabFragment())
-        } catch (e: Exception) {
-        }
-    }
 
     override fun onBackPressed() {
-        val f =
-            supportFragmentManager.beginTransaction()
         val list =
             supportFragmentManager.fragments
         var foundVisible = false
         for (i in list.indices) {
             if (list[i].isVisible) {
                 if (list[i] is BaseFragment) {
+                    if(!foundVisible) {
+                        (list[i] as BaseFragment).onBackTriggered()
+                    }
                     foundVisible = true
-                    (list[i] as BaseFragment).onBackTriggered()
                 }
             }
         }
@@ -173,6 +162,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } catch (e: Exception) {
+            e.printStackTrace()
         }
         if (supportFragmentManager.backStackEntryCount <= 1
             || currentFragment is MainTabFragment
@@ -278,7 +268,7 @@ class MainActivity : AppCompatActivity() {
 
 
     fun exitApp() {
-        clearFragment()
+       clearFragment()
         finish()
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
