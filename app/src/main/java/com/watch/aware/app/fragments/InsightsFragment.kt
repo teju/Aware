@@ -162,13 +162,9 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         val db = DataBaseHelper(activity!!)
         val tdate = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
 
-        val diatnceArray = db.getAllSteps("Where date is '"+tdate+"'")
+        val diatnceArray = lastestHRSteps()
         if(diatnceArray != null && diatnceArray.size != 0) {
-            var total = 0.0
-            for(a in diatnceArray) {
-                total = total.toDouble() + a.cal.toDouble()
-            }
-            calories.text = String.format("%.3f", total)
+            calories.text = String.format("%.3f", diatnceArray.get(0).total_cal.toFloat())
 
             val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
             val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
@@ -196,13 +192,10 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         val db = DataBaseHelper(activity!!)
         val tdate = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
 
-        val diatnceArray = db.getAllSteps("Where date is '"+tdate+"'")
+        val diatnceArray = lastestHRSteps()
         if(diatnceArray != null && diatnceArray.size != 0) {
-            var avgsteps = 0.0
-            for(a in diatnceArray) {
-                avgsteps = avgsteps.toDouble() + a.distance.toDouble()
-            }
-            distance.text = String.format("%.3f", avgsteps)+" km"
+
+            distance.text = String.format("%.3f", diatnceArray.get(0).total_dist.toFloat())+" km"
 
             val parsetime = BaseHelper.parseDate(diatnceArray.get(0).time,Constants.TIME_JSON_HM)
             val today_date = BaseHelper.parseDate(Date(),Constants.DATE_TIME)
@@ -229,13 +222,10 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         val db = DataBaseHelper(activity!!)
         val tdate = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
         try {
-            val stepsArray = db.getAllSteps("Where date is '"+tdate+"'")
+            val stepsArray = lastestHRSteps()
             if (stepsArray != null && stepsArray.size != 0) {
-                var avgsteps = 0
-                for(a in stepsArray) {
-                    avgsteps = avgsteps.toInt() + a.stepCount.toInt()
-                }
-                stepsCount.text = avgsteps.toString()
+
+                stepsCount.text = stepsArray.get(0).total_steps.toString()
 
                 val parsetime = BaseHelper.parseDate(stepsArray.get(0).time, Constants.TIME_JSON_HM)
                 val today_date = BaseHelper.parseDate(Date(), Constants.DATE_TIME)
@@ -286,7 +276,7 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
 
     fun setHeartData() {
         val db = DataBaseHelper(activity!!)
-        val heartRates = db.getAllHeartRate("Where heartRate != 0 ORDER by Id DESC LIMIT 1")
+        val heartRates = db.getAllHeartRate(" ORDER BY date DESC,time DESC")
         if(heartRates.size != 0) {
             heart_rate.text = heartRates.get(0).heartRate.toString() +" bpm"
             com.watch.aware.app.helper.Constants.HR = heartRates.get(0).heartRate.toInt()
@@ -312,7 +302,7 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
     }
     fun setTempData() {
         val db = DataBaseHelper(activity!!)
-        val tempRates = db.getAllTemp("Where TempRate != 0 ORDER by Id DESC LIMIT 1")
+        val tempRates = db.getAllTemp(" ORDER BY date DESC,time DESC")
         if(tempRates.size != 0) {
             temp.text = String.format("%.1f",tempRates.get(0).tempRate)+" C"
             com.watch.aware.app.helper.Constants.Temp = tempRates.get(0).tempRate.toDouble()

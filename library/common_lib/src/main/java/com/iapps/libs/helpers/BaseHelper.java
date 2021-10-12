@@ -799,8 +799,7 @@ public class BaseHelper {
 	}
 
 	public static String formatDouble(double d) {
-		DecimalFormat formatter = new DecimalFormat("#,###.##");
-		d = Math.round(d);
+		DecimalFormat formatter = new DecimalFormat("##.##");
 		return formatter.format(d);
 	}
 

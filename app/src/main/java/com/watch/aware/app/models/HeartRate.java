@@ -12,15 +12,6 @@ public class HeartRate {
     int  heartRate = 0;
     String date = "0";
 
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    String ID = "0";
 
 
     public String getDate() {

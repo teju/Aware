@@ -57,11 +57,7 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
         today_date.text = todayDate
         val stepsArray = lastestHRSteps()
         if(stepsArray!= null && stepsArray?.size != 0) {
-            var avgsteps = 0
-            for(a in stepsArray) {
-                avgsteps = avgsteps.toInt() + a.stepCount.toInt()
-            }
-            stepsCount.text = avgsteps.toString()
+            stepsCount.text = stepsArray.get(0).total_steps.toString()
         }
         setXaxisData(DAILY)
     }

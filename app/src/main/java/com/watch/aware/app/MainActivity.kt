@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             triggerMainProcess()
         }, 2 * 2000.toLong())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            BaseHelper.triggerNotifLog(this)
+            //BaseHelper.triggerNotifLog(this)
         };
         DebugDB.getAddressLog();
 

@@ -109,7 +109,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        welcome.text ="Welcome back, " + UserInfoManager.getInstance(activity!!).getAccountName()
         try {
             if (UserInfoManager.getInstance(activity!!)
                     .getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT
@@ -203,7 +203,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             val lmist = mySQLOperate!!.queryRunWalkAllDay()
             for(activity in lmist) {
                 activity?.stepOneHourArrayInfo?.let {
-                    insertStepData(activity.stepOneHourArrayInfo,activity.calendar)
+                    insertStepData(activity.stepOneHourArrayInfo,activity.calendar,activity.step.toString(),String.format("%.2f", activity.calories),String.format("%.2f", activity.distance))
                 }
             }
             setData()

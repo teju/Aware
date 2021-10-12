@@ -13,16 +13,6 @@ public class TempRate {
 
     Double TempRate = 0.0;
 
-    public String getID() {
-        return ID;
-    }
-
-    public void setID(String ID) {
-        this.ID = ID;
-    }
-
-    String ID = "0";
-
 
 
     public String getDate() {

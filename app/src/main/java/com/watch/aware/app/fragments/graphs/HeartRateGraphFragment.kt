@@ -55,7 +55,7 @@ class HeartRateGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValu
         val todayDate = BaseHelper.parseDate(Date(), Constants.DATE_MONTH)
         today_date.text = todayDate
         val db = DataBaseHelper(activity!!)
-        val stepsArray = db.getAllHeartRate("Where heartRate != 0  ORDER by Id DESC")
+        val stepsArray = db.getAllHeartRate(" ORDER by time DESC, date Desc")
         if(stepsArray!= null && stepsArray?.size != 0) {
             stepsCount.text = stepsArray.get(0).heartRate.toString()
         }

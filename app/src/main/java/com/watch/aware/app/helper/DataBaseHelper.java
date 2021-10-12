@@ -18,17 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
-    private static  int database_version  = 16;
+    private static  int database_version  = 23;
     private final Context context;
     public String Steps = "CREATE TABLE StepsCount (stepsCount TEXT ," +
-            "distance TEXT ,cal TEXT,date DATE,time TEXT , PRIMARY KEY (time,date))";
+            "distance TEXT ,cal TEXT,date DATE,time TEXT , total_steps TEXT , total_cal TEXT , total_dist TEXT, " +
+            "PRIMARY KEY (time,date))";
 
-    public String HeartRate = "CREATE TABLE HeartRate (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "heartRate int ,date DATE,time TEXT UNIQUE)";
+    public String HeartRate = "CREATE TABLE HeartRate (heartRate int ,date DATE,time double ,PRIMARY KEY (time,heartRate))";
     public String SpoRate = "CREATE TABLE SpoRate (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
             "SpoRate int ,date DATE,time decimal UNIQUE)";
-    public String TempRate = "CREATE TABLE TempRate (Id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "TempRate decimal ,date DATE,time decimal UNIQUE)";
+    public String TempRate = "CREATE TABLE TempRate (TempRate decimal ,date DATE,time decimal,  PRIMARY KEY (time,TempRate))";
 
     private static final String DELETE_STEPS = "DROP TABLE IF EXISTS StepsCount" ;
     private static final String DELETE_HeartRate = "DROP TABLE IF EXISTS HeartRate" ;
@@ -63,13 +62,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         try {
             SQLiteDatabase sq = dbh.getWritableDatabase();
             ContentValues cv = new ContentValues();
-            System.out.println("DataBaseHelper123 heartRateInsert " + heartRate + " time " + time);
+            System.out.println("DataBaseHelper123 heartRateInsert " + heartRate + " time " + time+" date "+date);
             cv.put("heartRate", heartRate);
             cv.put("date", date);
             cv.put("time", time);
             sq.insert("HeartRate", null, cv);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
         return true;
     }
@@ -99,7 +98,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             cv.put("time", time);
             sq.insert("TempRate", null, cv);
         } catch (Exception e){
-
+            e.printStackTrace();
         }
         return true;
 
@@ -107,18 +106,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     public boolean stepsInsert(DataBaseHelper dbh, String stepsCount, String date,String distance,
-                               String cal,String time){
+                               String cal,String time,String total_steps,String total_cal,String total_dist){
         if(!BaseHelper.isEmpty(time)) {
             try {
                 SQLiteDatabase sq = dbh.getWritableDatabase();
                 ContentValues cv = new ContentValues();
-                System.out.println("DataBaseHelper123 stepsInsert " + stepsCount + " time " + time+ " date "+date);
+                System.out.println("DataBaseHelper123 stepsInsert "
+                        + stepsCount + " time " + time+ " date "+date +" total "+total_steps);
 
                 cv.put("stepsCount", stepsCount);
                 cv.put("date", date);
                 cv.put("distance", distance);
                 cv.put("cal", cal);
                 cv.put("time", time);
+                cv.put("total_steps", total_steps);
+                cv.put("total_dist", total_dist);
+                cv.put("total_cal", total_cal);
                 sq.insert("StepsCount", null, cv);
             } catch (Exception e) {
                 e.toString();
@@ -133,7 +136,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         List<Steps> dataListList = new ArrayList<Steps>();
         try {
 
-            String selectQuery = "SELECT rowid, stepsCount,distance,cal,date,time FROM StepsCount " + where;
+            String selectQuery = "SELECT * FROM StepsCount " + where;
 
             SQLiteDatabase db = this.getWritableDatabase();
 
@@ -142,12 +145,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     Steps steps = new Steps();
-                    steps.setID(cursor.getString(0));
-                    steps.setStepCount(cursor.getString(1));
-                    steps.setDistance(cursor.getString(2));
-                    steps.setCal(cursor.getString(3));
-                    steps.setDate(cursor.getString(4));
-                    steps.setTime(cursor.getString(5));
+                    steps.setStepCount(cursor.getString(0));
+                    steps.setDistance(cursor.getString(1));
+                    steps.setCal(cursor.getString(2));
+                    steps.setDate(cursor.getString(3));
+                    steps.setTime(cursor.getString(4));
+                    steps.setTotal_steps(cursor.getString(5));
+                    steps.setTotal_cal(cursor.getString(6));
+                    steps.setTotal_dist(cursor.getString(7));
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
@@ -191,13 +196,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     HeartRate steps = new HeartRate();
-                    steps.setID(cursor.getString(0));
-                    steps.setHeartRate(cursor.getInt(1));
-                    steps.setDate(cursor.getString(2));
-                    steps.setTime(cursor.getString(3));
+                    steps.setHeartRate(cursor.getInt(0));
+                    steps.setDate(cursor.getString(1));
+                    steps.setTime(cursor.getString(2));
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
+            System.out.println("DataBaseHelper123 getAllHeartRate " + selectQuery);
+
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -241,10 +247,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     com.watch.aware.app.models.TempRate steps = new TempRate();
-                    steps.setID(cursor.getString(0));
-                    steps.setTempRate(cursor.getDouble(1));
-                    steps.setDate(cursor.getString(2));
-                    steps.setTime(cursor.getString(3));
+                    steps.setTempRate(cursor.getDouble(0));
+                    steps.setDate(cursor.getString(1));
+                    steps.setTime(cursor.getString(2));
                     dataListList.add(steps);
                 } while (cursor.moveToNext());
             }
@@ -267,12 +272,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Steps steps = new Steps();
-                steps.setID(cursor.getString(0));
-                steps.setStepCount(cursor.getString(1));
-                steps.setDistance(cursor.getString(2));
-                steps.setCal(cursor.getString(3));
-                steps.setDate(cursor.getString(4));
-                steps.setTime(cursor.getString(5));
+                steps.setStepCount(cursor.getString(0));
+                steps.setDistance(cursor.getString(1));
+                steps.setCal(cursor.getString(2));
+                steps.setDate(cursor.getString(3));
+                steps.setTime(cursor.getString(4));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
@@ -296,10 +300,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 HeartRate steps = new HeartRate();
-                steps.setID(cursor.getString(0));
-                steps.setHeartRate(cursor.getInt(1));
-                steps.setDate(cursor.getString(2));
-                steps.setTime(cursor.getString(3));
+                steps.setHeartRate(cursor.getInt(0));
+                steps.setDate(cursor.getString(1));
+                steps.setTime(cursor.getString(2));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
@@ -346,10 +349,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 TempRate steps = new TempRate();
-                steps.setID(cursor.getString(0));
-                steps.setTempRate(cursor.getDouble(1));
-                steps.setDate(cursor.getString(2));
-                steps.setTime(cursor.getString(3));
+                steps.setTempRate(cursor.getDouble(0));
+                steps.setDate(cursor.getString(1));
+                steps.setTime(cursor.getString(2));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
@@ -371,12 +373,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Steps steps = new Steps();
-                steps.setID(cursor.getString(0));
-                steps.setStepCount(cursor.getString(1));
-                steps.setDistance(cursor.getString(2));
-                steps.setCal(cursor.getString(3));
-                steps.setDate(cursor.getString(4));
-                steps.setTime(cursor.getString(5));
+                steps.setStepCount(cursor.getString(0));
+                steps.setDistance(cursor.getString(1));
+                steps.setCal(cursor.getString(2));
+                steps.setDate(cursor.getString(3));
+                steps.setTime(cursor.getString(4));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
@@ -399,10 +400,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 HeartRate steps = new HeartRate();
-                steps.setID(cursor.getString(0));
-                steps.setHeartRate(cursor.getInt(1));
-                steps.setDate(cursor.getString(2));
-                steps.setTime(cursor.getString(3));
+                steps.setHeartRate(cursor.getInt(0));
+                steps.setDate(cursor.getString(1));
+                steps.setTime(cursor.getString(2));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
@@ -446,33 +446,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 TempRate steps = new TempRate();
-                steps.setID(cursor.getString(0));
-                steps.setTempRate(cursor.getDouble(1));
-                steps.setDate(cursor.getString(2));
-                steps.setTime(cursor.getString(3));
+                steps.setTempRate(cursor.getDouble(0));
+                    steps.setDate(cursor.getString(1));
+                steps.setTime(cursor.getString(2));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
         return dataListList;
     }
-
-    public void deleteSteps (String ID) {
+    public void deleteSteps (String time,String date) {
         SQLiteDatabase database = this.getWritableDatabase();
-        String where = "";
-        if(ID.length() != 0) {
-            where = " where stepsCount = "+ID+"";
-        }
+        String where = " where time = '"+time+"' AND date = '"+date+"'";
         String deleteQuery = "Delete from StepsCount"+where;
         System.out.println("DataBaseHelper123 deleteQuery " + deleteQuery);
-
         database.execSQL(deleteQuery);
     }
 
-    public boolean update(String s,String time,String date) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        db.execSQL("UPDATE StepsCount SET stepsCount = "+s+" where time = '"+time+"' AND date = '"+date+"'" );
+    public boolean update(String s,String time,String date,DataBaseHelper dbh,
+                          String total_steps,String total_cal,String total_dist) {
+        SQLiteDatabase db = dbh.getWritableDatabase();
         System.out.println("DataBaseHelper123 update date " + date+" time "+time+" s "+s);
-
+        db.execSQL("UPDATE StepsCount SET stepsCount = "+s+" total_steps = "+total_steps+
+                " total_cal = " +total_cal+" total_dist = "+total_dist+" where time = '"+time+"' AND date = '"+date+"'" );
         return true;
     }
 }

@@ -57,11 +57,8 @@ class DistanceGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
         today_date.text = todayDate
         val stepsArray = lastestHRSteps()
         if(stepsArray!= null && stepsArray?.size != 0) {
-            var avgsteps = 0.0
-            for(a in stepsArray) {
-                avgsteps = avgsteps.toDouble() + a.distance.toDouble()
-            }
-            cal_count.text = avgsteps.toString()
+
+            cal_count.text = stepsArray.get(0).total_dist.toString()
         }
         setXaxisData(DAILY)
     }

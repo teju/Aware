@@ -1,7 +1,6 @@
 package com.watch.aware.app.models;
 
 public class Steps {
-    String ID;
     String stepCount = "0";
     String distance;
 
@@ -43,13 +42,8 @@ public class Steps {
 
     String cal;
 
-    public String getID() {
-        return ID;
-    }
 
-    public void setID(String ID) {
-        this.ID = ID;
-    }
+
 
     public String getStepCount() {
         return stepCount;
@@ -78,6 +72,34 @@ public class Steps {
     }
 
     String time;
+    String total_steps;
+    String total_cal;
+
+    public String getTotal_steps() {
+        return total_steps;
+    }
+
+    public void setTotal_steps(String total_steps) {
+        this.total_steps = total_steps;
+    }
+
+    public String getTotal_cal() {
+        return total_cal;
+    }
+
+    public void setTotal_cal(String total_cal) {
+        this.total_cal = total_cal;
+    }
+
+    public String getTotal_dist() {
+        return total_dist;
+    }
+
+    public void setTotal_dist(String total_dist) {
+        this.total_dist = total_dist;
+    }
+
+    String total_dist;
 
 
 }

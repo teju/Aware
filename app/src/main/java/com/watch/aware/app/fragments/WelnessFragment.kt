@@ -95,11 +95,14 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             } else {
                 human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
             }
-            swiperefresh_items.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {})
+            swiperefresh_items.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+                onConnected()
+            })
 
 
             refresh.setOnClickListener {
                 mWriteCommand?.syncAllSleepData()
+
             }
             // cyyonkm2kip25hvyvq34p7775d6yxxwwjbrsazad2ubvzaldkxaq
             mySQLOperate = UTESQLOperate.getInstance(activity) // 2.2.1版本修改
@@ -152,7 +155,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
 
             info_txt.text = "Please wait ..."
-        } catch (e:Exception){
+        } catch (e: Exception){
 
         }
     }
@@ -165,9 +168,17 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
             refresh.performClick();
 
             swiperefresh_items.setRefreshing(false);
+            mySQLOperate!!.queryBallSports(GlobalVariable.BALL_TYPE_TABLETENNIS)
+
+            mWriteCommand?.open24HourRate(true)
+            mWriteCommand?.syncTemperatureAutomaticTestInterval(true, 0)
+            mWriteCommand!!.syncRateData()
+            mWriteCommand!!.queryCurrentTemperatureData()
 
             if (heartRates.size != 0  && tempRates.size != 0 ) {
-                postGetCovidStatusDataViewModel.loadData(UserInfoManager.getInstance(activity!!).getEmail())
+                postGetCovidStatusDataViewModel.loadData(
+                    UserInfoManager.getInstance(activity!!).getEmail()
+                )
             } else {
                 info_txt.text = "Please wait, data being transferred ..."
                 info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -181,43 +192,72 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 tvcough.setText("NO")
                 tvcough.setTextColor(activity?.resources?.getColor(R.color.Black)!!)
             }
-        } catch (e:Exception){
+            Handler().postDelayed({
+                //doSomethingHere()
+            }, 1000)
+            setTempData()
+            setSPoData()
+            setHeartData()
+        } catch (e: Exception){
             e.toString()
         }
     }
 
   
     fun setHeartData() {
+        var heartInfo = mySQLOperate?.query24HourRateAllInfo()
+        heartInfo?.let {
+            heartRateInsert(it)
+        }
+
         val db = DataBaseHelper(activity!!)
-        heartRates = db.getAllHeartRate("Where heartRate != 0  ORDER by Id DESC")
+        heartRates = db.getAllHeartRate("")
         if(heartRates.size != 0) {
             oxygen_level.text = "96"
-            val lastsynced = BaseHelper.parseDate(heartRates.get(0).time, Constants.TIME_JSON_HM)
-            val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
-            val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
-                BaseHelper.parseDate(heartRates.get(0).date,Constants.DATE_JSON))
+            System.out.println("getAllHeartRatetime "+heartRates.get(heartRates.size - 1).time
+                    +" date "+heartRates.get(heartRates.size - 1).date+
+                    " heart "+heartRates.get(heartRates.size - 1).heartRate+
+                    " parseDate "+BaseHelper.parseDate(heartRates.get(heartRates.size - 1).time, Constants.TIME_JSON_HM))
+            val lastsynced = BaseHelper.parseDate(heartRates.get(heartRates.size - 1).time, Constants.TIME_JSON_HM)
+            val today_date = BaseHelper.parseDate(Date(), Constants.DATE_JSON)
+            val diffDays = BaseHelper.printDifference(
+                BaseHelper.parseDate(
+                    today_date,
+                    Constants.DATE_JSON
+                ),
+                BaseHelper.parseDate(heartRates.get(heartRates.size - 1).date, Constants.DATE_JSON)
+            )
             if(diffDays?.days?.toInt() == 0) {
                 last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
             } else if(diffDays.days?.toInt() == 1) {
                 last_synced.text = "Yesterday"
             }
             else {
-                last_synced.text = heartRates.get(0).date
+                last_synced.text = heartRates.get(heartRates.size - 1).date
             }
-            heart_rate.text = heartRates.get(0).heartRate.toString()
-            HR = heartRates.get(0).heartRate.toInt()
+            heart_rate.text = heartRates.get(heartRates.size - 1).heartRate.toString()
+            HR = heartRates.get(heartRates.size - 1).heartRate.toInt()
+        } else{
+          //  onConnected()
         }
     }
 
     fun setTempData() {
+
         val db = DataBaseHelper(activity!!)
-        tempRates = db.getAllTemp("Where TempRate != 0 ORDER by Id DESC")
+        tempRates = db.getAllTemp(" ORDER BY date DESC,time DESC")
         if(tempRates.size != 0) {
+/*
             try {
                 val lastsynced = BaseHelper.parseDate(tempRates.get(0).time, Constants.TIME_JSON_HM)
-                val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
-                val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
-                    BaseHelper.parseDate(tempRates.get(0).date,Constants.DATE_JSON))
+                val today_date = BaseHelper.parseDate(Date(), Constants.DATE_JSON)
+                val diffDays = BaseHelper.printDifference(
+                    BaseHelper.parseDate(
+                        today_date,
+                        Constants.DATE_JSON
+                    ),
+                    BaseHelper.parseDate(tempRates.get(0).date, Constants.DATE_JSON)
+                )
                 if(diffDays?.days?.toInt() == 0) {
                     last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
                 } else if(diffDays.days?.toInt() == 1) {
@@ -226,11 +266,12 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 else {
                     last_synced.text = tempRates.get(0).date
                 }
-            }catch (e:Exception){
+            }catch (e: Exception){
                 e.printStackTrace()
 
             }
-            temp.text = String.format("%.1f",tempRates.get(0).tempRate)
+*/
+            temp.text = String.format("%.1f", tempRates.get(0).tempRate)
             Temp = tempRates.get(0).tempRate.toDouble()
         }
     }
@@ -241,9 +282,14 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         if(spoRates.size != 0) {
             try {
                 val lastsynced = BaseHelper.parseDate(spoRates.get(0).time, Constants.TIME_JSON_HM)
-                val today_date = BaseHelper.parseDate(Date(),Constants.DATE_JSON)
-                val diffDays = BaseHelper.printDifference(BaseHelper.parseDate(today_date,Constants.DATE_JSON),
-                    BaseHelper.parseDate(spoRates.get(0).date,Constants.DATE_JSON))
+                val today_date = BaseHelper.parseDate(Date(), Constants.DATE_JSON)
+                val diffDays = BaseHelper.printDifference(
+                    BaseHelper.parseDate(
+                        today_date,
+                        Constants.DATE_JSON
+                    ),
+                    BaseHelper.parseDate(spoRates.get(0).date, Constants.DATE_JSON)
+                )
                 if(diffDays?.days?.toInt() == 0) {
                     last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
                 } else if(diffDays.days?.toInt() == 1) {
@@ -252,7 +298,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 else {
                     last_synced.text = spoRates.get(0).date
                 }
-            }catch (e:Exception){
+            }catch (e: Exception){
                 e.printStackTrace()
 
             }
@@ -262,11 +308,13 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
     }
 
     fun setGetCovidStatusDataAPIObserver() {
-        postGetCovidStatusDataViewModel = ViewModelProviders.of(this).get(PostCovidStatusDataViewModel::class.java).apply {
+        postGetCovidStatusDataViewModel = ViewModelProviders.of(this).get(
+            PostCovidStatusDataViewModel::class.java
+        ).apply {
             this@WelnessFragment.let { thisFragReference ->
                 isLoading.observe(thisFragReference, Observer { aBoolean ->
-                    if(aBoolean!!) {
-                     //   syncing.visibility = View.VISIBLE
+                    if (aBoolean!!) {
+                        //   syncing.visibility = View.VISIBLE
                     } else {
                         syncing.visibility = View.GONE
                     }
@@ -274,8 +322,8 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 errorMessage.observe(thisFragReference, Observer { s ->
                     showNotifyDialog(
                         s.title, s.message!!,
-                        getString(R.string.ok),"",object : NotifyListener {
-                            override fun onButtonClicked(which: Int) { }
+                        getString(R.string.ok), "", object : NotifyListener {
+                            override fun onButtonClicked(which: Int) {}
                         }
                     )
                 })
@@ -284,23 +332,38 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
                     when (state) {
                         PostCovidStatusDataViewModel.NEXT_STEP -> {
-                            when(postGetCovidStatusDataViewModel.obj?.CovidPrediction) {
-                                "G" ->{
+                            when (postGetCovidStatusDataViewModel.obj?.CovidPrediction) {
+                                "G" -> {
                                     info_txt.text = "Your wellness data\nseems ok !"
                                     info_txt.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
-                                    circle.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorAccent), android.graphics.PorterDuff.Mode.SRC_IN);
+                                    circle.setColorFilter(
+                                        ContextCompat.getColor(
+                                            activity!!,
+                                            R.color.colorAccent
+                                        ), android.graphics.PorterDuff.Mode.SRC_IN
+                                    );
 
                                 }
                                 "Y" -> {
                                     info_txt.text = "There is some issue\nwith your wellness data"
                                     info_txt.setTextColor(activity?.resources?.getColor(R.color.DarkOrange)!!)
-                                    circle.setColorFilter(ContextCompat.getColor(activity!!, R.color.DarkOrange), android.graphics.PorterDuff.Mode.SRC_IN);
+                                    circle.setColorFilter(
+                                        ContextCompat.getColor(
+                                            activity!!,
+                                            R.color.DarkOrange
+                                        ), android.graphics.PorterDuff.Mode.SRC_IN
+                                    );
 
                                 }
                                 "R" -> {
                                     info_txt.text = "Please contact\nyour doctor"
                                     info_txt.setTextColor(activity?.resources?.getColor(R.color.Red)!!)
-                                    circle.setColorFilter(ContextCompat.getColor(activity!!, R.color.Red), android.graphics.PorterDuff.Mode.SRC_IN);
+                                    circle.setColorFilter(
+                                        ContextCompat.getColor(
+                                            activity!!,
+                                            R.color.Red
+                                        ), android.graphics.PorterDuff.Mode.SRC_IN
+                                    );
 
                                 }
                             }
@@ -316,7 +379,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
         postUpdateProfileModel = ViewModelProviders.of(this).get(PostUpdateProfileModel::class.java).apply {
            this@WelnessFragment.let { thisFragReference ->
                 isLoading.observe(thisFragReference, Observer { aBoolean ->
-                    if(aBoolean!!) {
+                    if (aBoolean!!) {
                         ld.showLoadingV2()
                     } else {
                         ld.hide()
@@ -325,8 +388,8 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 errorMessage.observe(thisFragReference, Observer { s ->
                     showNotifyDialog(
                         s.title, s.message!!,
-                        getString(R.string.ok),"",object : NotifyListener {
-                            override fun onButtonClicked(which: Int) { }
+                        getString(R.string.ok), "", object : NotifyListener {
+                            override fun onButtonClicked(which: Int) {}
                         }
                     )
                 })
@@ -350,9 +413,15 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
     fun startAlert() {
         val intent = Intent(activity, MyBroadcastReceiver::class.java)
         val pendingIntent: PendingIntent = PendingIntent.getBroadcast(
-            activity?.getApplicationContext(), 234324243, intent, 0)
+            activity?.getApplicationContext(), 234324243, intent, 0
+        )
         val alarmManager: AlarmManager? = activity?.getSystemService(ALARM_SERVICE) as AlarmManager?
-        alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),1*60*1000, pendingIntent);
+        alarmManager?.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            System.currentTimeMillis(),
+            1 * 60 * 1000,
+            pendingIntent
+        );
 
     }
 
@@ -364,6 +433,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 tempStatus = status
                 LogUtils.i(TAG, "Rate_tempRate =$tempRate")
                 mHandler.sendEmptyMessage(UPDATA_REAL_RATE_MSG)
+/*
                 activity?.runOnUiThread {
                     try {
                     heartRateInsert(rate)
@@ -375,6 +445,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
                 }
             }
+*/
         }
 
     private val mOnRateOf24HourListener =
@@ -558,7 +629,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     else -> {
                     }
                 }
-            } catch (e:java.lang.Exception){
+            } catch (e: java.lang.Exception){
 
             }
         }
@@ -644,6 +715,12 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     RATE_SYNC_FINISH_MSG
                 )
                 ICallbackStatus.OFFLINE_24_HOUR_RATE_SYNC_OK -> mHandler.sendEmptyMessage(
+                    RATE_OF_24_HOUR_SYNC_FINISH_MSG
+                )
+                ICallbackStatus.OFFLINE_24_HOUR_RATE_SYNCING -> mHandler.sendEmptyMessage(
+                    RATE_OF_24_HOUR_SYNC_FINISH_MSG
+                )
+                ICallbackStatus.SYNC_TEMPERATURE_AUTOMATICTEST_INTERVAL_COMMAND_OK -> mHandler.sendEmptyMessage(
                     RATE_OF_24_HOUR_SYNC_FINISH_MSG
                 )
                 ICallbackStatus.SET_METRICE_OK -> {
@@ -781,7 +858,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 else -> {
                 }
             }
-        }catch (e:java.lang.Exception){
+        }catch (e: java.lang.Exception){
 
         }
     }
@@ -852,7 +929,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 else -> {
                 }
             }
-        }catch (e:Exception){
+        }catch (e: Exception){
 
         }
     }
@@ -931,7 +1008,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                 mBLEServiceOperate?.connect(UserInfoManager.getInstance(activity!!).getDeviceID())
 
             }
-        }catch (e:Exception){
+        }catch (e: Exception){
 
         }
     }
@@ -979,7 +1056,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     )
                 }
             }
-        }catch (e:Exception){
+        }catch (e: Exception){
 
         }
     }
@@ -1051,7 +1128,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                     " heartRateStatus =$heartRateStatus, bpStatus =$bpStatus, oxygenStatus =$oxygenStatus, bodyTemperatureStatus =$bodyTemperatureStatus"
                 )
             }
-        }catch (e:Exception){
+        }catch (e: Exception){
 
         }
     }
@@ -1093,6 +1170,7 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
                         + ",bodyTemperature =" + info.bodyTemperature + ",bodySurfaceTemperature =" + info.bodySurfaceTemperature
                         + ",ambientTemperature =" + info.ambientTemperature
             )
+
             activity?.runOnUiThread {
                 try {
                     TempInsert(info)
@@ -1104,7 +1182,8 @@ class WelnessFragment : BaseFragment() , ICallback, ServiceStatusCallback,
 
                 }
             }
-        }catch (e:Exception){
+
+        }catch (e: Exception){
 
         }
 

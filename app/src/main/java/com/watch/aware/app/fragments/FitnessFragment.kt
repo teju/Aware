@@ -46,17 +46,39 @@ class FitnessFragment : BaseFragment()  {
         return v;
     }
 
-    fun setData(info: StepOneDayAllInfo) {
-       // val stepsArray = lastestHRSteps()
+    fun setData(info: StepOneDayAllInfo?) {
+
         if (info != null) {
             last_synced.text =BaseHelper.parseDate(Date(), TIMEFORMAT)
             calories.text = String.format("%.2f", info.calories)
             dist.text = String.format("%.2f", info.distance)
             steps.text = info.step.toString()
         } else {
-            val today_date = BaseHelper.parseDate(Date(), Constants.TIME_JSON_HM)
-            val sync_date = BaseHelper.parseDate(today_date, Constants.TIME_JSON_HM)
-            last_synced.text = BaseHelper.parseDate(sync_date, TIMEFORMAT)
+            val stepsArray = lastestHRSteps()
+            if(stepsArray?.size != 0) {
+                try {
+                    val lastsynced =
+                        BaseHelper.parseDate(stepsArray?.get(0)?.time, Constants.TIME_JSON_HM)
+                    val today_date = BaseHelper.parseDate(Date(), Constants.DATE_JSON)
+                    val diffDays = BaseHelper.printDifference(
+                        BaseHelper.parseDate(today_date, Constants.DATE_JSON),
+                        BaseHelper.parseDate(stepsArray?.get(0)?.date, Constants.DATE_JSON)
+                    )
+                    if (diffDays?.days?.toInt() == 0) {
+                        last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
+                    } else if (diffDays.days?.toInt() == 1) {
+                        last_synced.text = "Yesterday"
+                    } else {
+                        last_synced.text = stepsArray?.get(0)?.date
+                    }
+                }catch (e:Exception ){
+                    e.toString()
+                }
+
+                calories.text = stepsArray?.get(0)?.total_cal.toString()
+                dist.text = stepsArray?.get(0)?.distance.toString()
+                steps.text = stepsArray?.get(0)?.total_steps.toString()
+            }
         }
     }
 
@@ -73,7 +95,7 @@ class FitnessFragment : BaseFragment()  {
             } else {
                 fitness_human.setImageDrawable(activity?.resources?.getDrawable(R.drawable.human_male))
             }
-           // setData(info)
+
             val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
             if(connected) {
                 connection_status.setText(getString(R.string.connected))
@@ -97,12 +119,13 @@ class FitnessFragment : BaseFragment()  {
                      val sleepTimeInfo = UTESQLOperate.getInstance(mContext)
                          .querySleepInfo(CalendarUtils.getCalendar(0))
                      if (sleepTimeInfo != null) {
-                         sleep.text = "" + sleepTimeInfo.sleepTotalTime / 60
+                         sleep.text = "" + (sleepTimeInfo.sleepTotalTime / 60).toDouble()
                      }
                  } catch (e: Exception){
 
                  }
             }
+            setData(null)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
@@ -149,12 +172,20 @@ class FitnessFragment : BaseFragment()  {
                     val lmist = mySQLOperate!!.queryRunWalkAllDay()
                     for(activity in lmist) {
                         activity?.stepOneHourArrayInfo?.let {
-                            insertStepData(activity.stepOneHourArrayInfo,activity.calendar)
+                            if(!BaseHelper.isEmpty(activity.calendar)) {
+                                insertStepData(
+                                    activity.stepOneHourArrayInfo,
+                                    activity.calendar,
+                                    activity.step.toString(),
+                                    String.format("%.2f", activity.calories),
+                                    String.format("%.2f", activity.distance)
+                                )
+                            }
                         }
                     }
 
                 } catch (e: Exception){
-
+                    e.printStackTrace()
                 }
             }
 
