@@ -60,12 +60,19 @@ class FitnessFragment : BaseFragment()  {
                     val lastsynced =
                         BaseHelper.parseDate(stepsArray?.get(0)?.time, Constants.TIME_JSON_HM)
                     val today_date = BaseHelper.parseDate(Date(), Constants.DATE_JSON)
+                    val _today_date = BaseHelper.parseDate(Date(), Constants.TIME_JSON_HM)
+                    val sync_date = BaseHelper.parseDate(_today_date,Constants.TIME_JSON_HM)
+
                     val diffDays = BaseHelper.printDifference(
                         BaseHelper.parseDate(today_date, Constants.DATE_JSON),
                         BaseHelper.parseDate(stepsArray?.get(0)?.date, Constants.DATE_JSON)
                     )
                     if (diffDays?.days?.toInt() == 0) {
-                        last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
+                        if(lastsynced > sync_date) {
+                            last_synced.text = BaseHelper.parseDate(sync_date, TIMEFORMAT)
+                        } else {
+                            last_synced.text = BaseHelper.parseDate(lastsynced, TIMEFORMAT)
+                        }
                     } else if (diffDays.days?.toInt() == 1) {
                         last_synced.text = "Yesterday"
                     } else {

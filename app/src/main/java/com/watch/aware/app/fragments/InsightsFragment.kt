@@ -267,7 +267,15 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
                 ) + "') AND stepsCount != 0 ORDER BY time DESC"
             )
             val lastSync = BaseHelper.parseDate(activities.get(0).time, Constants.TIME_JSON_HM)
-            last_synced.text = BaseHelper.parseDate(lastSync, TIMEFORMAT)
+            val _today_date = BaseHelper.parseDate(Date(), Constants.TIME_JSON_HM)
+            val sync_date = BaseHelper.parseDate(_today_date,Constants.TIME_JSON_HM)
+            if(lastSync > sync_date) {
+                last_synced.text = BaseHelper.parseDate(sync_date, TIMEFORMAT)
+
+            } else {
+                last_synced.text = BaseHelper.parseDate(lastSync, TIMEFORMAT)
+
+            }
         }catch (e:Exception){
 
         }
@@ -304,7 +312,7 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         val db = DataBaseHelper(activity!!)
         val tempRates = db.getAllTemp(" ORDER BY date DESC,time DESC")
         if(tempRates.size != 0) {
-            temp.text = String.format("%.1f",tempRates.get(0).tempRate)+" C"
+            temp.text = String.format("%.1f",tempRates.get(0).tempRate)+" BPM"
             com.watch.aware.app.helper.Constants.Temp = tempRates.get(0).tempRate.toDouble()
 
             val parsetime = BaseHelper.parseDate(tempRates.get(0).time,Constants.TIME_JSON_HM)

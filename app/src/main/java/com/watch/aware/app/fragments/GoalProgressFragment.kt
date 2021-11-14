@@ -87,15 +87,20 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
             e.printStackTrace()
         }
         try {
+            val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
+            val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
             val activities = dataBaseHelper.getAllSteps("WHERE  " +
                     "date is DATE('"+ BaseHelper.parseDate(Date(), Constants.DATE_JSON)+"') ORDER by time DESC")
             if(activities !=null && activities.size != 0) {
                 val lastSync = BaseHelper.parseDate(activities.get(0).time, Constants.TIME_JSON_HM)
-                last_synced.text =
-                    BaseHelper.parseDate(lastSync, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+                if(lastSync > sync_date ){
+                    last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+                } else {
+                    last_synced.text =
+                        BaseHelper.parseDate(lastSync, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+                }
             } else {
-                val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
-                val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
+
                 last_synced.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
             }
 
