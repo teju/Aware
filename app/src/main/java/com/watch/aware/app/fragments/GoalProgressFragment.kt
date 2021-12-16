@@ -178,22 +178,6 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 )
             }
 
-
-            /*swiperefresh_items.run {
-            swiperefresh_items.setOnRefreshListener(OnRefreshListener {
-                Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-               connect()
-            })
-        }
-        welcome.text = "Welcome back, "+ UserInfoManager.getInstance(activity!!).getAccountName()
-        refresh.setOnClickListener {
-            swiperefresh_items.setRefreshing(true);
-            Helper.handleCommand(BleKey.DATA_ALL, BleKeyFlag.READ,activity!!)
-        }
-        if(!BleConnector.isAvailable()) {
-            connection_status.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.close_circle, 0);
-
-        }*/
             val connected = SPUtil.getInstance(activity?.getApplicationContext()).bleConnectStatus
             if(connected) {
                 connection_status.setText(getString(R.string.connected))
@@ -243,7 +227,14 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 "WHERE date is  ('" + BaseHelper.parseDate(Date(), Constants.DATE_JSON) + "') ORDER by time DESC" )
             if (dteps != null && dteps.size > 0) {
                 val lasthr = Helper.convertStringToDate(TIME_JSON_HM, dteps.get(0).time)
-                last_active_hr.text = BaseHelper.parseDate(lasthr, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+                val today_date = BaseHelper.parseDate(Date(),Constants.TIME_JSON_HM)
+                val sync_date = BaseHelper.parseDate(today_date,Constants.TIME_JSON_HM)
+                val lastSync = BaseHelper.parseDate(dteps.get(0).time, Constants.TIME_JSON_HM)
+                if(lastSync > sync_date ) {
+                    last_active_hr.text = BaseHelper.parseDate(sync_date, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+                } else{
+                    last_active_hr.text = BaseHelper.parseDate(lastSync, com.watch.aware.app.helper.Constants.TIMEFORMAT)
+                }
                 if(UserInfoManager.getInstance(activity!!).getGoalType() == STEPS_GOAL) {
                     var avgsteps = 0
                     for(a in dteps) {

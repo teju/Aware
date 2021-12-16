@@ -272,11 +272,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Steps steps = new Steps();
-                steps.setStepCount(cursor.getString(0));
-                steps.setDistance(cursor.getString(1));
-                steps.setCal(cursor.getString(2));
-                steps.setDate(cursor.getString(3));
-                steps.setTime(cursor.getString(4));
+                steps.setStepCount(cursor.getString(1));
+                steps.setDistance(cursor.getString(2));
+                steps.setCal(cursor.getString(3));
+                steps.setDate(cursor.getString(4));
+                steps.setTime(cursor.getString(5));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }
@@ -373,11 +373,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Steps steps = new Steps();
-                steps.setStepCount(cursor.getString(0));
-                steps.setDistance(cursor.getString(1));
-                steps.setCal(cursor.getString(2));
-                steps.setDate(cursor.getString(3));
-                steps.setTime(cursor.getString(4));
+                steps.setStepCount(cursor.getString(1));
+                steps.setDistance(cursor.getString(2));
+                steps.setCal(cursor.getString(3));
+                steps.setDate(cursor.getString(4));
+                steps.setTime(cursor.getString(5));
                 dataListList.add(steps);
             } while (cursor.moveToNext());
         }

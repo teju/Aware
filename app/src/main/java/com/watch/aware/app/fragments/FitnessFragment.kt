@@ -174,7 +174,7 @@ class FitnessFragment : BaseFragment()  {
                         R.drawable.check_circle,
                         0
                     );
-                    setData(info)
+
 
                     val lmist = mySQLOperate!!.queryRunWalkAllDay()
                     for(activity in lmist) {
@@ -190,7 +190,7 @@ class FitnessFragment : BaseFragment()  {
                             }
                         }
                     }
-
+                    setData(info)
                 } catch (e: Exception){
                     e.printStackTrace()
                 }

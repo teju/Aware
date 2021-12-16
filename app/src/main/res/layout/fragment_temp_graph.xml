@@ -84,7 +84,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/Gray"
                 android:textSize="15dp"
-                android:text="BPM"
+                android:text="C"
                 android:fontFamily="@font/opensansbold"
                 android:layout_height="wrap_content">
             </TextView>

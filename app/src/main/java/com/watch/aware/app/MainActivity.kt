@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity() {
                 if (fragment != null) supportFragmentManager.beginTransaction()
                     .remove(fragment).commitNowAllowingStateLoss()
             } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
         supportFragmentManager.popBackStack(
@@ -197,9 +198,11 @@ class MainActivity : AppCompatActivity() {
                                 transaction.hide(f)
                             }
                         } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
                 } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
             try {
@@ -208,6 +211,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     transaction.show(fragment).commitAllowingStateLoss()
                 } catch (e1: Exception) {
+                    e.printStackTrace()
                 }
             }
             foundExistingFragment = true
@@ -239,6 +243,7 @@ class MainActivity : AppCompatActivity() {
                     .commitAllowingStateLoss()
                 Helper.hideKeyboard(this)
             } catch (e1: Exception) {
+                e1.printStackTrace()
             }
         }
     }

@@ -33,7 +33,7 @@ class MainTabFragment : BaseFragment() {
         try {
             initNavigationView()
         } catch (e : Exception){
-
+            e.printStackTrace()
         }
     }
     fun  initNavigationView() {
