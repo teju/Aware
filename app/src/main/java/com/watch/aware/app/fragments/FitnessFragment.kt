@@ -81,8 +81,8 @@ class FitnessFragment : BaseFragment()  {
                 }catch (e:Exception ){
                     e.toString()
                 }
-
-                calories.text = stepsArray?.get(0)?.total_cal.toString()
+                val cal =  stepsArray?.get(0)?.total_cal?.toDouble()
+                calories.text = cal?.toInt().toString()
                 dist.text = stepsArray?.get(0)?.distance.toString()
                 steps.text = stepsArray?.get(0)?.total_steps.toString()
             }

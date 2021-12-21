@@ -248,7 +248,8 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
         try {
             val diatnceArray = lastestHRSteps()
             if (diatnceArray != null && diatnceArray.size != 0) {
-                calories.text = String.format("%.3f", diatnceArray.get(0).total_cal.toFloat())
+                val cal =  diatnceArray.get(0).total_cal.toDouble()
+                calories.text = cal.toInt().toString()
 
                 val parsetime =
                     BaseHelper.parseDate(diatnceArray.get(0).time, Constants.TIME_JSON_HM)
