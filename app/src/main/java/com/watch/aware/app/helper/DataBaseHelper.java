@@ -169,8 +169,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
        double maxStep = 0.0;
         try {
 
-            String selectQuery = "SELECT SUM("+type+") as steps,date,time from StepsCount where date is '" +date+
-                    "' GROUP BY TIME(time) order by steps desc Limit 1";
+            String selectQuery = "SELECT CAST(stepsCount AS INTEGER) as steps ,date,time from StepsCount where date is '" +date+
+                    "' order by steps desc Limit 1";
             System.out.println("DataBaseHelper123 getAllSteps " + selectQuery );
 
             SQLiteDatabase db = this.getWritableDatabase();
@@ -263,7 +263,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT rowid, stepsCount,distance,cal,date,time FROM StepsCount" +
                 " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021 AND stepsCount != 0  AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2022 AND stepsCount != 0  AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -290,7 +290,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM HeartRate" +
                 " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2022 " +
                 "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') AND heartRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -314,7 +314,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM SpoRate" +
                 " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2022 " +
                 "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') AND SpoRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -339,7 +339,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM TempRate" +
                 " WHERE CAST(strftime('%w', date) AS integer) = "+ week+ " AND CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021 " +
+                " AND CAST(strftime('%Y', date) AS integer) = 2022 " +
                 "AND DATE(date) >= DATE('now', 'weekday 0', '-7 days') AND TempRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -364,7 +364,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT rowid, stepsCount,distance,cal,date,time FROM StepsCount" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021  ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2022  ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -391,7 +391,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM HeartRate" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND heartRate != 0 ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2022  AND heartRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -414,7 +414,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM SpoRate" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND SpoRate != 0 ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2022  AND SpoRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -437,7 +437,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT *  FROM TempRate" +
                 " WHERE CAST(strftime('%m', date) AS integer) = "+month+" " +
-                " AND CAST(strftime('%Y', date) AS integer) = 2021  AND TempRate != 0 ORDER BY time DESC";
+                " AND CAST(strftime('%Y', date) AS integer) = 2022  AND TempRate != 0 ORDER BY time DESC";
 
         SQLiteDatabase db = this.getWritableDatabase();
 
