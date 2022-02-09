@@ -2,11 +2,12 @@ package com.watch.aware.app.fragments.graphs
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -28,6 +29,7 @@ import com.watch.aware.app.models.DailyData
 import com.watch.aware.app.models.MonthlyData
 import com.watch.aware.app.models.WeeklyData
 import kotlinx.android.synthetic.main.fragment_temp_graph.*
+import java.time.LocalDate
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -53,16 +55,46 @@ class TempGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSele
         week.setOnClickListener(this)
         day.setOnClickListener(this)
         month.setOnClickListener(this)
-        val todayDate = BaseHelper.parseDate(Date(), Constants.DATE_MONTH)
-        today_date.text = todayDate
-        val db = DataBaseHelper(activity!!)
-        val stepsArray = db.getAllTemp(" ORDER by time DESC, date Desc")
-        if(stepsArray!= null && stepsArray?.size != 0) {
-            stepsCount.text =  String.format("%.2f", stepsArray.get(0).tempRate.toDouble())
-        }
-        setXaxisData(DAILY)
-    }
 
+        setXaxisData(DAILY)
+        setStepsData(DAILY)
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setStepsData(which: Int)
+    {
+        try {
+            if (which == StepsGraphFragment.DAILY) {
+                val todayDate = BaseHelper.parseDate(Date(), Constants.DATE_MONTH)
+                today_date.text = todayDate
+                val db = DataBaseHelper(activity!!)
+                val stepsArray = db.getAllTemp(" ORDER by time DESC, date Desc")
+                if(stepsArray!= null && stepsArray?.size != 0) {
+                    stepsCount.text =  String.format("%.2f", stepsArray.get(0).tempRate.toDouble())
+                }
+            } else if (which == StepsGraphFragment.WEEKLY) {
+                val date = LocalDate.now()
+
+                today_date.text = date.dayOfWeek?.name
+                val calendar = Calendar.getInstance()
+                val day = calendar[Calendar.DAY_OF_WEEK]
+                val dteps = WeeklyData().getWeeklyTempData(day - 1, "", activity!!)
+                stepsCount.text = dteps.toInt().toString()
+
+            } else if (which == StepsGraphFragment.MONTHLY) {
+                val date = LocalDate.now()
+
+                today_date.text = date.month?.name
+                val calendar = Calendar.getInstance()
+                val day = calendar[Calendar.MONTH] + 1
+                val heartrate = MonthlyData().getMonthlyTempData(day, "", activity!!)
+                stepsCount.text = heartrate.toInt().toString()
+
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+
+    }
     fun setXaxisData(which : Int) {
         xAxisValues = ArrayList()
         if(which == DAILY) {
@@ -253,6 +285,7 @@ class TempGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSele
                     month,
                     ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
                 setXaxisData(WEEKLY)
+                setStepsData(WEEKLY)
             }
             R.id.day -> {
                 week.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -268,6 +301,7 @@ class TempGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSele
                     month,
                     ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
                 setXaxisData(DAILY)
+                setStepsData(DAILY)
             }
             R.id.month -> {
                 week.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -283,6 +317,7 @@ class TempGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValueSele
                     week,
                     ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
                 setXaxisData(MONTHLY)
+                setStepsData(MONTHLY)
             }
         }
     }

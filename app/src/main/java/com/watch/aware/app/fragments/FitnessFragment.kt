@@ -50,7 +50,7 @@ class FitnessFragment : BaseFragment()  {
 
         if (info != null) {
             last_synced.text =BaseHelper.parseDate(Date(), TIMEFORMAT)
-            calories.text = String.format("%.2f", info.calories)
+            calories.text = info.calories.toInt().toString()
             dist.text = String.format("%.2f", info.distance)
             steps.text = info.step.toString()
         } else {

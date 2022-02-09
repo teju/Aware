@@ -2,10 +2,12 @@ package com.watch.aware.app.fragments.graphs
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -20,12 +22,14 @@ import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
-import com.watch.aware.app.models.DailyData
+import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.helper.MyMarkerView
 import com.watch.aware.app.helper.UserInfoManager
+import com.watch.aware.app.models.DailyData
 import com.watch.aware.app.models.MonthlyData
 import com.watch.aware.app.models.WeeklyData
 import kotlinx.android.synthetic.main.fragment_step_graph.*
+import java.time.LocalDate
 import java.util.*
 
 
@@ -53,21 +57,18 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
         week.setOnClickListener(this)
         day.setOnClickListener(this)
         month.setOnClickListener(this)
-        val todayDate = BaseHelper.parseDate(Date(),Constants.DATE_MONTH)
-        today_date.text = todayDate
-        val stepsArray = lastestHRSteps()
-        if(stepsArray!= null && stepsArray?.size != 0) {
-            stepsCount.text = stepsArray.get(0).total_steps.toString()
-        }
+
         setXaxisData(DAILY)
+        setStepsData(DAILY)
     }
 
-    fun setXaxisData(which : Int) {
+    fun setXaxisData(which: Int) {
         xAxisValues = ArrayList()
         if(which == DAILY) {
             if(UserInfoManager.getInstance(activity!!).getTimeFormat() == com.watch.aware.app.helper.Constants.TWELVE_HOUR_FORMAT) {
                 xAxisValues = ArrayList(
-                    Arrays.asList("12am",
+                    Arrays.asList(
+                        "12am",
                         "1am",
                         "2am",
                         "3am",
@@ -88,12 +89,15 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                         "6pm",
                         "7pm",
                         "8pm",
-                        "9pm" ,
-                        "10pm" ,
-                        "11pm" ))
+                        "9pm",
+                        "10pm",
+                        "11pm"
+                    )
+                )
             } else {
                 xAxisValues = ArrayList(
-                    Arrays.asList("12",
+                    Arrays.asList(
+                        "12",
                         "1",
                         "2",
                         "3",
@@ -116,23 +120,29 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                         "20",
                         "21",
                         "22",
-                        "23"))
+                        "23"
+                    )
+                )
             }
 
         } else if(which == WEEKLY){
             xAxisValues = ArrayList(
-                Arrays.asList("",
+                Arrays.asList(
+                    "",
                     "Sun",
                     "Mon",
                     "Tue",
                     "Wed",
                     "Thur",
                     "Fri",
-                    "Sat"))
+                    "Sat"
+                )
+            )
         }
         else if(which == MONTHLY){
             xAxisValues = ArrayList(
-                Arrays.asList("",
+                Arrays.asList(
+                    "",
                     "Jan",
                     "Feb",
                     "Mar",
@@ -144,22 +154,70 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                     "Sep",
                     "Oct",
                     "Nov",
-                    "Dec"))
+                    "Dec"
+                )
+            )
         }
         values.clear()
         if(which == DAILY) {
-            values = DailyData().getXAxisDailyGoal(activity!!,"steps")
+            values = DailyData().getXAxisDailyGoal(activity!!, "steps")
         } else if(which == WEEKLY) {
-            values = WeeklyData().getXAxisStepWeekly(activity!!,"Steps")
+            values = WeeklyData().getXAxisStepWeekly(activity!!, "Steps")
         } else if(which == MONTHLY) {
-            values = MonthlyData().getXAxisStepMonthly(activity!!,"Steps")
+            values = MonthlyData().getXAxisStepMonthly(activity!!, "Steps")
         }
         renderData(which)
         mChart.notifyDataSetChanged()
         mChart.invalidate()
     }
 
-    fun renderData(which : Int) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setStepsData(which: Int) {
+        try {
+            if (which == DAILY) {
+                val todayDate = BaseHelper.parseDate(Date(), Constants.DATE_MONTH)
+                today_date.text = todayDate
+                val stepsArray = lastestHRSteps()
+                if (stepsArray != null && stepsArray?.size != 0) {
+                    stepsCount.text = stepsArray.get(0).total_steps.toString()
+                }
+            } else if (which == WEEKLY) {
+                val date = LocalDate.now()
+
+                today_date.text = date.dayOfWeek?.name
+                val calendar = Calendar.getInstance()
+                val day = calendar[Calendar.DAY_OF_WEEK]
+                val dataBaseHelper = DataBaseHelper(activity!!)
+                val dteps = dataBaseHelper.getAllStepsWeekly(
+                    day - 1,
+                    BaseHelper.parseDate(Date(), Constants.DATE_MM).toInt()
+                )
+                var stepsCnt = 0
+                for (steps in dteps) {
+                    stepsCnt = stepsCnt + steps.stepCount.toInt()
+                }
+                stepsCount.text = stepsCnt.toString()
+            } else if (which == MONTHLY) {
+                val date = LocalDate.now()
+
+                today_date.text = date.month?.name
+                val calendar = Calendar.getInstance()
+                val day = calendar[Calendar.MONTH] + 1
+                val dataBaseHelper = DataBaseHelper(activity!!)
+                val dteps = dataBaseHelper.getAllStepsMonthly(day )
+                var stepsCnt = 0
+                for (steps in dteps) {
+                    stepsCnt = stepsCnt + steps.stepCount.toInt()
+                }
+                stepsCount.text = stepsCnt.toString()
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+
+    }
+
+    fun renderData(which: Int) {
         try {
 
             mChart.setTouchEnabled(true)
@@ -203,7 +261,7 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
             mChart.getLegend().setEnabled(false);
 
             setGraphData()
-        } catch (e:Exception){
+        } catch (e: Exception){
 
         }
     }
@@ -251,14 +309,18 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                 month.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
                 ViewCompat.setBackgroundTintList(
                     week,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.black)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.black)!!)
+                );
                 ViewCompat.setBackgroundTintList(
                     day,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!)
+                );
                 ViewCompat.setBackgroundTintList(
                     month,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!)
+                );
                 setXaxisData(WEEKLY)
+                setStepsData(WEEKLY)
             }
             R.id.day -> {
                 week.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -266,14 +328,18 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                 month.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
                 ViewCompat.setBackgroundTintList(
                     day,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.black)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.black)!!)
+                );
                 ViewCompat.setBackgroundTintList(
                     week,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!)
+                );
                 ViewCompat.setBackgroundTintList(
                     month,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!)
+                );
                 setXaxisData(DAILY)
+                setStepsData(DAILY)
             }
             R.id.month -> {
                 week.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -281,14 +347,18 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                 month.setTextColor(activity?.resources?.getColor(R.color.colorAccent)!!)
                 ViewCompat.setBackgroundTintList(
                     month,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.black)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.black)!!)
+                );
                 ViewCompat.setBackgroundTintList(
                     day,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!)
+                );
                 ViewCompat.setBackgroundTintList(
                     week,
-                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
+                    ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!)
+                );
                 setXaxisData(MONTHLY)
+                setStepsData(MONTHLY)
             }
         }
     }

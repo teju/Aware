@@ -165,7 +165,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return dataListList;
     }
-    public double getMaxSteps(String date,String type) {
+    public int getMaxSteps(String date,String type) {
        double maxStep = 0.0;
         try {
 
@@ -181,7 +181,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         } catch (Exception e){
 
         }
-        return maxStep;
+        return (int)maxStep;
     }
 
     public List<com.watch.aware.app.models.HeartRate> getAllHeartRate(String where) {

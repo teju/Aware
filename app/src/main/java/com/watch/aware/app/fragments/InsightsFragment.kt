@@ -290,7 +290,7 @@ class InsightsFragment : BaseFragment() ,View.OnClickListener{
             if (diatnceArray != null && diatnceArray.size != 0) {
 
                 distance.text = String.format(
-                    "%.3f",
+                    "%.2f",
                     diatnceArray.get(0).total_dist.toFloat()
                 ) + " km"
 

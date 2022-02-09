@@ -412,7 +412,7 @@ open class BaseFragment : GenericFragment() {
                         dataBaseHelper,
                         activity.step.toString(),
                         BaseHelper.parseDate(startDate, Constants.DATE_JSON),
-                        String.format("%.3f", dist),
+                        String.format("%.2f", dist),
                         String.format("%.2f", cal).toString(),
                         mtime,total_steps,total_cal,total_dist
                     )
@@ -422,7 +422,7 @@ open class BaseFragment : GenericFragment() {
                         dataBaseHelper,
                         activity.step.toString(),
                         BaseHelper.parseDate(startDate, Constants.DATE_JSON),
-                        String.format("%.3f", dist),
+                        String.format("%.2f", dist),
                         String.format("%.2f", cal).toString(),
                         mtime,total_steps,total_cal,total_dist)
                 }

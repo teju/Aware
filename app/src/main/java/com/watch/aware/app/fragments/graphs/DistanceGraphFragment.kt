@@ -2,10 +2,12 @@ package com.watch.aware.app.fragments.graphs
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -20,12 +22,14 @@ import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.watch.aware.app.R
 import com.watch.aware.app.fragments.settings.BaseFragment
+import com.watch.aware.app.helper.DataBaseHelper
 import com.watch.aware.app.models.DailyData
 import com.watch.aware.app.helper.MyMarkerView
 import com.watch.aware.app.helper.UserInfoManager
 import com.watch.aware.app.models.MonthlyData
 import com.watch.aware.app.models.WeeklyData
 import kotlinx.android.synthetic.main.fragment_distance_graph.*
+import java.time.LocalDate
 import java.util.*
 
 
@@ -53,15 +57,60 @@ class DistanceGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
         week.setOnClickListener(this)
         day.setOnClickListener(this)
         month.setOnClickListener(this)
-        val todayDate = BaseHelper.parseDate(Date(), Constants.DATE_MONTH)
-        today_date.text = todayDate
-        val stepsArray = lastestHRSteps()
-        if(stepsArray!= null && stepsArray?.size != 0) {
 
-            cal_count.text = stepsArray.get(0).total_dist.toString()
-        }
         setXaxisData(DAILY)
+        setStepsData(DAILY)
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun setStepsData(which: Int) {
+        try {
+            if (which == StepsGraphFragment.DAILY) {
+                val todayDate = BaseHelper.parseDate(Date(), Constants.DATE_MONTH)
+                today_date.text = todayDate
+                val stepsArray = lastestHRSteps()
+                if (stepsArray != null && stepsArray?.size != 0) {
+                    cal_count.text = stepsArray.get(0).total_dist.toString()
+                }
+            } else if (which == StepsGraphFragment.WEEKLY) {
+                val date = LocalDate.now()
+
+                today_date.text = date.dayOfWeek?.name
+                val calendar = Calendar.getInstance()
+                val day = calendar[Calendar.DAY_OF_WEEK]
+                val dataBaseHelper = DataBaseHelper(activity!!)
+                val dteps = dataBaseHelper.getAllStepsWeekly(
+                    day - 1,
+                    BaseHelper.parseDate(Date(), Constants.DATE_MM).toInt()
+                )
+                var stepsCnt = 0f
+                for (steps in dteps) {
+                    stepsCnt = stepsCnt + steps.distance.toFloat()
+                }
+                cal_count.text = String.format(
+                    "%.2f",
+                    stepsCnt.toDouble())
+            } else if (which == StepsGraphFragment.MONTHLY) {
+                val date = LocalDate.now()
+
+                today_date.text = date.month?.name
+                val calendar = Calendar.getInstance()
+                val day = calendar[Calendar.MONTH] + 1
+                val dataBaseHelper = DataBaseHelper(activity!!)
+                val dteps = dataBaseHelper.getAllStepsMonthly(day )
+                var stepsCnt = 0f
+                for (steps in dteps) {
+                    stepsCnt = stepsCnt + steps.distance.toFloat()
+                }
+                cal_count.text = String.format(
+                    "%.2f",
+                    stepsCnt.toDouble())
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+
+    }
+
     fun setXaxisData(which : Int) {
         xAxisValues = ArrayList()
         if(which == DAILY) {
@@ -259,6 +308,7 @@ class DistanceGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
                     month,
                     ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
                 setXaxisData(WEEKLY)
+                setStepsData(WEEKLY)
             }
             R.id.day -> {
                 week.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -274,6 +324,7 @@ class DistanceGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
                     month,
                     ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
                 setXaxisData(DAILY)
+                setStepsData(DAILY)
             }
             R.id.month -> {
                 week.setTextColor(activity?.resources?.getColor(R.color.DarkGray)!!)
@@ -289,6 +340,7 @@ class DistanceGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
                     week,
                     ColorStateList.valueOf(activity?.resources?.getColor(R.color.light_gray)!!));
                 setXaxisData(MONTHLY)
+                setStepsData(MONTHLY)
             }
         }
     }

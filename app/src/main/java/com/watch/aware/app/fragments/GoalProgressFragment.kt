@@ -82,7 +82,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 progressBar.setProgress(res.toFloat(),false)
             }
 
-            step_count.text = ""+ String.format("%.2f",res) + "%\n"+appendText
+            step_count.text = ""+ res.toInt() + "%\n"+appendText
         } catch (e:java.lang.Exception){
             e.printStackTrace()
         }
@@ -249,7 +249,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                         avgsteps = avgsteps.toDouble() + a.cal.toDouble()
                     }
                     val avg_steps = (avgsteps.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
-                    average_steps.text =String.format("%.2f",avg_steps)
+                    average_steps.text = avg_steps.toInt().toString()
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"cal").toString()
                 } else {
                     var avgsteps = 0.0
@@ -257,7 +257,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                         avgsteps = avgsteps.toDouble() + a.distance.toDouble()
                     }
                     val avg_steps = (avgsteps.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
-                    average_steps.text =String.format("%.3f",avg_steps)
+                    average_steps.text =String.format("%.2f",avg_steps)
                     max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
                 }
             }
