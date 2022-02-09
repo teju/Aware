@@ -183,6 +183,43 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         return (int)maxStep;
     }
+    public int getMaxCal(String date,String type) {
+        double maxStep = 0.0;
+        try {
+
+            String selectQuery = "SELECT CAST(cal AS INTEGER) as steps ,date,time from StepsCount where date is '" +date+
+                    "' order by steps desc Limit 1";
+            System.out.println("DataBaseHelper123 getAllSteps " + selectQuery );
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            cursor.moveToFirst();
+            maxStep = cursor.getDouble(0);
+
+        } catch (Exception e){
+
+        }
+        return (int)maxStep;
+    }
+
+    public double getMaxDistance(String date,String type) {
+        double maxStep = 0.0;
+        try {
+
+            String selectQuery = "SELECT CAST(distance AS DOUBLE) as steps ,date,time from StepsCount where date is '" +date+
+                    "' order by steps desc Limit 1";
+            System.out.println("DataBaseHelper123 getAllSteps " + selectQuery );
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+            cursor.moveToFirst();
+            maxStep = cursor.getDouble(0);
+
+        } catch (Exception e){
+
+        }
+        return maxStep;
+    }
 
     public List<com.watch.aware.app.models.HeartRate> getAllHeartRate(String where) {
         List<HeartRate> dataListList = new ArrayList<HeartRate>();

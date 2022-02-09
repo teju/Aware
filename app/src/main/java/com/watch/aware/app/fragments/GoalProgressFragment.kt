@@ -74,7 +74,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                 for(a in activities ) {
                     totalVal = totalVal + (a.distance).toDouble()
                 }
-                appendText = "of distance travelled"
+                appendText = "of distance"
             }
 
             val res = totalVal / UserInfoManager.getInstance(activity!!).getGoalValue() * 100
@@ -250,7 +250,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                     }
                     val avg_steps = (avgsteps.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
                     average_steps.text = avg_steps.toInt().toString()
-                    max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"cal").toString()
+                    max_step.text = dataBaseHelper.getMaxCal(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"cal").toString()
                 } else {
                     var avgsteps = 0.0
                     for(a in dteps) {
@@ -258,7 +258,7 @@ class GoalProgressFragment : BaseFragment(),OnChartValueSelectedListener {
                     }
                     val avg_steps = (avgsteps.toFloat() / (BaseHelper.parseDate(Date(), Constants.TIME_hA).toFloat()))
                     average_steps.text =String.format("%.2f",avg_steps)
-                    max_step.text = dataBaseHelper.getMaxSteps(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
+                    max_step.text = dataBaseHelper.getMaxDistance(BaseHelper.parseDate(Date(), Constants.DATE_JSON),"distance").toString()
                 }
             }
         } catch (e:Exception) {

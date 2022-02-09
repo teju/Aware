@@ -183,20 +183,10 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
                 }
             } else if (which == WEEKLY) {
                 val date = LocalDate.now()
-
                 today_date.text = date.dayOfWeek?.name
-                val calendar = Calendar.getInstance()
-                val day = calendar[Calendar.DAY_OF_WEEK]
-                val dataBaseHelper = DataBaseHelper(activity!!)
-                val dteps = dataBaseHelper.getAllStepsWeekly(
-                    day - 1,
-                    BaseHelper.parseDate(Date(), Constants.DATE_MM).toInt()
-                )
-                var stepsCnt = 0
-                for (steps in dteps) {
-                    stepsCnt = stepsCnt + steps.stepCount.toInt()
-                }
-                stepsCount.text = stepsCnt.toString()
+                values = WeeklyData().getXAxisStepWeekly(activity!!, "Steps")
+
+                //stepsCount.text = stepsCnt.toString()
             } else if (which == MONTHLY) {
                 val date = LocalDate.now()
 
