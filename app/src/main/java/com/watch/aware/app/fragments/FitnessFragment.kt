@@ -153,6 +153,7 @@ class FitnessFragment : BaseFragment()  {
                 mWalkDistance = info.walkDistance
                 mWalkDurationTime = info.walkDurationTime
             }
+            info.stepOneHourArrayInfo
             LogUtils.d(
                 TAG, "mSteps =" + mSteps + ",mDistance ="
                         + mDistance + ",mCalories =" + mCalories + ",mRunSteps ="

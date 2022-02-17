@@ -75,16 +75,11 @@ class DistanceGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
                 val date = LocalDate.now()
 
                 today_date.text = date.dayOfWeek?.name
-                val calendar = Calendar.getInstance()
-                val day = calendar[Calendar.DAY_OF_WEEK]
-                val dataBaseHelper = DataBaseHelper(activity!!)
-                val dteps = dataBaseHelper.getAllStepsWeekly(
-                    day - 1,
-                    BaseHelper.parseDate(Date(), Constants.DATE_MM).toInt()
-                )
+                val values = WeeklyData().getTotalStepWeekly(activity!!, "dist")
+
                 var stepsCnt = 0f
-                for (steps in dteps) {
-                    stepsCnt = stepsCnt + steps.distance.toFloat()
+                for (steps in values) {
+                    stepsCnt = stepsCnt + steps.toFloat()
                 }
                 cal_count.text = String.format(
                     "%.2f",

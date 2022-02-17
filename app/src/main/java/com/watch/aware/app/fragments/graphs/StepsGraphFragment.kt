@@ -184,9 +184,13 @@ class StepsGraphFragment : BaseFragment(),View.OnClickListener, OnChartValueSele
             } else if (which == WEEKLY) {
                 val date = LocalDate.now()
                 today_date.text = date.dayOfWeek?.name
-                values = WeeklyData().getXAxisStepWeekly(activity!!, "Steps")
+                val values = WeeklyData().getTotalStepWeekly(activity!!, "Steps")
+                var stepsCnt = 0
 
-                //stepsCount.text = stepsCnt.toString()
+                for(value in values) {
+                    stepsCnt = stepsCnt + value.toInt();
+                }
+                stepsCount.text = stepsCnt.toString()
             } else if (which == MONTHLY) {
                 val date = LocalDate.now()
 

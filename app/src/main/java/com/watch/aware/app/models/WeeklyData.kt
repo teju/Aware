@@ -8,6 +8,7 @@ import com.iapps.libs.helpers.BaseHelper
 import com.iapps.logs.com.pascalabs.util.log.helper.Constants
 import com.watch.aware.app.helper.DataBaseHelper
 import java.util.*
+import kotlin.collections.ArrayList
 
 class WeeklyData {
     var activity :Context? = null
@@ -23,6 +24,19 @@ class WeeklyData {
         values.add(Entry(7.0f, getWeeklyStepsData(6, type)))
         return values
     }
+    fun getTotalStepWeekly(activity: Context,type : String): ArrayList<Float> {
+        this.activity = activity
+        val values: ArrayList<Float> = ArrayList()
+        values.add(getWeeklyStepsData(0, type))
+        values.add(getWeeklyStepsData(1, type))
+        values.add(getWeeklyStepsData(2, type))
+        values.add( getWeeklyStepsData(3, type))
+        values.add( getWeeklyStepsData(4, type))
+        values.add(getWeeklyStepsData(5, type))
+        values.add(getWeeklyStepsData(6, type))
+        return values
+    }
+
     fun getXAxisHeartRateWeekly(activity: Context,type : String): MutableList<Entry> {
         this.activity = activity
         val values: MutableList<Entry> = ArrayList()

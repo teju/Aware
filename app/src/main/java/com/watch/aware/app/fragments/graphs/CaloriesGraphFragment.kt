@@ -75,18 +75,11 @@ class CaloriesGraphFragment : BaseFragment() ,View.OnClickListener, OnChartValue
                 }
             } else if (which == StepsGraphFragment.WEEKLY) {
                 val date = LocalDate.now()
-
                 today_date.text = date.dayOfWeek?.name
-                val calendar = Calendar.getInstance()
-                val day = calendar[Calendar.DAY_OF_WEEK]
-                val dataBaseHelper = DataBaseHelper(activity!!)
-                val dteps = dataBaseHelper.getAllStepsWeekly(
-                    day - 1,
-                    BaseHelper.parseDate(Date(), Constants.DATE_MM).toInt()
-                )
-                var stepsCnt = 0f
-                for (steps in dteps) {
-                    stepsCnt = stepsCnt + steps.cal.toFloat()
+                val values = WeeklyData().getTotalStepWeekly(activity!!, "cal")
+                var stepsCnt = 0
+                for(value in values) {
+                    stepsCnt = stepsCnt + value.toInt();
                 }
                 cal_count.text = stepsCnt.toInt().toString()
 
